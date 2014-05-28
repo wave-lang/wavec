@@ -29,3 +29,8 @@ a.out
 *.exe
 *.out
 *.app
+
+# Lex and Yacc files.
+y.*
+y.*.*
+*.yy.cc
