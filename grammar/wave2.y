@@ -4,12 +4,14 @@
 %token Oparentheses Cparentheses /* ( ) */
 %token Semicolon Parallel /* ; || */
 %token At /* @ */
+%token Number_sign /* # */
 %token Integer_litteral Float_litteral Boolean_litteral String_litteral Char_litteral
 %token Infinity
 %token Prec Succ Up Down Rewind
 %token Unary_plus Unary_minus Increment Decrement Square_root Sin Cos Not Log Exp Ceil Floor
 %token Plus Minus Min Max Times Divid Mod Equal Not_equal Upper_equal Lesser_equal Lesser Upper And Or Get
 %token Atom Question_mark Exclamation_mark Read Print
+%start Program
 
 %%
 
@@ -19,7 +21,7 @@ Program : Phrase
         ;
 
 Phrase : Let Identifier Be Any_expression Dot
-       | Collection_expression
+       | Collection_expression Dot
        ;
 
 Any_expression : Collection_expression
@@ -28,15 +30,12 @@ Any_expression : Collection_expression
                | Collection_simple
                ;
 
-Collection_expression : Collection_sequential
-                      | Collection_sequential Obrace_sequential Collection_sequential Cbrace
-                      | Collection_parallel
+Collection_expression : Collection_sequential Obrace_sequential Collection_sequential Cbrace
                       | Collection_parallel Obrace_parallel Collection_parallel Cbrace
                       ;
 
-Collection_sequential : Collection_simple
-                      | Collection_simple Semicolon Collection_simple
-                      | Collection_simple Obrace_sequential Collection_simple Cbrace Repetition_number
+Collection_sequential : Collection_simple Semicolon Collection_simple
+                      | Collection_simple Obrace_sequential Collection_sequential Cbrace Repetition_number
                       ;
 
 Collection_parallel : Collection_simple Parallel Collection_simple
@@ -50,7 +49,7 @@ Collection_simple : Oparentheses Collection_expression Cparentheses
                   ;
 
 Repetition_number : Integer_litteral
-                  | '#' Location
+                  | Number_sign Location
                   ;
 
 Value : Integer_litteral
@@ -60,8 +59,9 @@ Value : Integer_litteral
       | String_litteral
       ;
 
-Location : Move
-         | Move Number
+Location : Move Number
+         | Move
+         | Move Number Location
          | Move Location
          ;
 
