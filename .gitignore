@@ -33,4 +33,4 @@ a.out
 # Lex and Yacc files.
 y.*
 y.*.*
-*.yy.cc
+*.yy.c
