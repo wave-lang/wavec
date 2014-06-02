@@ -1,7 +1,7 @@
 YACCPATH = ../grammar/
 YACCNAME = wave_yacc.o
 CC = gcc
-IFLAGS = -I$(YACCHEAD)
+IFLAGS = -I$(YACCPATH)
 CFLAGS = -lfl -ly
 
 all : wave_lex
@@ -14,7 +14,8 @@ wave_lex.o : wave_lex.c
 	$(CC) $(IFLAGS) -c $<
 
 wave_lex : wave_lex.o
-	$(CC) $(CFLAGS) wave_lex.o $(YACCPATH)$(YACCNAME) -o $@
+	$(CC) -o $@ $(YACCPATH)$(YACCNAME) $< $(CFLAGS)
 
 clean :
-	rm wave_lex.o wave_lex.c wave_lex
+	@(cd $(YACCPATH); make clean 1>/dev/null 2>&1; echo $(YACCPATH) Cleaned.)
+	@rm wave_lex.o wave_lex.c wave_lex 2>/dev/null; echo Directory cleaned.
