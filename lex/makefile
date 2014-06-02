@@ -14,4 +14,7 @@ wave_lex.o : wave_lex.c
 	$(CC) $(IFLAGS) -c $<
 
 wave_lex : wave_lex.o
-	$(CC) $(CFLAGS) wave_lex.o $(YACCPATH)$(YACCNAME)
+	$(CC) $(CFLAGS) wave_lex.o $(YACCPATH)$(YACCNAME) -o $@
+
+clean :
+	rm wave_lex.o wave_lex.c wave_lex
