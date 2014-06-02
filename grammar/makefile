@@ -1,10 +1,16 @@
-all : wave_yacc
+CC = gcc
+IFLAGS =
 
-wave_yacc : wave2.y
-	yacc wave2.y -d -o wave_yacc.c
+all : wave_yacc.o
 
-wave_yacc_debug : wave2.y
-	yacc wave2.y -v
+wave_yacc.o : wave_yacc.c
+	$(CC) $(IFLAGS) -c $<
+
+wave_yacc.c : wave2.y
+	yacc $< -d -o $@
+
+wave_yacc_debug.c : wave2.y
+	yacc $< -v -o $@
 
 clean:
-	rm wave_yacc.c wave_yacc.h y.output
+	rm wave_yacc.c wave_yacc.o wave_yacc_debug.c wave_yacc.h wave_yacc_debug.output
