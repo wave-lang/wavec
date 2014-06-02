@@ -1,4 +1,4 @@
-/*
+%{/*
 The MIT License (MIT)
 
 Copyright (c) 2014 Éric VIOLARD, Maxime SCHMITT, Harenome RAZANAJATO RANAIVOARIVONY
@@ -21,10 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+%}
 
-%token Let Be Dot /* Let y Be x . */
-%token Identifier /* (a-z|A-Z){(a-z|A-Z|_|0-9)} */
-%token Osquare_brackets Csquare_brackets Obrace_sequential Obrace_parallel Cbrace /* [ ] {; {|| } */
+%token Dot /* "." */
+%token Osquare_brackets Csquare_brackets Obrace_sequential Obrace_parallel Cbrace /* [ ] { {; {|| } */
 %token Oparentheses Cparentheses /* ( ) */
 %token Semicolon Parallel /* ; || */
 %token At /* @ */
@@ -44,17 +44,13 @@ Program : Phrase
         |
         ;
 
-Phrase : Let Identifier Be Any_expression Dot
-       | Collection_expression Dot
+Phrase : Collection_expression Dot
        ;
 
-Any_expression : Collection_expression
-               | Collection_sequential
-               | Collection_parallel
-               | Collection_simple
-               ;
-
-Collection_expression : Collection_sequential Obrace_sequential Collection_sequential Cbrace
+Collection_expression : Collection_simple
+                      | Collection_sequential
+                      | Collection_sequential Obrace_sequential Collection_sequential Cbrace
+                      | Collection_parallel
                       | Collection_parallel Obrace_parallel Collection_parallel Cbrace
                       ;
 
