@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "wave.h"
+#include "wave_yacc.h"
 extern int yylval;
 %}
 Integer     [0-9]+
