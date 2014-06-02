@@ -35,3 +35,5 @@ y.*
 y.*.*
 *.yy.cc
 wave_yacc.*
+wave_preprocessor.c
+wave_preprocessor
