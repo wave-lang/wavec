@@ -130,6 +130,13 @@ static inline void _wave_atom_set_content (wave_atom * const atom,
     atom->_content = content;
 }
 
+static inline const wave_atom_content * _wave_atom_get_content
+    (const wave_atom * atom)
+{
+    return & atom->_content;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
@@ -201,11 +208,6 @@ wave_atom wave_atom_from_operator (wave_operator op)
 wave_atom_type wave_atom_get_type (const wave_atom * atom)
 {
     return atom->_type;
-}
-
-const wave_atom_content * _wave_atom_get_content (const wave_atom * atom)
-{
-    return & atom->_content;
 }
 
 wave_int wave_atom_get_int (const wave_atom * const atom)

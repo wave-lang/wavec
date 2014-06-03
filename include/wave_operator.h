@@ -30,9 +30,12 @@
 #ifndef __WAVE_OPERATOR_H__
 #define __WAVE_OPERATOR_H__
 
+/**
+ * \brief Wave operators.
+ */
 typedef enum wave_operator
 {
-    WAVE_OP_UNKNOWN
+    WAVE_OP_UNKNOWN         /**<- Unknown. */
 } wave_operator;
 
 #endif /* __WAVE_OPERATOR_H__ */

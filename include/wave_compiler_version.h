@@ -30,8 +30,19 @@
 #ifndef __WAVE_COMPILER_VERSION_H__
 #define __WAVE_COMPILER_VERSION_H__
 
+/**
+ * \brief Wave compiler major version.
+ */
 static const unsigned int WAVE_COMPILER_VERSION_MAJOR = 0;
+
+/**
+ * \brief Wave compiler minor version.
+ */
 static const unsigned int WAVE_COMPILER_VERSION_MINOR = 0;
+
+/**
+ * \brief Wave compiler patch version.
+ */
 static const unsigned int WAVE_COMPILER_VERSION_PATCH = 0;
 
 #endif /* __WAVE_COMPILER_VERSION_H__ */

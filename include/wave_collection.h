@@ -51,6 +51,9 @@ typedef enum wave_collection_type
     WAVE_COLLECTION_CYCLIC_PAR       /**<- Cyclic par. */
 } wave_collection_type;
 
+/**
+ * \brief Collection.
+ */
 typedef struct wave_collection
 {
     wave_collection_type _type;                 /**<- Type. */

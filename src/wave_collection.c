@@ -117,7 +117,7 @@ void wave_collection_set_type (wave_collection * const c,
         c->_type = t;
 }
 
-void wave_collection_set_atom (wave_collection * const c, atom * const a)
+void wave_collection_set_atom (wave_collection * const c, wave_atom * const a)
 {
     if (c != NULL)
         c->_atom = a;

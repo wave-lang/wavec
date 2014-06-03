@@ -46,19 +46,22 @@
  */
 typedef enum wave_atom_type
 {
-    WAVE_ATOM_LITERAL,     /**<- The atom is a const value. */
-    WAVE_ATOM_OPERATOR,  /**<- The atom is an operator. */
-    WAVE_ATOM_PATH,      /**<- The atom is a path. */
-    WAVE_ATOM_UNKNOWN    /**<- Unknown. */
+    WAVE_ATOM_LITERAL,      /**<- The atom is a const value. */
+    WAVE_ATOM_OPERATOR,     /**<- The atom is an operator. */
+    WAVE_ATOM_PATH,         /**<- The atom is a path. */
+    WAVE_ATOM_UNKNOWN       /**<- Unknown. */
 } wave_atom_type;
 
+/**
+ * \brief Wave literal type.
+ */
 typedef enum wave_literal_type
 {
-    WAVE_LITERAL_INT,
-    WAVE_LITERAL_FLOAT,
-    WAVE_LITERAL_BOOL,
-    WAVE_LITERAL_CHAR,
-    WAVE_LITERAL_STRING
+    WAVE_LITERAL_INT,       /**<- Int. */
+    WAVE_LITERAL_FLOAT,     /**<- Float. */
+    WAVE_LITERAL_BOOL,      /**<- Bool. */
+    WAVE_LITERAL_CHAR,      /**<- Char. */
+    WAVE_LITERAL_STRING     /**<- String. */
 } wave_literal_type;
 
 /**
@@ -66,13 +69,13 @@ typedef enum wave_literal_type
  */
 typedef union wave_atom_content
 {
-    wave_operator _operator;    /**<- Operator of the atom. */
-    wave_path _path;            /**<- Path of the atom. */
-    wave_int _int;                   /**<- Integer. */
-    wave_float _float;               /**<- Float. */
-    wave_bool _bool;                 /**<- Boolean. */
-    wave_char _char;                 /**<- Character. */
-    wave_char * _string;             /**<- String. */
+    wave_operator _operator;        /**<- Operator of the atom. */
+    wave_path _path;                /**<- Path of the atom. */
+    wave_int _int;                  /**<- Integer. */
+    wave_float _float;              /**<- Float. */
+    wave_bool _bool;                /**<- Boolean. */
+    wave_char _char;                /**<- Character. */
+    wave_char * _string;            /**<- String. */
 } wave_atom_content;
 
 /**
@@ -80,8 +83,8 @@ typedef union wave_atom_content
  */
 typedef struct wave_atom
 {
-    wave_atom_type _type;            /**<- The atom's type. */
-    wave_atom_content _content;      /**<- The atom's content. */
+    wave_atom_type _type;           /**<- The atom's type. */
+    wave_atom_content _content;     /**<- The atom's content. */
 } wave_atom;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +112,7 @@ void * wave_atom_free (wave_atom * atom);
 
 /**
  * \brief Get an atom which will yeld the provided integer.
- * \param int Int.
+ * \param i Int.
  * \return atom.
  * \relatesalso wave_atom
  */
@@ -187,7 +190,7 @@ wave_int wave_atom_get_int (const wave_atom * const atom);
 
 /**
  * \brief Get an atom's float.
- * \param a Atom.
+ * \param atom Atom.
  * \return The atom's float value.
  * \relatesalso wave_atom
  */
