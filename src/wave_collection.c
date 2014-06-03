@@ -120,40 +120,40 @@ void wave_collection_set_type (wave_collection * const c,
 void wave_collection_set_atom (wave_collection * const c, wave_atom * const a)
 {
     if (c != NULL)
-        c->_atom = a;
+        c->_inner._atom = a;
 }
 
 void wave_collection_set_list (wave_collection * const c,
     wave_collection * const list)
 {
     if (c != NULL)
-        c->_list = list;
+        c->_inner._list = list;
 }
 
 void wave_collection_set_repetition_list (wave_collection * const c,
     wave_collection * const list)
 {
     if (c != NULL)
-        c->_repetition._list = list;
+        c->_inner._repetition._list = list;
 }
 
 void wave_collection_set_repetition_path (wave_collection * const c,
     wave_path * const p)
 {
     if (c != NULL)
-        c->_repetition._path = p;
+        c->_inner._repetition._path = p;
 }
 
 void wave_collection_set_cyclic_list (wave_collection * const c,
     wave_collection * const list)
 {
     if (c != NULL)
-        c->_cyclic._list = list;
+        c->_inner._cyclic._list = list;
 }
 
 void wave_collection_set_cyclic_cycle (wave_collection * const c,
     wave_collection * const cycle)
 {
     if (c != NULL)
-        c->_cyclic._cycle = cycle;
+        c->_inner._cyclic._cycle = cycle;
 }

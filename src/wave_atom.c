@@ -286,7 +286,7 @@ void wave_atom_set_bool (wave_atom * const atom, wave_bool b)
     _wave_atom_set_content (atom, _wave_atom_content_from_bool (b));
 }
 
-void wave_atom_set__char (wave_atom * const atom, wave_char c)
+void wave_atom_set_char (wave_atom * const atom, wave_char c)
 {
     _wave_atom_set_type (atom, WAVE_ATOM_LITERAL);
     _wave_atom_set_content (atom, _wave_atom_content_from_char (c));

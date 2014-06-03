@@ -124,7 +124,7 @@ wave_atom wave_atom_from_int (wave_int i);
  * \return atom.
  * \relatesalso wave_atom
  */
-wave_atom wave_atom_from_float (float f);
+wave_atom wave_atom_from_float (wave_float f);
 
 /**
  * \brief Get an atom which will yeld the provided character.
@@ -132,7 +132,7 @@ wave_atom wave_atom_from_float (float f);
  * \return atom.
  * \relatesalso wave_atom
  */
-wave_atom wave_atom_from_char (char c);
+wave_atom wave_atom_from_char (wave_char c);
 
 /**
  * \brief Get an atom which will yeld the provided bool.
@@ -140,7 +140,7 @@ wave_atom wave_atom_from_char (char c);
  * \return atom.
  * \relatesalso wave_atom
  */
-wave_atom wave_atom_from_bool (bool b);
+wave_atom wave_atom_from_bool (wave_bool b);
 
 /**
  * \brief Get an atom which will yeld the provided string.
@@ -148,7 +148,7 @@ wave_atom wave_atom_from_bool (bool b);
  * \return atom.
  * \relatesalso wave_atom
  */
-wave_atom wave_atom_from_string (char * string);
+wave_atom wave_atom_from_string (wave_char * string);
 
 /**
  * \brief Get an atom which will yeld the provided path.
@@ -277,7 +277,7 @@ void wave_atom_set_bool (wave_atom * const atom, wave_bool b);
  * \note The atom's type will be set to WAVE_ATOM_LITERAL.
  * \relatesalso wave_atom
  */
-void wave_atom_set__char (wave_atom * const atom, wave_char c);
+void wave_atom_set_char (wave_atom * const atom, wave_char c);
 
 /**
  * \brief Set an atom's int value.
