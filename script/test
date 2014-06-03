@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if ! [ -f bin/unit_tests ]; then
+    echo "Are you sure you ran make ?" 1>&2
+    exit 66
+fi
+
+bin/unit_tests $*
+
+exit $?
