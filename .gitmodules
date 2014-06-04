@@ -1,0 +1,3 @@
+[submodule "hash_table_c_language"]
+	path = hash_table_c_language
+	url = https://github.com/syllo/hash_table_c_language.git
