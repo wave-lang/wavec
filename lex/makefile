@@ -12,9 +12,10 @@ LINK_FLAGS = -L$(HASH_LIB) -lhash -lfl -ly
 
 vpath %.c $(SRC_PATH)
 vpath %.h $(INCLUDE_PATH)
-vpath libhash.a $(HASH_PATH)
+vpath libhash.a $(HASH_LIB)
 
-all : wave_lex
+wave_lex : wave_lex.o libhash.a
+	$(CC) -o $@ $(YACCPATH)$(YACCNAME) $< $(LINK_FLAGS)
 
 libhash.a :
 	(cd $(HASH_PATH); make)
@@ -24,10 +25,7 @@ wave_lex.c : wave_lex.l
 
 wave_lex.o : wave_lex.c
 	(cd $(YACCPATH); make)
-	$(CC) $(IFLAGS) -c $<
-
-wave_lex : wave_lex.o libhash.a
-	$(CC) -o $@ $(YACCPATH)$(YACCNAME) $< $(LINK_FLAGS)
+	$(CC) $(IFLAGS) -c $< -o $@
 
 wave_preprocessor.c : wave_preprocessor.l
 	lex -o $@ $<
