@@ -30,6 +30,7 @@
 #ifndef __TEST_WAVE_PATH_H__
 #define __TEST_WAVE_PATH_H__
 
+#include <stdbool.h>
 #include <CUnit/CUnit.h>
 
 #include "wave_path.h"
@@ -41,14 +42,12 @@
 /**
  * \brief wave_path test suite initialization.
  * \return Success or error code.
- * \todo implementation
  */
 int test_wave_path_suite_init (void);
 
 /**
  * \brief wave_path test suite cleaning.
  * \return Success or error code.
- * \todo implementation
  */
 int test_wave_path_suite_clean (void);
 
@@ -59,14 +58,12 @@ int test_wave_path_suite_clean (void);
 /**
  * \brief Test wave_path_allocator().
  * \test wave_path_allocator()
- * \todo implementation
  */
 void test_wave_path_allocator (void);
 
 /**
  * \brief Test wave_path_free().
  * \test wave_path_free()
- * \todo implementation
  */
 void test_wave_path_free (void);
 
@@ -77,14 +74,12 @@ void test_wave_path_free (void);
 /**
  * \brief Test wave_path_has_next().
  * \test wave_path_has_next()
- * \todo implementation
  */
 void test_wave_path_has_next (void);
 
 /**
  * \brief Tet wave_path_get_move().
  * \test wave_path_get_move()
- * \todo implementation
  */
 void test_wave_path_get_move (void);
 
@@ -119,7 +114,6 @@ void test_wave_path_get_repeat_path (void);
 /**
  * \brief Test wave_path_get_next().
  * \test wave_path_get_next()
- * \todo implementation
  */
 void test_wave_path_get_next (void);
 

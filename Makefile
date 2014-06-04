@@ -17,7 +17,7 @@ FLAGS_CC_WARNINGS = -Wall -Wextra -Wfloat-equal -Wdouble-promotion -Wswitch-defa
 FLAGS_CC = $(FLAGS_INCLUDE) -std=c99 -pedantic -O0 $(FLAGS_CC_WARNINGS) $(FLAGS_CC_DEBUG)
 FLAGS_CC_LIB_DIRS = -L$(PATH_LIB)
 FLAGS_CC_LIB = -lwavecompiler
-FLAGS_CC_UNIT_TESTS = -lcunit -lwavetests
+FLAGS_CC_UNIT_TESTS = -lcunit -lm -lwavetests $(FLAGS_CC_LIB)
 
 vpath %.h $(PATH_INCLUDE) $(PATH_TESTS_INCLUDE)
 vpath %.c $(PATH_SRC) $(PATH_TESTS_SRC)
@@ -30,7 +30,7 @@ main: main.o libwavecompiler.a | bin_dir
 		$(CC) -o $(PATH_BIN)/$@ $(PATH_OBJ)/main.o $(FLAGS_CC_LIB_DIRS) $(FLAGS_CC_LIB)
 
 unit_tests: unit_tests.o libwavecompiler.a libwavetests.a | bin_dir
-		$(CC) -o $(PATH_BIN)/$@ $(PATH_OBJ)/unit_tests.o $(FLAGS_CC_LIB_DIRS) $(FLAGS_CC_LIB) $(FLAGS_CC_UNIT_TESTS)
+		$(CC) -o $(PATH_BIN)/$@ $(PATH_OBJ)/unit_tests.o $(FLAGS_CC_LIB_DIRS) $(FLAGS_CC_UNIT_TESTS)
 
 %.o: %.c | obj_dir
 		$(CC) $(FLAGS_CC) -o $(PATH_OBJ)/$@ -c $<

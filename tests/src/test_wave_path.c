@@ -33,9 +33,56 @@
 // Static variables.
 ////////////////////////////////////////////////////////////////////////////////
 
+#define WAVE_PATH_NUMBER 10
+static bool must_free_paths = true;
+static wave_path * paths[WAVE_PATH_NUMBER];
+static wave_move_type WAVE_MOVES[] =
+{
+    WAVE_MOVE_UP,
+    WAVE_MOVE_DOWN,
+    WAVE_MOVE_PRE,
+    WAVE_MOVE_SUC,
+    WAVE_MOVE_REWIND,
+    WAVE_MOVE_PART,
+    WAVE_MOVE_REP,
+    WAVE_MOVE_UNKNOWN,
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 // Suite related functions.
 ////////////////////////////////////////////////////////////////////////////////
+
+static void _test_init (void)
+{
+    for (unsigned int i = 0; i < WAVE_PATH_NUMBER; ++i)
+        paths[i] = malloc (sizeof * paths[i]);
+
+    * paths[0] = (wave_path) { ._move = WAVE_MOVE_UP, ._next_path = paths[1] };
+    * paths[1] = (wave_path) { ._move = WAVE_MOVE_PRE, ._next_path = paths[2] };
+    * paths[2] = (wave_path) { ._move = WAVE_MOVE_DOWN, ._next_path = paths[3] };
+    * paths[3] = (wave_path) { ._move = WAVE_MOVE_SUC, ._next_path = paths[4] };
+    * paths[4] = (wave_path) { ._move = WAVE_MOVE_SUC, ._next_path = NULL };
+
+    * paths[5] = (wave_path) { ._move = WAVE_MOVE_UP, ._next_path = paths[6] };
+    * paths[6] = (wave_path) {
+        ._move = WAVE_MOVE_REP,
+        ._complex_move._repeat._type = REPEAT_VALUE_CONSTANT,
+        ._complex_move._repeat._number = 10,
+        ._complex_move._repeat._path = paths[7],
+        ._next_path = paths[9]
+    };
+    * paths[7] = (wave_path) { ._move = WAVE_MOVE_UP, ._next_path = paths[8] };
+    * paths[8] = (wave_path) { ._move = WAVE_MOVE_DOWN, ._next_path = NULL };
+    * paths[9] = (wave_path) { ._move = WAVE_MOVE_UP, ._next_path = NULL };
+}
+
+static void _test_clean (void)
+{
+    if (must_free_paths)
+        for (unsigned int i = 0; i < WAVE_PATH_NUMBER; ++i)
+            free (paths[i]);
+    must_free_paths = true;
+}
 
 int test_wave_path_suite_init (void)
 {
@@ -53,10 +100,24 @@ int test_wave_path_suite_clean (void)
 
 void test_wave_path_allocator (void)
 {
+    _test_init ();
+
+    wave_path * w = wave_path_allocator ();
+    CU_ASSERT_PTR_NOT_NULL (w);
+    free (w);
+
+    _test_clean ();
 }
 
 void test_wave_path_free (void)
 {
+    _test_init ();
+
+    CU_ASSERT_PTR_NULL (wave_path_free (paths[0]))
+    CU_ASSERT_PTR_NULL (wave_path_free (paths[5]))
+    must_free_paths = false;
+
+    _test_clean ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -65,30 +126,91 @@ void test_wave_path_free (void)
 
 void test_wave_path_has_next (void)
 {
+    _test_init ();
+
+    CU_ASSERT_TRUE (wave_path_has_next (paths[0]))
+    CU_ASSERT_TRUE (wave_path_has_next (paths[1]))
+    CU_ASSERT_TRUE (wave_path_has_next (paths[2]))
+    CU_ASSERT_TRUE (wave_path_has_next (paths[3]))
+    CU_ASSERT_FALSE (wave_path_has_next (paths[4]))
+
+    CU_ASSERT_TRUE (wave_path_has_next (paths[5]))
+    CU_ASSERT_TRUE (wave_path_has_next (paths[6]))
+    CU_ASSERT_TRUE (wave_path_has_next (paths[7]))
+    CU_ASSERT_FALSE (wave_path_has_next (paths[8]))
+    CU_ASSERT_FALSE (wave_path_has_next (paths[9]))
+
+    _test_clean ();
 }
 
 void test_wave_path_get_move (void)
 {
+    _test_init ();
+
+    CU_ASSERT_EQUAL (wave_path_get_move (paths[0]), WAVE_MOVE_UP)
+    CU_ASSERT_EQUAL (wave_path_get_move (paths[1]), WAVE_MOVE_PRE)
+    CU_ASSERT_EQUAL (wave_path_get_move (paths[2]), WAVE_MOVE_DOWN)
+    CU_ASSERT_EQUAL (wave_path_get_move (paths[3]), WAVE_MOVE_SUC)
+    CU_ASSERT_EQUAL (wave_path_get_move (paths[4]), WAVE_MOVE_SUC)
+
+    CU_ASSERT_EQUAL (wave_path_get_move (paths[5]), WAVE_MOVE_UP)
+    CU_ASSERT_EQUAL (wave_path_get_move (paths[6]), WAVE_MOVE_REP)
+    CU_ASSERT_EQUAL (wave_path_get_move (paths[7]), WAVE_MOVE_UP)
+    CU_ASSERT_EQUAL (wave_path_get_move (paths[8]), WAVE_MOVE_DOWN)
+    CU_ASSERT_EQUAL (wave_path_get_move (paths[9]), WAVE_MOVE_UP)
+
+    _test_clean ();
 }
 
 void test_wave_path_get_part (void)
 {
+    _test_init ();
+    _test_clean ();
 }
 
 void test_wave_path_get_repeat_type (void)
 {
+    _test_init ();
+
+    CU_ASSERT_EQUAL (wave_path_get_repeat_type (paths[6]), REPEAT_VALUE_CONSTANT)
+
+    _test_clean ();
 }
 
 void test_wave_path_get_repeat_number (void)
 {
+    _test_init ();
+
+    CU_ASSERT_EQUAL (wave_path_get_repeat_number (paths[6]), 10)
+
+    _test_clean ();
 }
 
 void test_wave_path_get_repeat_path (void)
 {
+    _test_init ();
+
+    CU_ASSERT_PTR_EQUAL (wave_path_get_repeat_path (paths[6]), paths[7])
+
+    _test_clean ();
 }
 
 void test_wave_path_get_next (void)
 {
+    _test_init ();
+
+    CU_ASSERT_PTR_EQUAL (wave_path_get_next (paths[0]), paths[1])
+    CU_ASSERT_PTR_EQUAL (wave_path_get_next (paths[1]), paths[2])
+    CU_ASSERT_PTR_EQUAL (wave_path_get_next (paths[2]), paths[3])
+    CU_ASSERT_PTR_EQUAL (wave_path_get_next (paths[3]), paths[4])
+    CU_ASSERT_PTR_NULL (wave_path_get_next (paths[4]))
+    CU_ASSERT_PTR_EQUAL (wave_path_get_next (paths[5]), paths[6])
+    CU_ASSERT_PTR_EQUAL (wave_path_get_next (paths[6]), paths[9])
+    CU_ASSERT_PTR_EQUAL (wave_path_get_next (paths[7]), paths[8])
+    CU_ASSERT_PTR_NULL (wave_path_get_next (paths[8]))
+    CU_ASSERT_PTR_NULL (wave_path_get_next (paths[9]))
+
+    _test_clean ();
 }
 
 
@@ -98,24 +220,43 @@ void test_wave_path_get_next (void)
 
 void test_wave_path_set_move (void)
 {
+    _test_init ();
+
+    for (int i = 0; WAVE_MOVES[i] != WAVE_MOVE_UNKNOWN; ++i)
+    {
+        wave_path_set_move (paths[0], WAVE_MOVES[i]);
+        CU_ASSERT_EQUAL (paths[0]->_move, WAVE_MOVES[i])
+    }
+
+    _test_clean ();
 }
 
 void test_wave_path_add_path (void)
 {
+    _test_init ();
+    _test_clean ();
 }
 
 void test_wave_path_set_part (void)
 {
+    _test_init ();
+    _test_clean ();
 }
 
 void test_wave_path_set_repeat_type (void)
 {
+    _test_init ();
+    _test_clean ();
 }
 
 void test_wave_path_set_repeat_number (void)
 {
+    _test_init ();
+    _test_clean ();
 }
 
 void test_wave_path_set_repeat_path (void)
 {
+    _test_init ();
+    _test_clean ();
 }

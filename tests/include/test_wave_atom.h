@@ -30,6 +30,7 @@
 #ifndef __TEST_WAVE_ATOM_H__
 #define __TEST_WAVE_ATOM_H__
 
+#include <stdbool.h>
 #include <CUnit/CUnit.h>
 
 #include "wave_atom.h"

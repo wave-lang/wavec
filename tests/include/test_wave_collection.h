@@ -30,6 +30,7 @@
 #ifndef __TEST_WAVE_COLLECTION_H__
 #define __TEST_WAVE_COLLECTION_H__
 
+#include <stdbool.h>
 #include <CUnit/CUnit.h>
 
 #include "wave_collection.h"
