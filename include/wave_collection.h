@@ -63,8 +63,8 @@ typedef struct wave_collection
         struct wave_collection * _list;             /**<- Seq or Par. */
         struct
         {
-        struct wave_collection * _list;             /**<- List. */
-        wave_path * _path;                          /**<- Repeated path. */
+            struct wave_collection * _list;         /**<- List. */
+            wave_path * _path;                      /**<- Repeated path. */
         } _repetition;                              /**<- Repetition. */
         struct
         {
@@ -269,5 +269,13 @@ void wave_collection_set_cyclic_list (wave_collection * c, wave_collection * lis
  * \warning \c c must be not \c NULL.
  */
 void wave_collection_set_cyclic_cycle (wave_collection * c, wave_collection * cycle);
+
+////////////////////////////////////////////////////////////////////////////////
+// Printing.
+////////////////////////////////////////////////////////////////////////////////
+
+void wave_collection_fprint (FILE * stream, const wave_collection * c);
+
+void wave_collection_print (const wave_collection * c);
 
 #endif /* __WAVE_COLLECTION_H__ */

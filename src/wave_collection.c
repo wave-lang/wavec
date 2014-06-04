@@ -199,3 +199,71 @@ void wave_collection_set_cyclic_cycle (wave_collection * const c, wave_collectio
     if (c != NULL)
         c->_inner._cyclic._cycle = cycle;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Printing.
+////////////////////////////////////////////////////////////////////////////////
+
+static void _wave_collection_fprint_sep (FILE * stream, const wave_collection * c, const char * sep);
+
+static void _fprint_current (FILE * stream, const wave_collection * c)
+{
+    wave_collection_type collection_type = wave_collection_get_type (c);
+    switch (collection_type)
+    {
+        case WAVE_COLLECTION_ATOM:
+            wave_atom_fprint (stream, wave_collection_get_atom (c));
+            break;
+        case WAVE_COLLECTION_REP:
+            wave_collection_fprint (stream, wave_collection_get_repetition_list (c));
+            wave_path_fprint (stream, wave_collection_get_repetition_path (c));
+            break;
+        case WAVE_COLLECTION_SEQ:
+            fprintf (stream, "(");
+            _wave_collection_fprint_sep (stream, wave_collection_get_list (c), ";");
+            fprintf (stream, ")");
+            break;
+        case WAVE_COLLECTION_PAR:
+            fprintf (stream, "(");
+            _wave_collection_fprint_sep (stream, wave_collection_get_list (c), "||");
+            fprintf (stream, ")");
+            break;
+        case WAVE_COLLECTION_CYCLIC_SEQ:
+            wave_collection_fprint (stream, wave_collection_get_cyclic_list (c));
+            fprintf (stream, "{; ");
+            wave_collection_fprint (stream, wave_collection_get_cyclic_cycle (c));
+            fprintf (stream, "}");
+            break;
+        case WAVE_COLLECTION_CYCLIC_PAR:
+            wave_collection_fprint (stream, wave_collection_get_cyclic_list (c));
+            fprintf (stream, "{|| ");
+            wave_collection_fprint (stream, wave_collection_get_cyclic_cycle (c));
+            fprintf (stream, "}");
+            break;
+        default:
+            break;
+    }
+}
+
+void _wave_collection_fprint_sep (FILE * stream, const wave_collection * c, const char * sep)
+{
+    const wave_collection * last = c;
+    while (last != NULL)
+    {
+        _fprint_current (stream, last);
+        if (wave_collection_has_next (last))
+            fprintf (stream, "%s", sep);
+        last = wave_collection_get_next (last);
+    }
+}
+
+void wave_collection_fprint (FILE * stream, const wave_collection * c)
+{
+    _fprint_current (stream, c);
+}
+
+void wave_collection_print (const wave_collection * c)
+{
+    wave_collection_fprint (stdout, c);
+}
+

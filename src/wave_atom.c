@@ -121,12 +121,12 @@ static inline void _wave_atom_content_fprint_bool (FILE * stream, const wave_ato
 
 static inline void _wave_atom_content_fprint_char (FILE * stream, const wave_atom_content * c)
 {
-    fprintf (stream, "%c", c->_char);
+    fprintf (stream, "\'%c\'", c->_char);
 }
 
 static inline void _wave_atom_content_fprint_string (FILE * stream, const wave_atom_content * c)
 {
-    fprintf (stream, "%s", c->_string);
+    fprintf (stream, "\"%s\"", c->_string);
 }
 
 static inline void _wave_atom_content_fprint_operator (FILE * stream, const wave_atom_content * c)
@@ -211,8 +211,18 @@ void * wave_atom_free (wave_atom * atom)
 {
     if (atom != NULL)
     {
-        if (wave_atom_get_type (atom) == WAVE_ATOM_LITERAL_STRING)
-            free (atom->_content._string);
+        wave_atom_type atom_type = wave_atom_get_type (atom);
+        switch (atom_type)
+        {
+            case WAVE_ATOM_LITERAL_STRING:
+                free (atom->_content._string);
+                break;
+            case WAVE_ATOM_PATH:
+                wave_path_free (atom->_content._path);
+                break;
+            default:
+                break;
+        }
         free (atom);
         atom = NULL;
     }

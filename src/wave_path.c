@@ -223,13 +223,13 @@ static void _print_current (FILE * stream, const wave_path * p)
     {
         fprintf (stream, "[ ");
         wave_path_fprint (stream, p->_complex_move._part);
-        fprintf (stream, "]");
+        fprintf (stream, " ]");
     }
     else if (m == WAVE_MOVE_REP)
     {
         fprintf (stream, "( ");
         wave_path_fprint (stream, p->_complex_move._repeat._path);
-        fprintf (stream, ") %d", p->_complex_move._repeat._number);
+        fprintf (stream, " ) %d", p->_complex_move._repeat._number);
     }
     else
         _print_move (stream, m);

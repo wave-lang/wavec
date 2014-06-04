@@ -36,17 +36,23 @@
 #include "wave_atom.h"
 #include "wave_collection.h"
 
-static wave_path * p[9];
+#define _PATH_NUMBER 9
+#define _ATOM_NUMBER 7
+#define _COLLECTION_NUMBER 7
+
+static wave_path * p[_PATH_NUMBER];
+static wave_atom * a[_ATOM_NUMBER];
+static wave_collection * c[_COLLECTION_NUMBER];
 
 static int _init_path (void)
 {
     p[0] = wave_path_allocator ();
-    for (int i = 1; i < 6; ++i)
+    for (unsigned int i = 1; i < 6; ++i)
     {
         p[i] = wave_path_allocator ();
         wave_path_add_path (p[0], p[i]);
     }
-    for (int i = 6; i < 9; ++i)
+    for (unsigned int i = 6; i < _PATH_NUMBER; ++i)
         p[i] = wave_path_allocator ();
 
     wave_path_set_move (p[0], WAVE_MOVE_UP);
@@ -66,11 +72,44 @@ static int _init_path (void)
 
 static int _init_atom (void)
 {
+    for (unsigned int i = 0; i < _ATOM_NUMBER; ++i)
+        a[i] = wave_atom_allocator ();
+
+    wave_atom_set_int (a[0], 10);
+    wave_atom_set_float (a[1], 0.2f);
+    wave_atom_set_bool (a[2], true);
+    wave_atom_set_char (a[3], 'a');
+    wave_atom_set_string (a[4], "abcde");
+    wave_atom_set_operator (a[5], WAVE_OP_UNARY_PLUS);
+    wave_atom_set_path (a[6], p[0]);
+
     return 0;
 }
 
 static int _init_collection (void)
 {
+    for (unsigned int i = 0; i < _COLLECTION_NUMBER; ++i)
+        c[i] = wave_collection_allocator ();
+
+    wave_collection_set_type (c[0], WAVE_COLLECTION_SEQ);
+    wave_collection_set_type (c[1], WAVE_COLLECTION_ATOM);
+    wave_collection_set_type (c[2], WAVE_COLLECTION_ATOM);
+    wave_collection_set_type (c[3], WAVE_COLLECTION_PAR);
+    wave_collection_set_type (c[4], WAVE_COLLECTION_ATOM);
+    wave_collection_set_type (c[5], WAVE_COLLECTION_ATOM);
+    wave_collection_set_type (c[6], WAVE_COLLECTION_ATOM);
+    wave_collection_add_collection (c[1], c[2]);
+    wave_collection_add_collection (c[1], c[3]);
+    wave_collection_add_collection (c[4], c[5]);
+    wave_collection_add_collection (c[1], c[6]);
+    wave_collection_set_list (c[0], c[1]);
+    wave_collection_set_list (c[3], c[4]);
+    wave_collection_set_atom (c[1], a[0]);
+    wave_collection_set_atom (c[2], a[1]);
+    wave_collection_set_atom (c[4], a[2]);
+    wave_collection_set_atom (c[5], a[3]);
+    wave_collection_set_atom (c[6], a[4]);
+
     return 0;
 }
 
@@ -84,16 +123,19 @@ static int _init (void)
 
 static int _clean_path (void)
 {
-    wave_path_free (p[0]);
+    return 0;
 }
 
 static int _clean_atom (void)
 {
+    wave_atom_free (a[5]);
+    wave_atom_free (a[6]);
     return 0;
 }
 
 static int _clean_collection (void)
 {
+    wave_collection_free (c[0]);
     return 0;
 }
 
@@ -105,17 +147,45 @@ static int _clean (void)
     return 0;
 }
 
-static void print_path (void)
+static void _print_paths (void)
 {
     wave_path_print (p[0]);
+    printf ("\n");
+}
+
+static void _print_atoms (void)
+{
+    for (unsigned int i = 0; i < _ATOM_NUMBER; ++i)
+    {
+        printf ("- atom %d:\t", i);
+        wave_atom_print (a[i]);
+        printf ("\n");
+    }
+}
+
+static void _print_collections (void)
+{
+    wave_collection_print (c[0]);
     printf ("\n");
 }
 
 int main (int argc, char ** argv)
 {
     _init ();
+    printf ("Wave AST pretty printing\n");
+    printf ("========================\n");
 
-    print_path ();
+    printf ("Path printing:\n");
+    printf ("--------------\n");
+    _print_paths ();
+    printf ("\n");
+    printf ("Atom printing:\n");
+    printf ("--------------\n");
+    _print_atoms ();
+    printf ("\n");
+    printf ("Collection printing:\n");
+    printf ("--------------------\n");
+    _print_collections ();
 
     _clean ();
 
