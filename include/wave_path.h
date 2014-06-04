@@ -50,7 +50,7 @@ typedef enum wave_move_type
     WAVE_MOVE_REWIND,    /**<- Rewind. */
     WAVE_MOVE_PART,      /**<- Part. */
     WAVE_MOVE_REP,       /**<- Repeat. */
-    WAVE_MOVE_UNKNOWN    /**<- Unknown. */
+    WAVE_MOVE_UNKNOWN,   /**<- Unknown. */
 } wave_move_type;
 
 /**

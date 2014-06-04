@@ -68,7 +68,7 @@ typedef enum wave_operator
     WAVE_OP_SPECIFIC_CUT,               /**<- Cut. */
     WAVE_OP_SPECIFIC_READ,              /**<- Read. */
     WAVE_OP_SPECIFIC_PRINT,             /**<- Print. */
-    WAVE_OP_UNKNOWN                     /**<- Unknown. */
+    WAVE_OP_UNKNOWN,                    /**<- Unknown. */
 } wave_operator;
 
 #endif /* __WAVE_OPERATOR_H__ */

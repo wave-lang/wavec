@@ -162,31 +162,31 @@ void * wave_atom_free (wave_atom * atom)
 wave_atom wave_atom_from_int (wave_int i)
 {
     wave_atom_content content = _wave_atom_content_from_int (i);
-    return _wave_atom_build (WAVE_ATOM_LITERAL, content);
+    return _wave_atom_build (WAVE_ATOM_LITERAL_INT, content);
 }
 
 wave_atom wave_atom_from_float (wave_float f)
 {
     wave_atom_content content = _wave_atom_content_from_float (f);
-    return _wave_atom_build (WAVE_ATOM_LITERAL, content);
+    return _wave_atom_build (WAVE_ATOM_LITERAL_FLOAT, content);
 }
 
 wave_atom wave_atom_from_char (wave_char c)
 {
     wave_atom_content content = _wave_atom_content_from_char (c);
-    return _wave_atom_build (WAVE_ATOM_LITERAL, content);
+    return _wave_atom_build (WAVE_ATOM_LITERAL_CHAR, content);
 }
 
 wave_atom wave_atom_from_bool (wave_bool b)
 {
     wave_atom_content content = _wave_atom_content_from_bool (b);
-    return _wave_atom_build (WAVE_ATOM_LITERAL, content);
+    return _wave_atom_build (WAVE_ATOM_LITERAL_BOOL, content);
 }
 
 wave_atom wave_atom_from_string (wave_char * string)
 {
     wave_atom_content content = _wave_atom_content_from_string (string);
-    return _wave_atom_build (WAVE_ATOM_LITERAL, content);
+    return _wave_atom_build (WAVE_ATOM_LITERAL_STRING, content);
 }
 
 wave_atom wave_atom_from_path (wave_path path)
@@ -270,30 +270,30 @@ void wave_atom_set_operator (wave_atom * const atom, wave_operator op)
 
 void wave_atom_set_int (wave_atom * const atom, wave_int i)
 {
-    _wave_atom_set_type (atom, WAVE_ATOM_LITERAL);
+    _wave_atom_set_type (atom, WAVE_ATOM_LITERAL_INT);
     _wave_atom_set_content (atom, _wave_atom_content_from_int (i));
 }
 
 void wave_atom_set_float (wave_atom * const atom, wave_float f)
 {
-    _wave_atom_set_type (atom, WAVE_ATOM_LITERAL);
+    _wave_atom_set_type (atom, WAVE_ATOM_LITERAL_FLOAT);
     _wave_atom_set_content (atom, _wave_atom_content_from_float (f));
 }
 
 void wave_atom_set_bool (wave_atom * const atom, wave_bool b)
 {
-    _wave_atom_set_type (atom, WAVE_ATOM_LITERAL);
+    _wave_atom_set_type (atom, WAVE_ATOM_LITERAL_BOOL);
     _wave_atom_set_content (atom, _wave_atom_content_from_bool (b));
 }
 
 void wave_atom_set_char (wave_atom * const atom, wave_char c)
 {
-    _wave_atom_set_type (atom, WAVE_ATOM_LITERAL);
+    _wave_atom_set_type (atom, WAVE_ATOM_LITERAL_CHAR);
     _wave_atom_set_content (atom, _wave_atom_content_from_char (c));
 }
 
 void wave_atom_set_string (wave_atom * const atom, wave_char * string)
 {
-    _wave_atom_set_type (atom, WAVE_ATOM_LITERAL);
+    _wave_atom_set_type (atom, WAVE_ATOM_LITERAL_STRING);
     _wave_atom_set_content (atom, _wave_atom_content_from_string (string));
 }

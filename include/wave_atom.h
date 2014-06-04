@@ -46,23 +46,15 @@
  */
 typedef enum wave_atom_type
 {
-    WAVE_ATOM_LITERAL,      /**<- The atom is a const value. */
-    WAVE_ATOM_OPERATOR,     /**<- The atom is an operator. */
-    WAVE_ATOM_PATH,         /**<- The atom is a path. */
-    WAVE_ATOM_UNKNOWN       /**<- Unknown. */
+    WAVE_ATOM_LITERAL_INT,      /**<- The atom is a const integer. */
+    WAVE_ATOM_LITERAL_FLOAT,    /**<- The atom is a const float. */
+    WAVE_ATOM_LITERAL_BOOL,     /**<- The atom is a const boolean. */
+    WAVE_ATOM_LITERAL_CHAR,     /**<- The atom is a const character. */
+    WAVE_ATOM_LITERAL_STRING,   /**<- The atom is a const string. */
+    WAVE_ATOM_OPERATOR,         /**<- The atom is an operator. */
+    WAVE_ATOM_PATH,             /**<- The atom is a path. */
+    WAVE_ATOM_UNKNOWN,          /**<- Unknown. */
 } wave_atom_type;
-
-/**
- * \brief Wave literal type.
- */
-typedef enum wave_literal_type
-{
-    WAVE_LITERAL_INT,       /**<- Int. */
-    WAVE_LITERAL_FLOAT,     /**<- Float. */
-    WAVE_LITERAL_BOOL,      /**<- Bool. */
-    WAVE_LITERAL_CHAR,      /**<- Char. */
-    WAVE_LITERAL_STRING     /**<- String. */
-} wave_literal_type;
 
 /**
  * \brief Atom content.
@@ -247,7 +239,7 @@ wave_path wave_atom_get_path (const wave_atom * const atom);
  * \brief Set an atom's int value.
  * \param atom Atom.
  * \param i Int value.
- * \note The atom's type will be set to WAVE_ATOM_LITERAL.
+ * \note The atom's type will be set to WAVE_ATOM_LITERAL_INT.
  * \relatesalso wave_atom
  */
 void wave_atom_set_int (wave_atom * const atom, wave_int i);
@@ -256,7 +248,7 @@ void wave_atom_set_int (wave_atom * const atom, wave_int i);
  * \brief Set an atom's float value.
  * \param atom Atom.
  * \param f Float value.
- * \note The atom's type will be set to WAVE_ATOM_LITERAL.
+ * \note The atom's type will be set to WAVE_ATOM_LITERAL_FLOAT.
  * \relatesalso wave_atom
  */
 void wave_atom_set_float (wave_atom * const atom, wave_float f);
@@ -265,7 +257,7 @@ void wave_atom_set_float (wave_atom * const atom, wave_float f);
  * \brief Set an atom's int value.
  * \param atom Atom.
  * \param b Bool value.
- * \note The atom's type will be set to WAVE_ATOM_LITERAL.
+ * \note The atom's type will be set to WAVE_ATOM_LITERAL_BOOL.
  * \relatesalso wave_atom
  */
 void wave_atom_set_bool (wave_atom * const atom, wave_bool b);
@@ -274,7 +266,7 @@ void wave_atom_set_bool (wave_atom * const atom, wave_bool b);
  * \brief Set an atom's int value.
  * \param atom Atom.
  * \param c Char value.
- * \note The atom's type will be set to WAVE_ATOM_LITERAL.
+ * \note The atom's type will be set to WAVE_ATOM_LITERAL_CHAR.
  * \relatesalso wave_atom
  */
 void wave_atom_set_char (wave_atom * const atom, wave_char c);
@@ -283,7 +275,7 @@ void wave_atom_set_char (wave_atom * const atom, wave_char c);
  * \brief Set an atom's int value.
  * \param atom Atom.
  * \param string String value.
- * \note The atom's type will be set to WAVE_ATOM_LITERAL.
+ * \note The atom's type will be set to WAVE_ATOM_LITERAL_STRING.
  * \relatesalso wave_atom
  */
 void wave_atom_set_string (wave_atom * const atom, wave_char * string);

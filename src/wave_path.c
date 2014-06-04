@@ -41,9 +41,45 @@ void * wave_path_allocator (void)
     return p;
 }
 
+static inline bool _is_complex_move (wave_path * p)
+{
+    bool is_complex = false;
+    switch (p->_move)
+    {
+        /* Complex moves. */
+        case WAVE_MOVE_REWIND:
+        case WAVE_MOVE_PART:
+        case WAVE_MOVE_REP:
+            is_complex = true;
+            break;
+        /* Simple moves. */
+        case WAVE_MOVE_UP:
+        case WAVE_MOVE_DOWN:
+        case WAVE_MOVE_PRE:
+        case WAVE_MOVE_SUC:
+        case WAVE_MOVE_UNKNOWN:
+        default:
+            break;
+    }
+    return is_complex;
+}
+
 void * wave_path_free (wave_path * p)
 {
-    free (p);
+    wave_path * current, * next;
+    for (current = p; current != NULL; current = next)
+    {
+        next = current->_next_path;
+        if (_is_complex_move (p))
+        {
+            if (p->_move == WAVE_MOVE_PART)
+                wave_path_free (p->_complex_move._part);
+            else
+                wave_path_free (p->_complex_move._repeat._path);
+        }
+        free (current);
+    }
+
     return NULL;
 }
 
