@@ -24,6 +24,15 @@ SOFTWARE.
 */
 
 #include "wave_yacc.h"
+#include "preproc_utils.h"
+#include "stdio.h"
+#include "stdlib.h"
+#include "errno.h"
+#include "base_hash_table.h"
+static unsigned int nb_rows = 1;
+static unsigned int let_row = 1;
+static HT_hash_table *_hash_table = NULL;
+static char* identifier = NULL;
 extern int yylval;
 %}
 Integer     [0-9]+
@@ -31,8 +40,20 @@ Float       [0-9]+"."[0-9]*|[0-9]*"."[0-9]+
 Character   "'"."'"
 String      "\"".*"\""
 Boolean     True|False
+%x Definition Naming Be Macro Comment PREPROCESSOR
 
 %%
+<Definition,Naming,Be,Macro>"\n"                        ++nb_rows;
+<PREPROCESSOR>"\n"                                      ++nb_rows; fprintf(yyout, "\n");
+<PREPROCESSOR>"Let "+                                   printf("Let it be ligne %u\n", nb_rows); let_row = nb_rows; BEGIN(Naming);
+<Naming>[a-zA-Z][a-zA-Z0-9\_]*                          identifier = strdup(yytext); printf("Name found : %s\n", identifier); BEGIN(Be);
+<Be>" "+be[" "\n]+                                      printf("Be found"); BEGIN(Macro);
+<Be>"Let"                                               fprintf(stderr, "Error !\nFound a \"Let\", line %u, after a \"Let\", line %u, without a \"be\" between them.", nb_rows, let_row); exit(EXIT_FAILURE);
+<Be><<EOF>>                                             printf("Error, found an \"Let\" line %u but no \"be\" detected before the end of file\n", let_row); exit(EXIT_FAILURE);
+<Macro>[^"."]*                                          HT_add_element_string(_hash_table, identifier, yytext); printf("Expression :\n%s\n",yytext); /* add in the expression found buffer */
+<Macro>"."                                              BEGIN(PREPROCESSOR); /* add in the hash table with the appropriate name */
+<PREPROCESSOR,Definition,Naming,Be,Macro>"%"[^\n]*      /* eat up one line comments */
+
 "."                                     return Dot;
 "{||"                                   return Obrace_parallel;
 "{;"                                    return Obrace_sequential;
@@ -87,4 +108,30 @@ print                                   return Print;
 {Boolean}                               // test de bool
 
 %%
+static inline void perror_and_quit(const char* message){
+    perror(message);
+    exit(errno);
+}
 
+int main(int argc, char** argv){
+    --argc; ++argv;
+    _hash_table = HT_new_hash(100);
+    if( argc > 2 || argc < 1 ){
+        return EXIT_FAILURE;
+    }
+    yyin = fopen(argv[0], "r");
+    if( yyin == NULL )
+        perror_and_quit("fopen");
+    if( argc == 2 )
+        yyout = fopen(argv[1], "w");
+    else
+        yyout = fopen("pars_out.wave", "w");
+    if( yyout == NULL )
+        perror_and_quit("fopen");
+    BEGIN(PREPROCESSOR);
+    yylex();
+    fclose( yyin );
+    fclose( yyout );
+    HT_delete(_hash_table);
+    return EXIT_SUCCESS;
+}
