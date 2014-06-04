@@ -93,12 +93,14 @@ void _test_init (void)
 {
     for (unsigned int i = 0; i < WAVE_ATOM_NUMBER; ++i)
         atoms[i] = malloc (sizeof * atoms[i]);
+    char * string_4 = malloc ((strlen ("abcde") + 1) * sizeof * string_4);
+    strcpy (string_4, "abcde");
 
     * atoms[0] = (wave_atom) { ._type = WAVE_ATOM_LITERAL_INT, ._content._int = 1 };
     * atoms[1] = (wave_atom) { ._type = WAVE_ATOM_LITERAL_FLOAT, ._content._float = 0.2f };
     * atoms[2] = (wave_atom) { ._type = WAVE_ATOM_LITERAL_BOOL, ._content._bool = true };
     * atoms[3] = (wave_atom) { ._type = WAVE_ATOM_LITERAL_CHAR, ._content._char = 'a' };
-    * atoms[4] = (wave_atom) { ._type = WAVE_ATOM_LITERAL_STRING, ._content._string = "abcde" };
+    * atoms[4] = (wave_atom) { ._type = WAVE_ATOM_LITERAL_STRING, ._content._string = string_4 };
     * atoms[5] = (wave_atom) { ._type = WAVE_ATOM_OPERATOR, ._content._operator = WAVE_OP_BINARY_PLUS };
 }
 

@@ -79,6 +79,7 @@ typedef struct wave_path
         } _repeat;                          /**<- Repeat. */
     } _complex_move;                        /**<- Complex move. */
     struct wave_path * _next_path;          /**<- Next move. */
+    struct wave_path * _previous_path;      /**<- Previous move. */
 } wave_path;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -110,56 +111,73 @@ void * wave_path_free (wave_path * p);
  * \retval true If the path still has a move.
  * \retval false If the path has ended.
  * \relatesalso wave_path
+ * \warning \c must be not \c NULL.
  */
 bool wave_path_has_next (const wave_path * p);
+
+/**
+ * \brief Determine whether a wave path has a previous move.
+ * \param p Path.
+ * \retval true If the path has a previous move.
+ * \retval false If this is the start.
+ * \relatesalso wave_path
+ * \warning \c must be not \c NULL.
+ */
+bool wave_path_has_previous (const wave_path * p);
 
 /**
  * \brief Get a move.
  * \param p Path.
  * \return Move type.
  * \relatesalso wave_path
+ * \warning \c must be not \c NULL.
  */
-wave_move_type wave_path_get_move (const wave_path * const p);
+wave_move_type wave_path_get_move (const wave_path * p);
 
 /**
  * \brief Get a path's part.
  * \param p Path.
  * \return Part.
  * \relatesalso wave_path
+ * \warning \c must be not \c NULL.
  */
-wave_path * wave_path_get_part (wave_path * const p);
+wave_path * wave_path_get_part (const wave_path * p);
 
 /**
  * \brief Get a path's repeat type.
  * \param p Path.
  * \return Repeat type.
  * \relatesalso wave_path
+ * \warning \c must be not \c NULL.
  */
-repeat_value_type wave_path_get_repeat_type (wave_path * const p);
+repeat_value_type wave_path_get_repeat_type (const wave_path * p);
 
 /**
  * \brief Get a path's repeat number.
  * \param p Path.
  * \return Number.
  * \relatesalso wave_path
+ * \warning \c must be not \c NULL.
  */
-unsigned int wave_path_get_repeat_number (wave_path * const p);
+unsigned int wave_path_get_repeat_number (const wave_path * p);
 
 /**
  * \brief Get path's repeat path.
  * \param p Path.
  * \return Path.
  * \relatesalso wave_path
+ * \warning \c must be not \c NULL.
  */
-wave_path * wave_path_get_repeat_path (wave_path * const p);
+wave_path * wave_path_get_repeat_path (const wave_path * p);
 
 /**
  * \brief Get the next path.
  * \param p Path.
  * \return Next.
  * \relatesalso wave_path
+ * \warning \c must be not \c NULL.
  */
-wave_path * wave_path_get_next (wave_path * const p);
+wave_path * wave_path_get_next (const wave_path * p);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
@@ -170,47 +188,69 @@ wave_path * wave_path_get_next (wave_path * const p);
  * \param[in,out] p Path.
  * \param[in] m Move type.
  * \relatesalso wave_path
+ * \warning \c must be not \c NULL.
  */
-void wave_path_set_move (wave_path * const p, wave_move_type m);
+void wave_path_set_move (wave_path * p, wave_move_type m);
 
 /**
  * \brief Add a path to another path.
  * \param[in,out] p
  * \param[in] next
  * \relatesalso wave_path
+ * \warning \c must be not \c NULL.
  */
-void wave_path_add_path (wave_path * const p, wave_path * const next);
+void wave_path_add_path (wave_path * p, wave_path * next);
 
 /**
  * \brief Set a path's part.
  * \param[in,out] p Path.
  * \param[in] part Part.
  * \relatesalso wave_path
+ * \warning \c must be not \c NULL.
  */
-void wave_path_set_part (wave_path * const p, wave_path * const part);
+void wave_path_set_part (wave_path * p, wave_path * part);
 
 /**
  * \brief Set a path's repeat type.
  * \param[in,out] p Path.
  * \param[in] t Type.
  * \relatesalso wave_path
+ * \warning \c must be not \c NULL.
  */
-void wave_path_set_repeat_type (wave_path * const p, repeat_value_type t);
+void wave_path_set_repeat_type (wave_path * p, repeat_value_type t);
 
 /**
  * \brief Set a path's repeat number.
  * \param[in,out] p Path.
  * \param[in] n Number.
  * \relatesalso wave_path
+ * \warning \c must be not \c NULL.
  */
-void wave_path_set_repeat_number (wave_path * const p, unsigned int n);
+void wave_path_set_repeat_number (wave_path * p, unsigned int n);
 
 /**
  * \brief Set a path's repetition.
  * \param[in,out] p Path.
  * \param[in] repeat Repat.
  * \relatesalso wave_path
+ * \warning \c must be not \c NULL.
  */
-void wave_path_set_repeat_path (wave_path * const p, wave_path * const repeat);
+void wave_path_set_repeat_path (wave_path * p, wave_path * repeat);
+
+////////////////////////////////////////////////////////////////////////////////
+// Printing.
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \brief Print a wave_path to a stream.
+ * \param stream Stream.
+ * \param p Path.
+ */
+void wave_path_fprint (FILE * stream, const wave_path * p);
+
+/**
+ * \brief Print a wave_path to stdout.
+ */
+void wave_path_print (const wave_path * p);
 
 #endif /* __WAVE_MOVE_H__ */

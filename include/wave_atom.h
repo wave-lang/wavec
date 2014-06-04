@@ -32,6 +32,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "wave_types.h"
 #include "wave_path.h"
@@ -62,7 +63,7 @@ typedef enum wave_atom_type
 typedef union wave_atom_content
 {
     wave_operator _operator;        /**<- Operator of the atom. */
-    wave_path _path;                /**<- Path of the atom. */
+    wave_path * _path;              /**<- Path of the atom. */
     wave_int _int;                  /**<- Integer. */
     wave_float _float;              /**<- Float. */
     wave_bool _bool;                /**<- Boolean. */
@@ -107,6 +108,8 @@ void * wave_atom_free (wave_atom * atom);
  * \param i Int.
  * \return atom.
  * \relatesalso wave_atom
+ * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_INT
+ * \post wave_atom_get_int() == \c i
  */
 wave_atom wave_atom_from_int (wave_int i);
 
@@ -115,6 +118,8 @@ wave_atom wave_atom_from_int (wave_int i);
  * \param f Float.
  * \return atom.
  * \relatesalso wave_atom
+ * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_FLOAT
+ * \post wave_atom_get_float() == \c f
  */
 wave_atom wave_atom_from_float (wave_float f);
 
@@ -123,6 +128,8 @@ wave_atom wave_atom_from_float (wave_float f);
  * \param c Char.
  * \return atom.
  * \relatesalso wave_atom
+ * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_CHAR
+ * \post wave_atom_get_char() == \c c
  */
 wave_atom wave_atom_from_char (wave_char c);
 
@@ -131,6 +138,8 @@ wave_atom wave_atom_from_char (wave_char c);
  * \param b Bool.
  * \return atom.
  * \relatesalso wave_atom
+ * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_BOOL
+ * \post wave_atom_get_bool() == \c b
  */
 wave_atom wave_atom_from_bool (wave_bool b);
 
@@ -139,23 +148,28 @@ wave_atom wave_atom_from_bool (wave_bool b);
  * \param string String.
  * \return atom.
  * \relatesalso wave_atom
+ * \note The content of \c string will be copied, it is up to the user to free \c string, if needed.
+ * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_STRING
+ * \post strcmp (wave_atom_get_string(), string) == 0
  */
-wave_atom wave_atom_from_string (wave_char * string);
+wave_atom wave_atom_from_string (const wave_char * string);
 
 /**
  * \brief Get an atom which will yeld the provided path.
  * \param path Path.
  * \return atom.
  * \relatesalso wave_atom
+ * \post wave_atom_get_type() == #WAVE_ATOM_PATH
  */
-wave_atom wave_atom_from_path (wave_path path);
+wave_atom wave_atom_from_path (wave_path * path);
 
 /**
  * \brief Get an atom which will yeld the provided operator.
  * \param op Operator.
  * \return atom.
  * \relatesalso wave_atom
- * \note The atom's type will be set to WAVE_ATOM_OPERATOR.
+ * \post wave_atom_get_type() == #WAVE_ATOM_OPERATOR
+ * \post wave_atom_get_operator() == \c op
  * \relatesalso wave_atom
  */
 wave_atom wave_atom_from_operator (wave_operator op);
@@ -169,40 +183,45 @@ wave_atom wave_atom_from_operator (wave_operator op);
  * \param atom Atom.
  * \return The atom's type.
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
  */
-wave_atom_type wave_atom_get_type (const wave_atom * const atom);
+wave_atom_type wave_atom_get_type (const wave_atom * atom);
 
 /**
  * \brief Get an atom's int.
  * \param atom Atom.
  * \return The atom's int value.
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
  */
-wave_int wave_atom_get_int (const wave_atom * const atom);
+wave_int wave_atom_get_int (const wave_atom * atom);
 
 /**
  * \brief Get an atom's float.
  * \param atom Atom.
  * \return The atom's float value.
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
  */
-wave_float wave_atom_get_float (const wave_atom * const atom);
+wave_float wave_atom_get_float (const wave_atom * atom);
 
 /**
  * \brief Get an atom's char.
  * \param atom Atom.
  * \return The atom's char value.
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
  */
-char wave_atom_get_char (const wave_atom * const atom);
+char wave_atom_get_char (const wave_atom * atom);
 
 /**
  * \brief Get an atom's bool
  * \param atom Atom.
  * \return The atom's bool value.
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
  */
-bool wave_atom_get_bool (const wave_atom * const atom);
+bool wave_atom_get_bool (const wave_atom * atom);
 
 /**
  * \brief Get an atom's string
@@ -210,8 +229,9 @@ bool wave_atom_get_bool (const wave_atom * const atom);
  * \return The atom's string
  * \pre atom_get_type (atom) == ATOM_LITERAL
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
  */
-char * wave_atom_get_string (const wave_atom * const atom);
+char * wave_atom_get_string (const wave_atom * atom);
 
 /**
  * \brief Get an atom's operator.
@@ -219,8 +239,9 @@ char * wave_atom_get_string (const wave_atom * const atom);
  * \return The atom's operator.
  * \pre atom_get_type (atom) == ATOM_OPERATOR.
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
  */
-wave_operator wave_atom_get_operator (const wave_atom * const atom);
+wave_operator wave_atom_get_operator (const wave_atom * atom);
 
 /**
  * \brief Get an atom's path.
@@ -228,8 +249,9 @@ wave_operator wave_atom_get_operator (const wave_atom * const atom);
  * \return The atom's path.
  * \pre atom_get_type (atom) == ATOM_PATH.
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
  */
-wave_path wave_atom_get_path (const wave_atom * const atom);
+wave_path * wave_atom_get_path (const wave_atom * atom);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
@@ -239,61 +261,86 @@ wave_path wave_atom_get_path (const wave_atom * const atom);
  * \brief Set an atom's int value.
  * \param atom Atom.
  * \param i Int value.
- * \note The atom's type will be set to WAVE_ATOM_LITERAL_INT.
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
+ * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_INT
  */
-void wave_atom_set_int (wave_atom * const atom, wave_int i);
+void wave_atom_set_int (wave_atom * atom, wave_int i);
 
 /**
  * \brief Set an atom's float value.
  * \param atom Atom.
  * \param f Float value.
- * \note The atom's type will be set to WAVE_ATOM_LITERAL_FLOAT.
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
+ * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_FLOAT
  */
-void wave_atom_set_float (wave_atom * const atom, wave_float f);
+void wave_atom_set_float (wave_atom * atom, wave_float f);
 
 /**
  * \brief Set an atom's int value.
  * \param atom Atom.
  * \param b Bool value.
- * \note The atom's type will be set to WAVE_ATOM_LITERAL_BOOL.
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
+ * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_BOOL
  */
-void wave_atom_set_bool (wave_atom * const atom, wave_bool b);
+void wave_atom_set_bool (wave_atom * atom, wave_bool b);
 
 /**
  * \brief Set an atom's int value.
  * \param atom Atom.
  * \param c Char value.
- * \note The atom's type will be set to WAVE_ATOM_LITERAL_CHAR.
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
+ * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_CHAR
  */
-void wave_atom_set_char (wave_atom * const atom, wave_char c);
+void wave_atom_set_char (wave_atom * atom, wave_char c);
 
 /**
  * \brief Set an atom's int value.
  * \param atom Atom.
  * \param string String value.
- * \note The atom's type will be set to WAVE_ATOM_LITERAL_STRING.
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
+ * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_STRING
  */
-void wave_atom_set_string (wave_atom * const atom, wave_char * string);
+void wave_atom_set_string (wave_atom * atom, wave_char * string);
 
 /**
  * \brief Set an atom's value.
  * \param atom Atom.
  * \param path Path.
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
+ * \post wave_atom_get_type() == #WAVE_ATOM_PATH
  */
-void wave_atom_set_path (wave_atom * const atom, wave_path path);
+void wave_atom_set_path (wave_atom * atom, wave_path * path);
 
 /**
  * \brief Set atomn atom's value.
  * \param atom Atom.
  * \param op Operator.
  * \relatesalso wave_atom
+ * \warning \c atom must be not \c NULL.
+ * \post wave_atom_get_type() == #WAVE_ATOM_OPERATOR
  */
-void wave_atom_set_operator (wave_atom * const atom, wave_operator op);
+void wave_atom_set_operator (wave_atom * atom, wave_operator op);
+
+////////////////////////////////////////////////////////////////////////////////
+// Printing.
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \brief Print a wave_atom to a stream.
+ * \param stream Stream.
+ * \param a Atom.
+ */
+void wave_atom_fprint (FILE * stream, const wave_atom * a);
+
+/**
+ * \brief Print a wave_atom to stdout.
+ */
+void wave_atom_print (const wave_atom * a);
 
 #endif /* __WAVE_ATOM_H__ */

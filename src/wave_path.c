@@ -38,19 +38,27 @@ void * wave_path_allocator (void)
     wave_path * const p = malloc (sizeof * p);
     if (p == NULL)
         perror ("malloc");
+    else
+    {
+        p->_move = WAVE_MOVE_UNKNOWN;
+        p->_next_path = NULL;
+        p->_previous_path = NULL;
+    }
     return p;
 }
 
-static inline bool _is_complex_move (wave_path * p)
+static inline void _free_current (wave_path * p)
 {
-    bool is_complex = false;
     switch (p->_move)
     {
         /* Complex moves. */
         case WAVE_MOVE_REWIND:
+            break;
         case WAVE_MOVE_PART:
+            wave_path_free (p->_complex_move._part);
+            break;
         case WAVE_MOVE_REP:
-            is_complex = true;
+            wave_path_free (p->_complex_move._repeat._path);
             break;
         /* Simple moves. */
         case WAVE_MOVE_UP:
@@ -61,23 +69,20 @@ static inline bool _is_complex_move (wave_path * p)
         default:
             break;
     }
-    return is_complex;
+    free (p);
 }
 
 void * wave_path_free (wave_path * p)
 {
-    wave_path * current, * next;
-    for (current = p; current != NULL; current = next)
+    if (p != NULL)
     {
-        next = current->_next_path;
-        if (_is_complex_move (p))
+        wave_path * current, * next;
+        for (current = p; current != NULL; current = next)
         {
-            if (p->_move == WAVE_MOVE_PART)
-                wave_path_free (p->_complex_move._part);
-            else
-                wave_path_free (p->_complex_move._repeat._path);
+            next = current->_next_path;
+            _free_current (current);
         }
-        free (current);
+        p = NULL;
     }
 
     return NULL;
@@ -87,43 +92,42 @@ void * wave_path_free (wave_path * p)
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////
 
-bool wave_path_has_next (const wave_path * p)
+bool wave_path_has_next (const wave_path * const p)
 {
-    bool has_next = false;
-    if (p != NULL)
-        has_next = p->_next_path != NULL;
-    return has_next;
+    return p->_next_path != NULL;
+}
+
+bool wave_path_has_previous (const wave_path * const p)
+{
+    return p->_previous_path != NULL;
 }
 
 wave_move_type wave_path_get_move (const wave_path * const p)
 {
-    wave_move_type move = WAVE_MOVE_UNKNOWN;
-    if (p != NULL)
-        move = p->_move;
-    return move;
+    return p->_move;
 }
 
-wave_path * wave_path_get_part (wave_path * const p)
+wave_path * wave_path_get_part (const wave_path * const p)
 {
     return p->_complex_move._part;
 }
 
-repeat_value_type wave_path_get_repeat_type (wave_path * const p)
+repeat_value_type wave_path_get_repeat_type (const wave_path * const p)
 {
     return p->_complex_move._repeat._type;
 }
 
-unsigned int wave_path_get_repeat_number (wave_path * const p)
+unsigned int wave_path_get_repeat_number (const wave_path * const p)
 {
     return p->_complex_move._repeat._number;
 }
 
-wave_path * wave_path_get_repeat_path (wave_path * const p)
+wave_path * wave_path_get_repeat_path (const wave_path * const p)
 {
     return p->_complex_move._repeat._path;
 }
 
-wave_path * wave_path_get_next (wave_path * const p)
+wave_path * wave_path_get_next (const wave_path * const p)
 {
     return p->_next_path;
 }
@@ -141,7 +145,13 @@ void wave_path_set_move (wave_path * const p, wave_move_type m)
 void wave_path_add_path (wave_path * const p, wave_path * const next)
 {
     if (p != NULL)
-        p->_next_path = next;
+    {
+        wave_path * last = p;
+        while (wave_path_has_next (last))
+            last = wave_path_get_next (last);
+        last->_next_path = next;
+        next ->_previous_path = last;
+    }
 }
 
 void wave_path_set_part (wave_path * const p, wave_path * const part)
@@ -166,4 +176,79 @@ void wave_path_set_repeat_path (wave_path * const p, wave_path * const repeat)
 {
     if (p != NULL)
         p->_complex_move._repeat._path = repeat;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Others.
+////////////////////////////////////////////////////////////////////////////////
+
+static void _print_move (FILE * stream, wave_move_type m)
+{
+    char c = ' ';
+    switch (m)
+    {
+        case WAVE_MOVE_UP:
+            c = 'u';
+            break;
+        case WAVE_MOVE_DOWN:
+            c = 'd';
+            break;
+        case WAVE_MOVE_PRE:
+            c = 'p';
+            break;
+        case WAVE_MOVE_SUC:
+            c = 's';
+            break;
+        case WAVE_MOVE_REWIND:
+            c = 'r';
+            break;
+        case WAVE_MOVE_PART:
+        case WAVE_MOVE_REP:
+        case WAVE_MOVE_UNKNOWN:
+        default:
+            break;
+    }
+    if (c != ' ')
+        fprintf (stream, "%c", c);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Printing.
+////////////////////////////////////////////////////////////////////////////////
+
+static void _print_current (FILE * stream, const wave_path * p)
+{
+    wave_move_type m = wave_path_get_move (p);
+    if (m == WAVE_MOVE_PART)
+    {
+        fprintf (stream, "[ ");
+        wave_path_fprint (stream, p->_complex_move._part);
+        fprintf (stream, "]");
+    }
+    else if (m == WAVE_MOVE_REP)
+    {
+        fprintf (stream, "( ");
+        wave_path_fprint (stream, p->_complex_move._repeat._path);
+        fprintf (stream, ") %d", p->_complex_move._repeat._number);
+    }
+    else
+        _print_move (stream, m);
+
+    if (wave_path_has_next (p))
+        fprintf (stream, " ");
+}
+
+void wave_path_fprint (FILE * stream, const wave_path * p)
+{
+    const wave_path * last = p;
+    while (last != NULL)
+    {
+        _print_current (stream, last);
+        last = wave_path_get_next (last);
+    }
+}
+
+void wave_path_print (const wave_path * p)
+{
+    wave_path_fprint (stdout, p);
 }

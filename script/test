@@ -5,6 +5,10 @@ if ! [ -f bin/unit_tests ]; then
     exit 66
 fi
 
-bin/unit_tests $*
+echo "Running unit tests."
+bin/unit_tests
+
+echo -e "\nRunning pretty printer tests."
+bin/print_tests
 
 exit $?

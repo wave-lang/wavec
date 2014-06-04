@@ -40,10 +40,45 @@ void * wave_collection_allocator (void)
         perror ("malloc");
     return w;
 }
+static inline void _free_current (wave_collection * w)
+{
+    wave_collection_type collection_type = wave_collection_get_type (w);
+    switch (collection_type)
+    {
+        case WAVE_COLLECTION_ATOM:
+            wave_atom_free (w->_inner._atom);
+            break;
+        case WAVE_COLLECTION_REP:
+            wave_collection_free (w->_inner._repetition._list);
+            wave_path_free (w->_inner._repetition._path);
+            break;
+        case WAVE_COLLECTION_SEQ:
+        case WAVE_COLLECTION_PAR:
+            wave_collection_free (w->_inner._list);
+            break;
+        case WAVE_COLLECTION_CYCLIC_PAR:
+        case WAVE_COLLECTION_CYCLIC_SEQ:
+            wave_collection_free (w->_inner._cyclic._list);
+            wave_collection_free (w->_inner._cyclic._cycle);
+            break;
+        default:
+            break;
+    }
+    free (w);
+}
 
 void * wave_collection_free (wave_collection * w)
 {
-    free (w);
+    if (w != NULL)
+    {
+        wave_collection * current, * next;
+        for (current = w; current != NULL; current = next)
+        {
+            next = current->_next_collection;
+            _free_current (current);
+        }
+        w = NULL;
+    }
     return NULL;
 }
 
@@ -53,10 +88,12 @@ void * wave_collection_free (wave_collection * w)
 
 bool wave_collection_has_next (const wave_collection * const c)
 {
-    bool has_next = false;
-    if (c != NULL)
-        has_next = c->_next_collection != NULL;
-    return has_next;
+    return c->_next_collection != NULL;
+}
+
+bool wave_collection_has_previous (const wave_collection * const c)
+{
+    return c->_next_collection != NULL;
 }
 
 wave_collection_type wave_collection_get_type (const wave_collection * const c)
@@ -99,15 +136,25 @@ wave_collection * wave_collection_get_next (const wave_collection * const c)
     return c->_next_collection;
 }
 
+wave_collection * wave_collection_get_previous (const wave_collection * const c)
+{
+    return c->_previous_collection;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
 ////////////////////////////////////////////////////////////////////////////////
 
-void wave_collection_add_collection (wave_collection * const c,
-    wave_collection * const next)
+void wave_collection_add_collection (wave_collection * const c, wave_collection * const next)
 {
     if (c != NULL)
-        c->_next_collection = next;
+    {
+        wave_collection * last = c;
+        while (wave_collection_has_next (last))
+            last = wave_collection_get_next (last);
+        last->_next_collection = next;
+        next->_previous_collection = last;
+    }
 }
 
 void wave_collection_set_type (wave_collection * const c,
@@ -123,36 +170,31 @@ void wave_collection_set_atom (wave_collection * const c, wave_atom * const a)
         c->_inner._atom = a;
 }
 
-void wave_collection_set_list (wave_collection * const c,
-    wave_collection * const list)
+void wave_collection_set_list (wave_collection * const c, wave_collection * const list)
 {
     if (c != NULL)
         c->_inner._list = list;
 }
 
-void wave_collection_set_repetition_list (wave_collection * const c,
-    wave_collection * const list)
+void wave_collection_set_repetition_list (wave_collection * const c, wave_collection * const list)
 {
     if (c != NULL)
         c->_inner._repetition._list = list;
 }
 
-void wave_collection_set_repetition_path (wave_collection * const c,
-    wave_path * const p)
+void wave_collection_set_repetition_path (wave_collection * const c, wave_path * const p)
 {
     if (c != NULL)
         c->_inner._repetition._path = p;
 }
 
-void wave_collection_set_cyclic_list (wave_collection * const c,
-    wave_collection * const list)
+void wave_collection_set_cyclic_list (wave_collection * const c, wave_collection * const list)
 {
     if (c != NULL)
         c->_inner._cyclic._list = list;
 }
 
-void wave_collection_set_cyclic_cycle (wave_collection * const c,
-    wave_collection * const cycle)
+void wave_collection_set_cyclic_cycle (wave_collection * const c, wave_collection * const cycle)
 {
     if (c != NULL)
         c->_inner._cyclic._cycle = cycle;

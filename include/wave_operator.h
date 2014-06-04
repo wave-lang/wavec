@@ -30,6 +30,9 @@
 #ifndef __WAVE_OPERATOR_H__
 #define __WAVE_OPERATOR_H__
 
+#include <stdlib.h>
+#include <stdio.h>
+
 /**
  * \brief Wave operators.
  */
@@ -70,5 +73,13 @@ typedef enum wave_operator
     WAVE_OP_SPECIFIC_PRINT,             /**<- Print. */
     WAVE_OP_UNKNOWN,                    /**<- Unknown. */
 } wave_operator;
+
+////////////////////////////////////////////////////////////////////////////////
+// Printing.
+////////////////////////////////////////////////////////////////////////////////
+
+void wave_operator_fprint (FILE * stream, wave_operator op);
+
+void wave_operator_print (wave_operator op);
 
 #endif /* __WAVE_OPERATOR_H__ */
