@@ -181,10 +181,13 @@ void test_wave_atom_from_char (void)
 void test_wave_atom_from_bool (void)
 {
     _test_init ();
-    bool value = true;
-    wave_atom atom = wave_atom_from_bool (value);
-    CU_ASSERT_EQUAL (atom._type, WAVE_ATOM_LITERAL_BOOL)
-    CU_ASSERT_EQUAL (atom._content._bool, value)
+    wave_atom atom_true = wave_atom_from_bool (true);
+    wave_atom atom_false = wave_atom_from_bool (false);
+
+    CU_ASSERT_EQUAL (atom_true._type, WAVE_ATOM_LITERAL_BOOL)
+    CU_ASSERT_EQUAL (atom_false._type, WAVE_ATOM_LITERAL_BOOL)
+    CU_ASSERT_EQUAL (atom_true._content._bool, true)
+    CU_ASSERT_EQUAL (atom_false._content._bool, false)
     _test_clean ();
 }
 
