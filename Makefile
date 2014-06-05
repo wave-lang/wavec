@@ -16,7 +16,7 @@ FLAGS_CC_DEBUG = -g
 FLAGS_CC_WARNINGS = -Wall -Wextra -Wfloat-equal -Wdouble-promotion -Wswitch-default -Winit-self -Wshadow -Wbad-function-cast -Wcast-qual -Wcast-align -Wconversion -Wlogical-op -Wstrict-prototypes -Wnested-externs
 FLAGS_CC = $(FLAGS_INCLUDE) -std=c99 -pedantic -O0 $(FLAGS_CC_WARNINGS) $(FLAGS_CC_DEBUG)
 FLAGS_CC_LIB_DIRS = -L$(PATH_LIB)
-FLAGS_CC_LIB = -lwavecompiler
+FLAGS_CC_LIB = -lm -lwavecompiler
 FLAGS_CC_UNIT_TESTS = -lcunit -lm -lwavetests $(FLAGS_CC_LIB)
 
 vpath %.h $(PATH_INCLUDE) $(PATH_TESTS_INCLUDE)
@@ -40,6 +40,7 @@ print_tests: test_ast_print.o libwavecompiler.a | bin_dir
 		$(CC) $(FLAGS_CC) -o $(PATH_OBJ)/$@ -c $<
 
 # Compiler
+wave_types.o: wave_types.c wave_types.h
 wave_operator.o: wave_operator.c wave_operator.h
 wave_path.o: wave_path.c wave_path.h
 wave_atom.o: wave_atom.c wave_atom.h wave_types.h wave_path.h wave_operator.h
@@ -54,8 +55,8 @@ test_wave_collection.o: test_wave_collection.c test_wave_collection.h wave_colle
 unit_tests.o: unit_tests.c wave_test_suites.h
 
 # Compiler lib
-libwavecompiler.a: wave_operator.o wave_path.o wave_atom.o wave_collection.o | lib_dir
-		ar -crv $(PATH_LIB)/libwavecompiler.a $(PATH_OBJ)/wave_operator.o $(PATH_OBJ)/wave_path.o $(PATH_OBJ)/wave_atom.o $(PATH_OBJ)/wave_collection.o
+libwavecompiler.a: wave_types.o wave_operator.o wave_path.o wave_atom.o wave_collection.o | lib_dir
+		ar -crv $(PATH_LIB)/libwavecompiler.a $(PATH_OBJ)/wave_types.o $(PATH_OBJ)/wave_operator.o $(PATH_OBJ)/wave_path.o $(PATH_OBJ)/wave_atom.o $(PATH_OBJ)/wave_collection.o
 		ranlib $(PATH_LIB)/libwavecompiler.a
 
 # Unit tests lib
