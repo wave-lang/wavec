@@ -126,6 +126,7 @@ static int _init_collection (void)
     wave_collection_set_atom (c[6], a[4]);
     wave_collection_set_atom (c[9], a[5]);
     wave_collection_set_atom (c[10], a[6]);
+    wave_collection_set_repetition_type (c[7], WAVE_COLLECTION_REPETITION_PATH);
     wave_collection_set_repetition_list (c[7], c[8]);
     wave_collection_set_repetition_path (c[7], p[9]);
 
