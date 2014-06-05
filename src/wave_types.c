@@ -29,6 +29,21 @@
  */
 #include "wave_types.h"
 
+wave_bool wave_bool_and (wave_bool a, wave_bool b)
+{
+    return a && b;
+}
+
+wave_bool wave_bool_or (wave_bool a, wave_bool b)
+{
+    return a || b;
+}
+
+wave_bool wave_bool_not (wave_bool b)
+{
+    return ! b;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // wave_int
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,42 +69,42 @@ wave_float wave_float_sqrt (wave_float f)
 
 wave_float wave_float_sin (wave_float f)
 {
-     return sinf (f);
+    return sinf (f);
 }
 
 wave_float wave_float_cos (wave_float f)
 {
-     return cosf (f);
+    return cosf (f);
 }
 
 wave_float wave_float_log (wave_float f)
 {
-     return logf (f);
+    return logf (f);
 }
 
 wave_float wave_float_exp (wave_float f)
 {
-     return expf (f);
+    return expf (f);
 }
 
 wave_float wave_float_ceil (wave_float f)
 {
-     return ceilf (f);
+    return ceilf (f);
 }
 
 wave_float wave_float_floor (wave_float f)
 {
-     return floorf (f);
+    return floorf (f);
 }
 
 wave_float wave_float_min (wave_float a, wave_float b)
 {
-     return fminf (a, b);
+    return fminf (a, b);
 }
 
 wave_float wave_float_max (wave_float a, wave_float b)
 {
-     return fmaxf (a, b);
+    return fmaxf (a, b);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
