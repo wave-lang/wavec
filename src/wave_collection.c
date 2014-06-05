@@ -215,18 +215,18 @@ static void _fprint_current (FILE * stream, const wave_collection * c)
             wave_atom_fprint (stream, wave_collection_get_atom (c));
             break;
         case WAVE_COLLECTION_REP:
+            fprintf (stream, "{;");
             wave_collection_fprint (stream, wave_collection_get_repetition_list (c));
+            fprintf (stream, "}");
+            fprintf (stream, "#[");
             wave_path_fprint (stream, wave_collection_get_repetition_path (c));
+            fprintf (stream, "]");
             break;
         case WAVE_COLLECTION_SEQ:
-            fprintf (stream, "(");
             _wave_collection_fprint_sep (stream, wave_collection_get_list (c), ";");
-            fprintf (stream, ")");
             break;
         case WAVE_COLLECTION_PAR:
-            fprintf (stream, "(");
             _wave_collection_fprint_sep (stream, wave_collection_get_list (c), "||");
-            fprintf (stream, ")");
             break;
         case WAVE_COLLECTION_CYCLIC_SEQ:
             wave_collection_fprint (stream, wave_collection_get_cyclic_list (c));
@@ -250,7 +250,12 @@ void _wave_collection_fprint_sep (FILE * stream, const wave_collection * c, cons
     const wave_collection * last = c;
     while (last != NULL)
     {
+        wave_collection_type collection_type = wave_collection_get_type (last);
+        if (collection_type == WAVE_COLLECTION_SEQ || collection_type == WAVE_COLLECTION_PAR)
+            fprintf (stream, "(");
         _fprint_current (stream, last);
+        if (collection_type == WAVE_COLLECTION_SEQ || collection_type == WAVE_COLLECTION_PAR)
+            fprintf (stream, ")");
         if (wave_collection_has_next (last))
             fprintf (stream, "%s", sep);
         last = wave_collection_get_next (last);
