@@ -6,7 +6,10 @@ SRC_PATH = src/
 OBJ_PATH = obj/
 YACCPATH = ../grammar/
 YACCNAME = wave_yacc.o
-CC = gcc
+CC = gcc -std=c99
+DEBUG_FLAGS = -g
+WARNING_FLAGS = -Wall -Wextra -Wfloat-equal -Wdouble-promotion -Wswitch-default -Winit-self -Wshadow -Wbad-function-cast -Wcast-qual -Wcast-align -Wconversion -Wlogical-op -Wstrict-prototypes -Wnested-externs
+COMPILE_FLAGS = $(WARNING_FLAGS) # $(DEBUG_FLAGS)
 IFLAGS = -I$(YACCPATH) -I$(INCLUDE_PATH) -I$(HASH_INCLUDE)
 LINK_FLAGS = -L$(HASH_LIB) -lhash -lfl -ly
 
@@ -14,8 +17,8 @@ vpath %.c $(SRC_PATH)
 vpath %.h $(INCLUDE_PATH)
 vpath libhash.a $(HASH_LIB)
 
-wave_lex : wave_lex.o libhash.a
-	$(CC) -o $@ $(YACCPATH)$(YACCNAME) $< $(LINK_FLAGS)
+wave_lex : wave_lex.o libhash.a preproc_utils.o
+	$(CC) -o $@ $(YACCPATH)$(YACCNAME) $< $(OBJ_PATH)preproc_utils.o $(LINK_FLAGS)
 
 libhash.a :
 	(cd $(HASH_PATH); make)
@@ -37,7 +40,7 @@ wave_preprocessor : wave_preprocessor.o
 	$(CC) -o $@ $< $(LINK_FLAGS)
 
 preproc_utils.o : preproc_utils.c preproc_utils.h | obj
-	$(CC) -c $< -I$(INCLUDE_PATH) -o $(OBJ_PATH)$@
+	$(CC) $(WARNING_FLAGS) -c $< -I$(IFLAGS) -o $(OBJ_PATH)$@
 
 obj :
 	mkdir -p $(OBJ_PATH)

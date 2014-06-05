@@ -25,15 +25,14 @@ SOFTWARE.
 
 #include "wave_yacc.h"
 #include "preproc_utils.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "errno.h"
-#include "base_hash_table.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
 static unsigned int nb_rows = 1;
 static unsigned int let_row = 1;
-static HT_hash_table *_hash_table = NULL;
-static char* identifier = NULL;
-static char* value = NULL;
+char** value = NULL;
+static int retval = 0;
+static char* _temp_expression = NULL;
 extern int yylval;
 %}
 Integer     [0-9]+
@@ -45,14 +44,51 @@ Boolean     True|False
 
 %%
 <Definition,Naming,Be,Macro>"\n"                        ++nb_rows;
-<PREPROCESSOR>"\n"                                      ++nb_rows; fprintf(yyout, "\n");
-<PREPROCESSOR>"Let "+                                   printf("Let it be ligne %u\n", nb_rows); let_row = nb_rows; BEGIN(Naming);
-<Naming>[a-zA-Z][a-zA-Z0-9\_]*                          identifier = strdup(yytext); printf("Name found : %s\n", identifier); BEGIN(Be);
-<Be>" "+be[" "\n]+                                      printf("Be found"); BEGIN(Macro);
-<Be>"Let"                                               fprintf(stderr, "Error !\nFound a \"Let\", line %u, after a \"Let\", line %u, without a \"be\" between them.", nb_rows, let_row); exit(EXIT_FAILURE);
-<Be><<EOF>>                                             printf("Error, found an \"Let\" line %u but no \"be\" detected before the end of file\n", let_row); exit(EXIT_FAILURE);
-<Macro>[^"."]*                                          HT_add_element_string(_hash_table, identifier, yytext);if(HT_get_element_string(_hash_table, identifier, &value) == 0)  printf("Expression :\n%s\n",value); /* add in the expression found buffer */
-<Macro>"."                                              BEGIN(PREPROCESSOR); /* add in the hash table with the appropriate name */
+<PREPROCESSOR>"\n"                                      {
+    ++nb_rows;
+    fprintf(yyout, "\n");
+}
+<PREPROCESSOR>"Let "+                                   {
+    printf("Let ligne %u\n", nb_rows);
+    let_row = nb_rows;
+    BEGIN(Naming);
+}
+<PREPROCESSOR>[a-zA-Z][a-zA-Z0-9_]*                     {
+    retval = preproc_check_identifier(yytext, &value);
+    if(retval == 1)
+        return 1;
+    fprintf(yyout, value);
+}
+<Naming><<EOF>>                                         return preproc_err_eof(let_row);
+<Naming>[a-zA-Z][a-zA-Z0-9\_]*                          {
+    preproc_new_identifier(yytext);
+    printf("Name found : %s\n", yytext);
+    BEGIN(Be);
+}
+<Be>[^ ]*" "be                                          return preproc_err_double_id();
+<Be>" "+be[ ]+                                          {
+    printf("Found the be %s\n", yytext);
+    BEGIN(Macro);
+}
+<Be>" "+be[\n]                                          {
+    printf("Found the be\n");
+    ++nb_rows;
+    BEGIN(Macro);
+}
+<Be><<EOF>>                                             return preproc_err_eof(let_row);
+<Macro>[a-zA-Z][a-zA-Z0-9_]*                            {
+    if( preproc_test_or_add_identifier(yytext) != 0)
+        return 1;
+}
+<Macro>\".*\"                                           preproc_add_to_current_expression(yytext);
+<Macro>'.*'                                             preproc_add_to_current_expression(yytext);
+<Macro>[^.\n% a-zA-Z"']*                                 {
+    preproc_add_to_current_expression(yytext);
+}
+<Macro>"."                                              {
+    preproc_add_current_id_with_current_expression();
+    BEGIN(PREPROCESSOR);
+}
 <PREPROCESSOR,Definition,Naming,Be,Macro>"%"[^\n]*      /* eat up one line comments */
 
 "."                                     return Dot;
@@ -109,14 +145,10 @@ print                                   return Print;
 {Boolean}                               // test de bool
 
 %%
-static inline void perror_and_quit(const char* message){
-    perror(message);
-    exit(errno);
-}
 
 int main(int argc, char** argv){
     --argc; ++argv;
-    _hash_table = HT_new_hash(100);
+    preproc_init(256);
     if( argc > 2 || argc < 1 ){
         return EXIT_FAILURE;
     }
@@ -133,6 +165,6 @@ int main(int argc, char** argv){
     yylex();
     fclose( yyin );
     fclose( yyout );
-    HT_delete(_hash_table);
+    preproc_clean();
     return EXIT_SUCCESS;
 }

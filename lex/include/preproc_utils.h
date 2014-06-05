@@ -28,9 +28,44 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include "base_hash_table.h"
+
 
 char* preproc_concat_two_strings(const char* str1, const char* str2);
 
-char* preproc_concat_two_strings_with_destroy(char* str1, char* str2);
+static inline void perror_and_quit(const char* message){
+    perror(message);
+    exit(errno);
+}
+
+void preproc_init(unsigned int size);
+
+static inline int preproc_err_let(const unsigned int first_let, const unsigned int second_let){
+    fprintf(stderr, "Error !\nFound a \"Let\", line %u, after a \"Let\", line %u, without a \"be\" between them.", second_let, first_let);
+    return 1;
+}
+
+static inline int preproc_err_eof(const unsigned int line_previous_let){
+    fprintf(stderr, "Error, found an \"Let\" line %u but no \"be\" detected before the end of file\n", line_previous_let);
+    return 1;
+}
+
+static inline int preproc_err_double_id(void){
+    fprintf(stderr, "Error, found two names for the Let definition. Exiting ...\n");
+    return 1;
+}
+
+void preproc_new_identifier(const char* id);
+
+char* preproc_get_actual_identifier(void);
+
+int preproc_add_current_id_with_current_expression(void);
+
+void preproc_clean(void);
+
+int preproc_test_or_add_identifier(const char* id_or_not);
+
+void preproc_add_to_current_expression(const char* str);
 
 #endif // ( __PREPROC_BUFFER_H )
