@@ -66,9 +66,12 @@ static void _test_init (void)
     * paths[5] = (wave_path) { ._move = WAVE_MOVE_UP, ._next_path = paths[6] };
     * paths[6] = (wave_path) {
         ._move = WAVE_MOVE_REP,
-        ._complex_move._repeat._type = REPEAT_VALUE_CONSTANT,
-        ._complex_move._repeat._number = 10,
-        ._complex_move._repeat._path = paths[7],
+        ._complex_move._repeat =
+        {
+            ._type = REPEAT_VALUE_CONSTANT,
+            ._number = 10,
+            ._path = paths[7]
+        },
         ._next_path = paths[9]
     };
     * paths[7] = (wave_path) { ._move = WAVE_MOVE_UP, ._next_path = paths[8] };
@@ -98,11 +101,11 @@ int test_wave_path_suite_clean (void)
 // Allocation and free tests.
 ////////////////////////////////////////////////////////////////////////////////
 
-void test_wave_path_allocator (void)
+void test_wave_path_alloc (void)
 {
     _test_init ();
 
-    wave_path * w = wave_path_allocator ();
+    wave_path * w = wave_path_alloc ();
     CU_ASSERT_PTR_NOT_NULL (w);
     free (w);
 

@@ -53,7 +53,7 @@ int test_wave_collection_suite_clean (void)
 // Allocation, free tests.
 ////////////////////////////////////////////////////////////////////////////////
 
-void test_wave_collection_allocator (void)
+void test_wave_collection_alloc (void)
 {
 }
 

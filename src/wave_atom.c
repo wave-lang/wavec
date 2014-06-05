@@ -33,6 +33,9 @@
 // Static utilities (wave_atom_content).
 ////////////////////////////////////////////////////////////////////////////////
 
+/* "_wave_atom_content_get_*" : functions to get the content of a
+ * wave_atom_content, once the wave_atom_type is known.
+ */
 static inline int _wave_atom_content_get_int (const wave_atom_content * atom)
 {
     return atom->_int;
@@ -58,7 +61,8 @@ static inline char * _wave_atom_content_get_string (const wave_atom_content * at
     return atom->_string;
 }
 
-static inline wave_operator _wave_atom_content_get_operator (const wave_atom_content * atom) {
+static inline wave_operator _wave_atom_content_get_operator (const wave_atom_content * atom)
+{
     return atom->_operator;
 }
 
@@ -67,6 +71,9 @@ static inline wave_path * _wave_atom_content_get_path (const wave_atom_content *
     return atom->_path;
 }
 
+/* "_wave_atom_content_from_*" : functions to create a wave_atom_content from
+ * a constant value, operator or a path.
+ */
 static inline wave_atom_content _wave_atom_content_from_int (wave_int i)
 {
     return (wave_atom_content) { ._int = i };
@@ -104,6 +111,9 @@ static inline wave_atom_content _wave_atom_content_from_path (wave_path * path)
     return (wave_atom_content) { ._path = path };
 }
 
+/* "_wave_atom_content_fprint_*": functions to print a wave_atom_content once
+ * the wave_atom_type is known.
+ */
 static inline void _wave_atom_content_fprint_int (FILE * stream, const wave_atom_content * c)
 {
     fprintf (stream, "%d", c->_int);
@@ -136,39 +146,27 @@ static inline void _wave_atom_content_fprint_operator (FILE * stream, const wave
 
 static inline void _wave_atom_content_fprint_path (FILE * stream, const wave_atom_content * c)
 {
+    fprintf (stream, "@");
     wave_path_fprint (stream, c->_path);
 }
 
+/* Tab of functions used to print a wave_atom_content. */
+static void (* const _wave_atom_content_fprint_functions []) (FILE *, const wave_atom_content *) =
+{
+    [WAVE_ATOM_LITERAL_INT]     = _wave_atom_content_fprint_int,
+    [WAVE_ATOM_LITERAL_FLOAT]   = _wave_atom_content_fprint_float,
+    [WAVE_ATOM_LITERAL_BOOL]    = _wave_atom_content_fprint_bool,
+    [WAVE_ATOM_LITERAL_CHAR]    = _wave_atom_content_fprint_char,
+    [WAVE_ATOM_LITERAL_STRING]  = _wave_atom_content_fprint_string,
+    [WAVE_ATOM_OPERATOR]        = _wave_atom_content_fprint_operator,
+    [WAVE_ATOM_PATH]            = _wave_atom_content_fprint_path,
+    [WAVE_ATOM_UNKNOWN]         = NULL,
+};
+
 static inline void _wave_atom_content_fprint (FILE * stream, const wave_atom_content * c, wave_atom_type t)
 {
-    switch (t)
-    {
-        case WAVE_ATOM_LITERAL_INT:
-            _wave_atom_content_fprint_int (stream, c);
-            break;
-        case WAVE_ATOM_LITERAL_FLOAT:
-            _wave_atom_content_fprint_float (stream, c);
-            break;
-        case WAVE_ATOM_LITERAL_BOOL:
-            _wave_atom_content_fprint_bool (stream, c);
-            break;
-        case WAVE_ATOM_LITERAL_CHAR:
-            _wave_atom_content_fprint_char (stream, c);
-            break;
-        case WAVE_ATOM_LITERAL_STRING:
-            _wave_atom_content_fprint_string (stream, c);
-            break;
-        case WAVE_ATOM_OPERATOR:
-            _wave_atom_content_fprint_operator (stream, c);
-            break;
-        case WAVE_ATOM_PATH:
-            fprintf (stream, "@");
-            _wave_atom_content_fprint_path (stream, c);
-            break;
-        default:
-            break;
-    }
-
+    if (t >= 0 && t < WAVE_ATOM_UNKNOWN)
+        _wave_atom_content_fprint_functions[t] (stream, c);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -199,11 +197,13 @@ static inline const wave_atom_content * _wave_atom_get_content (const wave_atom 
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
-void * wave_atom_allocator (void)
+void * wave_atom_alloc (void)
 {
     wave_atom * const atom = malloc (sizeof * atom);
     if (atom == NULL)
         perror ("malloc");
+    else
+        atom->_type = WAVE_ATOM_UNKNOWN;
     return atom;
 }
 
@@ -212,17 +212,10 @@ void * wave_atom_free (wave_atom * atom)
     if (atom != NULL)
     {
         wave_atom_type atom_type = wave_atom_get_type (atom);
-        switch (atom_type)
-        {
-            case WAVE_ATOM_LITERAL_STRING:
-                free (atom->_content._string);
-                break;
-            case WAVE_ATOM_PATH:
-                wave_path_free (atom->_content._path);
-                break;
-            default:
-                break;
-        }
+        if (atom_type == WAVE_ATOM_LITERAL_STRING)
+            free (atom->_content._string);
+        else if (atom_type == WAVE_ATOM_PATH)
+            wave_path_free (atom->_content._path);
         free (atom);
         atom = NULL;
     }

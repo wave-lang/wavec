@@ -33,52 +33,73 @@
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
-void * wave_collection_allocator (void)
+void * wave_collection_alloc (void)
 {
     wave_collection * const w = malloc (sizeof * w);
     if (w == NULL)
         perror ("malloc");
+    else
+    {
+        w->_type = WAVE_COLLECTION_UNKNOWN;
+        w->_next_collection = NULL;
+        w->_previous_collection = NULL;
+    }
     return w;
 }
-static inline void _free_current (wave_collection * w)
+
+static inline void _wave_collection_free_atom (wave_collection * c)
 {
-    wave_collection_type collection_type = wave_collection_get_type (w);
-    switch (collection_type)
-    {
-        case WAVE_COLLECTION_ATOM:
-            wave_atom_free (w->_inner._atom);
-            break;
-        case WAVE_COLLECTION_REP:
-            wave_collection_free (w->_inner._repetition._list);
-            if (wave_collection_get_repetition_type (w) == WAVE_COLLECTION_REPETITION_PATH)
-                wave_path_free (w->_inner._repetition._description._path);
-            break;
-        case WAVE_COLLECTION_SEQ:
-        case WAVE_COLLECTION_PAR:
-            wave_collection_free (w->_inner._list);
-            break;
-        case WAVE_COLLECTION_CYCLIC_PAR:
-        case WAVE_COLLECTION_CYCLIC_SEQ:
-            wave_collection_free (w->_inner._cyclic._list);
-            wave_collection_free (w->_inner._cyclic._cycle);
-            break;
-        default:
-            break;
-    }
-    free (w);
+    wave_atom_free (c->_inner._atom);
 }
 
-void * wave_collection_free (wave_collection * w)
+static inline void _wave_collection_free_repetition (wave_collection * c)
 {
-    if (w != NULL)
+    wave_collection_free (c->_inner._repetition._list);
+    if (wave_collection_get_repetition_type (c) == WAVE_COLLECTION_REPETITION_PATH)
+        wave_path_free (c->_inner._repetition._description._path);
+}
+
+static inline void _wave_collection_free_list (wave_collection * c)
+{
+    wave_collection_free (c->_inner._list);
+}
+
+static inline void _wave_collection_free_cyclic (wave_collection * c)
+{
+    wave_collection_free (c->_inner._cyclic._list);
+    wave_collection_free (c->_inner._cyclic._cycle);
+}
+
+static void (* const _wave_collection_free_functions []) (wave_collection *) =
+{
+    [WAVE_COLLECTION_ATOM]          = _wave_collection_free_atom,
+    [WAVE_COLLECTION_REP]           = _wave_collection_free_repetition,
+    [WAVE_COLLECTION_SEQ]           = _wave_collection_free_list,
+    [WAVE_COLLECTION_PAR]           = _wave_collection_free_list,
+    [WAVE_COLLECTION_CYCLIC_PAR]    = _wave_collection_free_cyclic,
+    [WAVE_COLLECTION_CYCLIC_SEQ]    = _wave_collection_free_cyclic,
+    [WAVE_COLLECTION_UNKNOWN]       = NULL,
+};
+
+static inline void _wave_collection_free_current (wave_collection * c)
+{
+    wave_collection_type collection_type = wave_collection_get_type (c);
+    if (collection_type >= 0 && collection_type < WAVE_COLLECTION_UNKNOWN)
+        _wave_collection_free_functions [collection_type] (c);
+    free (c);
+}
+
+void * wave_collection_free (wave_collection * c)
+{
+    if (c != NULL)
     {
         wave_collection * current, * next;
-        for (current = w; current != NULL; current = next)
+        for (current = c; current != NULL; current = next)
         {
             next = current->_next_collection;
-            _free_current (current);
+            _wave_collection_free_current (current);
         }
-        w = NULL;
+        c = NULL;
     }
     return NULL;
 }
@@ -165,56 +186,100 @@ void wave_collection_add_collection (wave_collection * const c, wave_collection 
     next->_previous_collection = last;
 }
 
-void wave_collection_set_type (wave_collection * const c,
-    wave_collection_type t)
+void wave_collection_set_type (wave_collection * const c, wave_collection_type t)
 {
     c->_type = t;
 }
 
 void wave_collection_set_atom (wave_collection * const c, wave_atom * const a)
 {
+    wave_collection_set_type (c, WAVE_COLLECTION_ATOM);
     c->_inner._atom = a;
 }
 
-void wave_collection_set_list (wave_collection * const c, wave_collection * const list)
+static inline void _wave_collection_set_list (wave_collection * const c, wave_collection * list, wave_collection_type t)
 {
+    wave_collection_set_type (c, t);
     c->_inner._list = list;
+}
+
+void wave_collection_set_seq_list (wave_collection * c, wave_collection * list)
+{
+    _wave_collection_set_list (c, list, WAVE_COLLECTION_SEQ);
+}
+
+void wave_collection_set_par_list (wave_collection * c, wave_collection * list)
+{
+    _wave_collection_set_list (c, list, WAVE_COLLECTION_PAR);
 }
 
 void wave_collection_set_repetition_type (wave_collection * const c, wave_collection_repetition_type t)
 {
+    wave_collection_set_type (c, WAVE_COLLECTION_REP);
     c->_inner._repetition._type = t;
 }
 
 void wave_collection_set_repetition_list (wave_collection * const c, wave_collection * const list)
 {
+    wave_collection_set_type (c, WAVE_COLLECTION_REP);
     c->_inner._repetition._list = list;
 }
 
 void wave_collection_set_repetition_times (wave_collection * c, unsigned int times)
 {
+    wave_collection_set_type (c, WAVE_COLLECTION_REP);
+    wave_collection_set_repetition_type (c, WAVE_COLLECTION_REPETITION_CONSTANT);
     c->_inner._repetition._description._times = times;
 }
 
 void wave_collection_set_repetition_path (wave_collection * const c, wave_path * const p)
 {
+    wave_collection_set_type (c, WAVE_COLLECTION_REP);
+    wave_collection_set_repetition_type (c, WAVE_COLLECTION_REPETITION_PATH);
     c->_inner._repetition._description._path = p;
 }
 
-void wave_collection_set_cyclic_list (wave_collection * const c, wave_collection * const list)
+static inline void _wave_collection_set_cyclic_list (wave_collection * const c, wave_collection * const list, wave_collection_type t)
 {
+    wave_collection_set_type (c, t);
     c->_inner._cyclic._list = list;
 }
 
-void wave_collection_set_cyclic_cycle (wave_collection * const c, wave_collection * const cycle)
+static inline void _wave_collection_set_cyclic_cycle (wave_collection * const c, wave_collection * const cycle, wave_collection_type t)
 {
+    wave_collection_set_type (c, t);
     c->_inner._cyclic._cycle = cycle;
+}
+
+void wave_collection_set_cyclic_seq_list (wave_collection * c, wave_collection * list)
+{
+    _wave_collection_set_cyclic_list (c, list, WAVE_COLLECTION_CYCLIC_SEQ);
+}
+
+void wave_collection_set_cyclic_seq_cycle (wave_collection * c, wave_collection * cycle)
+{
+    _wave_collection_set_cyclic_cycle (c, cycle, WAVE_COLLECTION_CYCLIC_SEQ);
+}
+
+void wave_collection_set_cyclic_par_list (wave_collection * c, wave_collection * list)
+{
+    _wave_collection_set_cyclic_list (c, list, WAVE_COLLECTION_CYCLIC_PAR);
+}
+
+void wave_collection_set_cyclic_par_cycle (wave_collection * c, wave_collection * cycle)
+{
+    _wave_collection_set_cyclic_cycle (c, cycle, WAVE_COLLECTION_CYCLIC_PAR);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Printing.
 ////////////////////////////////////////////////////////////////////////////////
 
+/* "_wave_collection_fprint_*" : Functions used to print a collection according
+ * to its type.
+ * All the functions must have identical prototypes, for they will be stored in
+ * a tab.
+ */
 static void _wave_collection_fprint_sep (FILE * stream, const wave_collection * c, const char * sep);
 
 static void _wave_collection_fprint_atom (FILE * stream, const wave_collection * c)
@@ -271,19 +336,16 @@ static void _wave_collection_fprint_cyclic_par (FILE * stream, const wave_collec
     _wave_collection_fprint_cyclic_sep (stream, c, "||");
 }
 
-static void _wave_collection_fprint_nothing (FILE * stream, const wave_collection *c)
+/* Tab of functions used to print a wave_collection. */
+static void (* const _wave_collection_fprint_functions []) (FILE *, const wave_collection *) =
 {
-}
-
-static void (* _wave_collection_fprint_functions []) (FILE *, const wave_collection *) =
-{
-    [WAVE_COLLECTION_ATOM] = _wave_collection_fprint_atom,
-    [WAVE_COLLECTION_REP] = _wave_collection_fprint_rep,
-    [WAVE_COLLECTION_SEQ] = _wave_collection_fprint_seq,
-    [WAVE_COLLECTION_PAR] = _wave_collection_fprint_par,
-    [WAVE_COLLECTION_CYCLIC_SEQ] = _wave_collection_fprint_cyclic_seq,
-    [WAVE_COLLECTION_CYCLIC_PAR] = _wave_collection_fprint_cyclic_par,
-    [WAVE_COLLECTION_UNKNOWN] = _wave_collection_fprint_nothing,
+    [WAVE_COLLECTION_ATOM]          = _wave_collection_fprint_atom,
+    [WAVE_COLLECTION_REP]           = _wave_collection_fprint_rep,
+    [WAVE_COLLECTION_SEQ]           = _wave_collection_fprint_seq,
+    [WAVE_COLLECTION_PAR]           = _wave_collection_fprint_par,
+    [WAVE_COLLECTION_CYCLIC_SEQ]    = _wave_collection_fprint_cyclic_seq,
+    [WAVE_COLLECTION_CYCLIC_PAR]    = _wave_collection_fprint_cyclic_par,
+    [WAVE_COLLECTION_UNKNOWN]       = NULL,
 };
 
 static void _fprint_current (FILE * stream, const wave_collection * c)

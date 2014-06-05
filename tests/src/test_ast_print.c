@@ -36,8 +36,19 @@
 #include "wave_atom.h"
 #include "wave_collection.h"
 
+/**
+ * \brief Path number.
+ */
 #define _PATH_NUMBER 13
+
+/**
+ * \brief Atom number.
+ */
 #define _ATOM_NUMBER 8
+
+/**
+ * \brief Collection number.
+ */
 #define _COLLECTION_NUMBER 11
 
 static wave_path * p[_PATH_NUMBER];
@@ -47,7 +58,7 @@ static wave_collection * c[_COLLECTION_NUMBER];
 static int _init_path (void)
 {
     for (unsigned int i = 0; i < _PATH_NUMBER; ++i)
-        p[i] = wave_path_allocator ();
+        p[i] = wave_path_alloc ();
 
     for (unsigned int i = 1; i < 6; ++i)
         wave_path_add_path (p[0], p[i]);
@@ -74,13 +85,14 @@ static int _init_path (void)
     wave_path_set_move (p[10], WAVE_MOVE_UP);
     wave_path_set_move (p[11], WAVE_MOVE_PRE);
     wave_path_set_move (p[12], WAVE_MOVE_DOWN);
-    wave_path_set_move (p[13], WAVE_MOVE_SUC);
+
+    return 0;
 }
 
 static int _init_atom (void)
 {
     for (unsigned int i = 0; i < _ATOM_NUMBER; ++i)
-        a[i] = wave_atom_allocator ();
+        a[i] = wave_atom_alloc ();
 
     wave_atom_set_int (a[0], 10);
     wave_atom_set_float (a[1], 0.2f);
@@ -97,7 +109,7 @@ static int _init_atom (void)
 static int _init_collection (void)
 {
     for (unsigned int i = 0; i < _COLLECTION_NUMBER; ++i)
-        c[i] = wave_collection_allocator ();
+        c[i] = wave_collection_alloc ();
 
     wave_collection_set_type (c[0], WAVE_COLLECTION_SEQ);
     wave_collection_set_type (c[1], WAVE_COLLECTION_ATOM);
@@ -116,9 +128,9 @@ static int _init_collection (void)
     wave_collection_add_collection (c[1], c[6]);
     wave_collection_add_collection (c[1], c[7]);
     wave_collection_add_collection (c[9], c[10]);
-    wave_collection_set_list (c[0], c[1]);
-    wave_collection_set_list (c[3], c[4]);
-    wave_collection_set_list (c[8], c[9]);
+    wave_collection_set_seq_list (c[0], c[1]);
+    wave_collection_set_par_list (c[3], c[4]);
+    wave_collection_set_seq_list (c[8], c[9]);
     wave_collection_set_atom (c[1], a[0]);
     wave_collection_set_atom (c[2], a[1]);
     wave_collection_set_atom (c[4], a[2]);
@@ -188,7 +200,10 @@ static void _print_collections (void)
     printf ("\n");
 }
 
-int main (int argc, char ** argv)
+/**
+ * \brief Main.
+ */
+int main (void)
 {
     _init ();
     printf ("Wave AST pretty printing\n");

@@ -38,7 +38,7 @@
  */
 typedef enum wave_operator
 {
-    WAVE_OP_UNARY_PLUS,                 /**<- Unary plus. */
+    WAVE_OP_UNARY_PLUS = 0,             /**<- Unary plus. */
     WAVE_OP_UNARY_MINUS,                /**<- Unary minus. */
     WAVE_OP_UNARY_INCREMENT,            /**<- Increment. */
     WAVE_OP_UNARY_DECREMENT,            /**<- Decrement. */
@@ -78,8 +78,17 @@ typedef enum wave_operator
 // Printing.
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * \brief Print a wave_operator to a stream.
+ * \param stream Stream.
+ * \param op Operator.
+ */
 void wave_operator_fprint (FILE * stream, wave_operator op);
 
+/**
+ * \brief Print a wave_operator to \c stdout.
+ * \param op Operator.
+ */
 void wave_operator_print (wave_operator op);
 
 #endif /* __WAVE_OPERATOR_H__ */

@@ -56,10 +56,10 @@ int test_wave_path_suite_clean (void);
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Test wave_path_allocator().
- * \test wave_path_allocator()
+ * \brief Test wave_path_alloc().
+ * \test wave_path_alloc()
  */
-void test_wave_path_allocator (void);
+void test_wave_path_alloc (void);
 
 /**
  * \brief Test wave_path_free().

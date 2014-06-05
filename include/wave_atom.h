@@ -44,14 +44,15 @@
 
 /**
  * \brief Atom type.
+ * \sa wave_atom
  */
 typedef enum wave_atom_type
 {
-    WAVE_ATOM_LITERAL_INT,      /**<- The atom is a const integer. */
-    WAVE_ATOM_LITERAL_FLOAT,    /**<- The atom is a const float. */
-    WAVE_ATOM_LITERAL_BOOL,     /**<- The atom is a const boolean. */
-    WAVE_ATOM_LITERAL_CHAR,     /**<- The atom is a const character. */
-    WAVE_ATOM_LITERAL_STRING,   /**<- The atom is a const string. */
+    WAVE_ATOM_LITERAL_INT = 0,  /**<- The atom is a constant integer. */
+    WAVE_ATOM_LITERAL_FLOAT,    /**<- The atom is a constant float. */
+    WAVE_ATOM_LITERAL_BOOL,     /**<- The atom is a constant boolean. */
+    WAVE_ATOM_LITERAL_CHAR,     /**<- The atom is a constant character. */
+    WAVE_ATOM_LITERAL_STRING,   /**<- The atom is a constant string. */
     WAVE_ATOM_OPERATOR,         /**<- The atom is an operator. */
     WAVE_ATOM_PATH,             /**<- The atom is a path. */
     WAVE_ATOM_UNKNOWN,          /**<- Unknown. */
@@ -59,20 +60,31 @@ typedef enum wave_atom_type
 
 /**
  * \brief Atom content.
+ * \sa wave_atom
  */
 typedef union wave_atom_content
 {
-    wave_operator _operator;        /**<- Operator of the atom. */
-    wave_path * _path;              /**<- Path of the atom. */
     wave_int _int;                  /**<- Integer. */
     wave_float _float;              /**<- Float. */
     wave_bool _bool;                /**<- Boolean. */
     wave_char _char;                /**<- Character. */
     wave_char * _string;            /**<- String. */
+    wave_operator _operator;        /**<- Operator of the atom. */
+    wave_path * _path;              /**<- Path of the atom. */
 } wave_atom_content;
 
 /**
  * \brief Atom.
+ *
+ * An atom can hold:
+ * - a constant integer value
+ * - a constant float value
+ * - a constant boolean value
+ * - a constant character value
+ * - a constant string value
+ * - an operator
+ * - a path
+ * \sa wave_atom_type, wave_atom_content
  */
 typedef struct wave_atom
 {
@@ -85,11 +97,11 @@ typedef struct wave_atom
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Allocator for atoms.
+ * \brief Alloc for atoms.
  * \return Atom.
  * \relatesalso wave_atom
  */
-void * wave_atom_allocator (void);
+void * wave_atom_alloc (void);
 
 /**
  * \brief Free atoms.
@@ -104,7 +116,7 @@ void * wave_atom_free (wave_atom * atom);
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Get an atom which will yeld the provided integer.
+ * \brief Get an atom which will hold the provided integer.
  * \param i Int.
  * \return atom.
  * \relatesalso wave_atom
@@ -114,7 +126,7 @@ void * wave_atom_free (wave_atom * atom);
 wave_atom wave_atom_from_int (wave_int i);
 
 /**
- * \brief Get an atom which will yeld the provided float.
+ * \brief Get an atom which will hold the provided float.
  * \param f Float.
  * \return atom.
  * \relatesalso wave_atom
@@ -124,7 +136,7 @@ wave_atom wave_atom_from_int (wave_int i);
 wave_atom wave_atom_from_float (wave_float f);
 
 /**
- * \brief Get an atom which will yeld the provided character.
+ * \brief Get an atom which will hold the provided character.
  * \param c Char.
  * \return atom.
  * \relatesalso wave_atom
@@ -134,7 +146,7 @@ wave_atom wave_atom_from_float (wave_float f);
 wave_atom wave_atom_from_char (wave_char c);
 
 /**
- * \brief Get an atom which will yeld the provided bool.
+ * \brief Get an atom which will hold the provided bool.
  * \param b Bool.
  * \return atom.
  * \relatesalso wave_atom
@@ -144,7 +156,7 @@ wave_atom wave_atom_from_char (wave_char c);
 wave_atom wave_atom_from_bool (wave_bool b);
 
 /**
- * \brief Get an atom which will yeld the provided string.
+ * \brief Get an atom which will hold the provided string.
  * \param string String.
  * \return atom.
  * \relatesalso wave_atom
@@ -155,7 +167,7 @@ wave_atom wave_atom_from_bool (wave_bool b);
 wave_atom wave_atom_from_string (const wave_char * string);
 
 /**
- * \brief Get an atom which will yeld the provided path.
+ * \brief Get an atom which will hold the provided path.
  * \param path Path.
  * \return atom.
  * \relatesalso wave_atom
@@ -164,7 +176,7 @@ wave_atom wave_atom_from_string (const wave_char * string);
 wave_atom wave_atom_from_path (wave_path * path);
 
 /**
- * \brief Get an atom which will yeld the provided operator.
+ * \brief Get an atom which will hold the provided operator.
  * \param op Operator.
  * \return atom.
  * \relatesalso wave_atom

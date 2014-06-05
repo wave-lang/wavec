@@ -42,7 +42,7 @@
  */
 static CU_TestInfo test_wave_path_info [] =
 {
-    { "Test wave_path_allocator",           test_wave_path_allocator            },
+    { "Test wave_path_alloc",               test_wave_path_alloc                },
     { "Test wave_path_free",                test_wave_path_free                 },
     { "Test wave_path_has_next",            test_wave_path_has_next             },
     { "Test wave_path_get_move",            test_wave_path_get_move             },
@@ -65,7 +65,7 @@ static CU_TestInfo test_wave_path_info [] =
  */
 static CU_TestInfo test_wave_atom_info [] =
 {
-    { "Test wave_atom_allocator",       test_wave_atom_allocator        },
+    { "Test wave_atom_alloc",           test_wave_atom_alloc            },
     { "Test wave_atom_free",            test_wave_atom_free             },
     { "Test wave_atom_from_int",        test_wave_atom_from_int         },
     { "Test wave_atom_from_float",      test_wave_atom_from_float       },
@@ -97,7 +97,7 @@ static CU_TestInfo test_wave_atom_info [] =
  */
 static CU_TestInfo test_wave_collection_info [] =
 {
-    { "Test wave_collection_allocator",             test_wave_collection_allocator            },
+    { "Test wave_collection_alloc",                 test_wave_collection_alloc                },
     { "Test wave_collection_free",                  test_wave_collection_free                 },
     { "Test wave_collection_has_next",              test_wave_collection_has_next             },
     { "Test wave_collection_get_type",              test_wave_collection_get_type             },

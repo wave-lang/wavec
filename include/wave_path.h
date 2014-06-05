@@ -43,7 +43,7 @@
  */
 typedef enum wave_move_type
 {
-    WAVE_MOVE_UP,        /**<- Up. */
+    WAVE_MOVE_UP = 0,    /**<- Up. */
     WAVE_MOVE_DOWN,      /**<- Down. */
     WAVE_MOVE_PRE,       /**<- Predecesor. */
     WAVE_MOVE_SUC,       /**<- Successor. */
@@ -58,7 +58,7 @@ typedef enum wave_move_type
  */
 typedef enum repeat_value_type
 {
-    REPEAT_VALUE_CONSTANT,      /**<- Constant. */
+    REPEAT_VALUE_CONSTANT = 0,  /**<- Constant. */
     REPEAT_VALUE_INFINITE       /**<- Infinite. */
 } repeat_value_type;
 
@@ -87,11 +87,11 @@ typedef struct wave_path
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Allocator for Wave paths.
+ * \brief Alloc for Wave paths.
  * \return Wave path
  * \relatesalso wave_path
  */
-void * wave_path_allocator (void);
+void * wave_path_alloc (void);
 
 /**
  * \brief Free wave paths.
@@ -207,6 +207,7 @@ void wave_path_add_path (wave_path * p, wave_path * next);
  * \param[in] part Part.
  * \relatesalso wave_path
  * \warning \c must be not \c NULL.
+ * \post wave_path_get_type() == #WAVE_MOVE_PART
  */
 void wave_path_set_part (wave_path * p, wave_path * part);
 
@@ -216,6 +217,7 @@ void wave_path_set_part (wave_path * p, wave_path * part);
  * \param[in] t Type.
  * \relatesalso wave_path
  * \warning \c must be not \c NULL.
+ * \post wave_path_get_type() == #WAVE_MOVE_REP
  */
 void wave_path_set_repeat_type (wave_path * p, repeat_value_type t);
 
@@ -225,6 +227,7 @@ void wave_path_set_repeat_type (wave_path * p, repeat_value_type t);
  * \param[in] n Number.
  * \relatesalso wave_path
  * \warning \c must be not \c NULL.
+ * \post wave_path_get_type() == #WAVE_MOVE_REP
  */
 void wave_path_set_repeat_number (wave_path * p, unsigned int n);
 
@@ -234,6 +237,7 @@ void wave_path_set_repeat_number (wave_path * p, unsigned int n);
  * \param[in] repeat Repat.
  * \relatesalso wave_path
  * \warning \c must be not \c NULL.
+ * \post wave_path_get_type() == #WAVE_MOVE_REP
  */
 void wave_path_set_repeat_path (wave_path * p, wave_path * repeat);
 
@@ -249,7 +253,7 @@ void wave_path_set_repeat_path (wave_path * p, wave_path * repeat);
 void wave_path_fprint (FILE * stream, const wave_path * p);
 
 /**
- * \brief Print a wave_path to stdout.
+ * \brief Print a wave_path to \c stdout.
  */
 void wave_path_print (const wave_path * p);
 

@@ -58,11 +58,11 @@ int test_wave_collection_suite_clean (void);
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Test wave_collection_allocator().
- * \test wave_collection_allocator()
+ * \brief Test wave_collection_alloc().
+ * \test wave_collection_alloc()
  * \todo implementation
  */
-void test_wave_collection_allocator (void);
+void test_wave_collection_alloc (void);
 
 /**
  * \brief Test wave_collection_free().

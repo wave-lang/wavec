@@ -58,11 +58,11 @@ int test_wave_atom_suite_clean (void);
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Test wave_atom_allocator().
- * \test wave_atom_allocator()
+ * \brief Test wave_atom_alloc().
+ * \test wave_atom_alloc()
  * \todo implementation
  */
-void test_wave_atom_allocator (void);
+void test_wave_atom_alloc (void);
 
 /**
  * \brief Test wave_atom_free().

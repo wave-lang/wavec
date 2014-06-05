@@ -126,10 +126,10 @@ int test_wave_atom_suite_clean (void)
 // Allocation, free tests.
 ////////////////////////////////////////////////////////////////////////////////
 
-void test_wave_atom_allocator (void)
+void test_wave_atom_alloc (void)
 {
     _test_init ();
-    wave_atom * a = wave_atom_allocator ();
+    wave_atom * a = wave_atom_alloc ();
     CU_ASSERT_PTR_NOT_NULL (a)
     free (a);
     _test_clean ();
