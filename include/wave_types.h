@@ -31,7 +31,13 @@
 #define __WAVE_TYPES_H__
 
 #include <stdbool.h>
+#include <limits.h>
+#include <math.h>
 #include <sys/types.h>
+
+////////////////////////////////////////////////////////////////////////////////
+// wave_bool
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Wave bool.
@@ -39,18 +45,80 @@
 typedef bool wave_bool;
 
 /**
+ * \brief Wave bool true.
+ */
+static const wave_bool WAVE_BOOL_TRUE = true;
+/**
+ * \brief Wave bool false.
+ */
+static const wave_bool WAVE_BOOL_FALSE = false;
+
+////////////////////////////////////////////////////////////////////////////////
+// wave_int
+////////////////////////////////////////////////////////////////////////////////
+
+/**
  * \brief Wave int.
  */
 typedef int wave_int;
+
+/**
+ * \brief Wave integer minimum value.
+ */
+static const wave_int WAVE_INT_MIN = INT_MIN;
+
+/**
+ * \brief Wave integer maximum value.
+ */
+static const wave_int WAVE_INT_MAX = INT_MAX;
+
+wave_int wave_int_min (wave_int a, wave_int b);
+wave_int wave_int_max (wave_int a, wave_int b);
+
+////////////////////////////////////////////////////////////////////////////////
+// wave_float
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Wave float.
  */
 typedef float wave_float;
 
+wave_float wave_float_sqrt (wave_float f);
+wave_float wave_float_sin (wave_float f);
+wave_float wave_float_cos (wave_float f);
+wave_float wave_float_log (wave_float f);
+wave_float wave_float_exp (wave_float f);
+wave_float wave_float_ceil (wave_float f);
+wave_float wave_float_floor (wave_float f);
+wave_float wave_float_min (wave_float a, wave_float b);
+wave_float wave_float_max (wave_float a, wave_float b);
+
+////////////////////////////////////////////////////////////////////////////////
+// wave_char
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * \brief Wave char.
  */
 typedef char wave_char;
+
+/**
+ * \brief Number of bits in a type wave_char.
+ */
+#define WAVE_CHAR_BIT CHAR_BIT
+
+/**
+ * \brief Wave character maximum value.
+ */
+static const wave_char WAVE_CHAR_MAX = CHAR_MAX;
+
+/**
+ * \brief Wave character minimum value.
+ */
+static const wave_char WAVE_CHAR_MIN = CHAR_MIN;
+
+wave_char wave_char_min (wave_char a, wave_char b);
+wave_char wave_char_max (wave_char a, wave_char b);
 
 #endif /* __WAVE_TYPES_H__ */
