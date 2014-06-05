@@ -36,9 +36,9 @@
 #include "wave_atom.h"
 #include "wave_collection.h"
 
-#define _PATH_NUMBER 9
-#define _ATOM_NUMBER 7
-#define _COLLECTION_NUMBER 7
+#define _PATH_NUMBER 13
+#define _ATOM_NUMBER 8
+#define _COLLECTION_NUMBER 11
 
 static wave_path * p[_PATH_NUMBER];
 static wave_atom * a[_ATOM_NUMBER];
@@ -46,14 +46,17 @@ static wave_collection * c[_COLLECTION_NUMBER];
 
 static int _init_path (void)
 {
-    p[0] = wave_path_allocator ();
+    for (unsigned int i = 0; i < _PATH_NUMBER; ++i)
+        p[i] = wave_path_allocator ();
+
     for (unsigned int i = 1; i < 6; ++i)
-    {
-        p[i] = wave_path_allocator ();
         wave_path_add_path (p[0], p[i]);
-    }
-    for (unsigned int i = 6; i < _PATH_NUMBER; ++i)
-        p[i] = wave_path_allocator ();
+
+    for (unsigned int i = 7; i < 9; ++i)
+        wave_path_add_path (p[6], p[i]);
+
+    for (unsigned int i = 10; i < 13; ++i)
+        wave_path_add_path (p[9], p[i]);
 
     wave_path_set_move (p[0], WAVE_MOVE_UP);
     wave_path_set_move (p[1], WAVE_MOVE_DOWN);
@@ -63,11 +66,15 @@ static int _init_path (void)
     wave_path_set_move (p[5], WAVE_MOVE_REWIND);
 
     wave_path_set_part (p[2], p[6]);
-    wave_path_add_path (p[6], p[7]);
-    wave_path_add_path (p[6], p[8]);
     wave_path_set_move (p[6], WAVE_MOVE_UP);
     wave_path_set_move (p[7], WAVE_MOVE_DOWN);
     wave_path_set_move (p[8], WAVE_MOVE_PRE);
+
+    wave_path_set_move (p[9], WAVE_MOVE_UP);
+    wave_path_set_move (p[10], WAVE_MOVE_UP);
+    wave_path_set_move (p[11], WAVE_MOVE_PRE);
+    wave_path_set_move (p[12], WAVE_MOVE_DOWN);
+    wave_path_set_move (p[13], WAVE_MOVE_SUC);
 }
 
 static int _init_atom (void)
@@ -80,8 +87,9 @@ static int _init_atom (void)
     wave_atom_set_bool (a[2], true);
     wave_atom_set_char (a[3], 'a');
     wave_atom_set_string (a[4], "abcde");
-    wave_atom_set_operator (a[5], WAVE_OP_UNARY_PLUS);
-    wave_atom_set_path (a[6], p[0]);
+    wave_atom_set_operator (a[5], WAVE_OP_BINARY_PLUS);
+    wave_atom_set_operator (a[6], WAVE_OP_BINARY_MINUS);
+    wave_atom_set_path (a[7], p[0]);
 
     return 0;
 }
@@ -98,17 +106,28 @@ static int _init_collection (void)
     wave_collection_set_type (c[4], WAVE_COLLECTION_ATOM);
     wave_collection_set_type (c[5], WAVE_COLLECTION_ATOM);
     wave_collection_set_type (c[6], WAVE_COLLECTION_ATOM);
+    wave_collection_set_type (c[7], WAVE_COLLECTION_REP);
+    wave_collection_set_type (c[8], WAVE_COLLECTION_SEQ);
+    wave_collection_set_type (c[9], WAVE_COLLECTION_ATOM);
+    wave_collection_set_type (c[10], WAVE_COLLECTION_ATOM);
     wave_collection_add_collection (c[1], c[2]);
     wave_collection_add_collection (c[1], c[3]);
     wave_collection_add_collection (c[4], c[5]);
     wave_collection_add_collection (c[1], c[6]);
+    wave_collection_add_collection (c[1], c[7]);
+    wave_collection_add_collection (c[9], c[10]);
     wave_collection_set_list (c[0], c[1]);
     wave_collection_set_list (c[3], c[4]);
+    wave_collection_set_list (c[8], c[9]);
     wave_collection_set_atom (c[1], a[0]);
     wave_collection_set_atom (c[2], a[1]);
     wave_collection_set_atom (c[4], a[2]);
     wave_collection_set_atom (c[5], a[3]);
     wave_collection_set_atom (c[6], a[4]);
+    wave_collection_set_atom (c[9], a[5]);
+    wave_collection_set_atom (c[10], a[6]);
+    wave_collection_set_repetition_list (c[7], c[8]);
+    wave_collection_set_repetition_path (c[7], p[9]);
 
     return 0;
 }
@@ -128,8 +147,7 @@ static int _clean_path (void)
 
 static int _clean_atom (void)
 {
-    wave_atom_free (a[5]);
-    wave_atom_free (a[6]);
+    wave_atom_free (a[7]);
     return 0;
 }
 
