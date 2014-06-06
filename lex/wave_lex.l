@@ -152,25 +152,3 @@ print                                   return Print;
 
 %%
 
-int main(int argc, char** argv){
-    --argc; ++argv;
-    preproc_init(256);
-    if( argc > 2 || argc < 1 ){
-        return EXIT_FAILURE;
-    }
-    yyin = fopen(argv[0], "r");
-    if( yyin == NULL )
-        perror_and_quit("fopen");
-    if( argc == 2 )
-        yyout = fopen(argv[1], "w");
-    else
-        yyout = fopen("pars_out.wave", "w");
-    if( yyout == NULL )
-        perror_and_quit("fopen");
-    BEGIN(PREPROCESSOR);
-    yylex();
-    fclose( yyin );
-    fclose( yyout );
-    preproc_clean();
-    return EXIT_SUCCESS;
-}
