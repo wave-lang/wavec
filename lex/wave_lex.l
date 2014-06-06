@@ -1,10 +1,8 @@
 %top{
 #include "wave_yacc.h"
-#include "preproc_utils.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
-#include <string.h>
+#include <stdbool.h>
 }
 %{
 /*
@@ -31,72 +29,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-static unsigned int nb_rows = 1;
-static unsigned int let_row = 1;
-char* value = NULL;
-static int retval = 0;
-static char* _temp_expression = NULL;
 extern int yylval;
 %}
-Integer     [0-9]+
-Float       [0-9]+"."[0-9]*|[0-9]*"."[0-9]+
+
+Integer     -" "*[0-9]+|[0-9]+
+Float       -" "*[0-9]+"."[0-9]*|-" "*[0-9]*"."[0-9]+|[0-9]+"."[0-9]*|[0-9]*"."[0-9]+
 Character   "'"."'"
-String      "\"".*"\""
+String      \".*\"
 Boolean     True|False
 %x Definition Naming Be Macro Comment PREPROCESSOR
 
 %%
-<Definition,Naming,Be,Macro>"\n"                        ++nb_rows;
-<PREPROCESSOR>"\n"                                      {
-    ++nb_rows;
-    fprintf(yyout, "\n");
-}
-<PREPROCESSOR>"Let "+                                   {
-    printf("Let ligne %u\n", nb_rows);
-    let_row = nb_rows;
-    BEGIN(Naming);
-}
-<PREPROCESSOR>[a-zA-Z][a-zA-Z0-9_]*                     {
-    retval = preproc_check_identifier(yytext, &value);
-    if(retval == 1){
-        fprintf(stderr, "The identifier %s line %d is not defined yet.\n", yytext, nb_rows);
-        return 1;
-    }
-    fprintf(yyout, "%s", value);
-}
-<Naming><<EOF>>                                         return preproc_err_eof(let_row);
-<Naming>[a-zA-Z][a-zA-Z0-9\_]*                          {
-    preproc_new_identifier(yytext);
-    printf("Name found : %s\n", yytext);
-    BEGIN(Be);
-}
-<Be>[^ ]*" "be                                          return preproc_err_double_id();
-<Be>" "+be[ ]+                                          {
-    printf("Found the be %s\n", yytext);
-    BEGIN(Macro);
-}
-<Be>" "+be[\n]                                          {
-    printf("Found the be\n");
-    ++nb_rows;
-    BEGIN(Macro);
-}
-<Be><<EOF>>                                             return preproc_err_eof(let_row);
-<Macro>[a-zA-Z][a-zA-Z0-9_]*                            {
-    if( preproc_test_or_add_identifier(yytext) != 0)
-        return 1;
-}
-<Macro>\".*\"                                           preproc_add_to_current_expression(yytext);
-<Macro>'.*'                                             preproc_add_to_current_expression(yytext);
-<Macro>[^.\n% a-zA-Z"']*                                 {
-    preproc_add_to_current_expression(yytext);
-}
-<Macro>"."                                              {
-    preproc_add_current_id_with_current_expression();
-    BEGIN(PREPROCESSOR);
-}
-<PREPROCESSOR,Definition,Naming,Be,Macro>"%"[^\n]*      /* eat up one line comments */
-
-
+{Integer}                               yylval = atoi (yytext); return Integer_litteral;
+{Float}                                 yylval = atof (yytext); return Float_litteral;
+{Character}                             yylval = * (yytext + 1); return Char_litteral;
+{String}                                return String_litteral;
+"True"                                  yylval = true; return Boolean_litteral;
+"False"                                 yylval = false; return Boolean_litteral;
 "."                                     return Dot;
 "{||"                                   return Obrace_parallel;
 "{;"                                    return Obrace_sequential;
@@ -144,11 +93,5 @@ get                                     return Get;
 "!"                                     return Exclamation_mark;
 read                                    return Read;
 print                                   return Print;
-{Integer}                               return Integer_litteral;
-{Float}                                 return Float_litteral;
-{Character}                             return Char_litteral;
-{String}                                return String_litteral;
-{Boolean}                               // test de bool
-
 %%
 

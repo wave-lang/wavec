@@ -47,97 +47,146 @@ Program : Phrase
 Phrase : Collection_expression Dot
        ;
 
-Collection_expression : Collection_simple
-                      | Collection_sequential
-                      | Collection_sequential Obrace_sequential Collection_sequential Cbrace
-                      | Collection_parallel
-                      | Collection_parallel Obrace_parallel Collection_parallel Cbrace
+Collection_expression : Collection_simple { $$ = $1; }
+                      | Collection_sequential { $$ = wave_collection_alloc (); wave_collection_set_seq_list ($$, $1); }
+                      | Collection_sequential Obrace_sequential Collection_sequential Cbrace {
+                            $$ = wave_collection_alloc ();
+                            wave_collection_set_cyclic_seq_list ($$, $1);
+                            wave_collection_set_cyclic_seq_cycle ($$, $3);
+                        }
+                      | Collection_parallel { $$ = wave_collection_aloc (); wave_collection_set_par_list ($$, $1); }
+                      | Collection_parallel Obrace_parallel Collection_parallel Cbrace{
+                            $$ = wave_collection_alloc ();
+                            wave_collection_set_cyclic_par_list ($$, $1);
+                            wave_collection_set_cyclic_par_cycle ($$, $3);
+                        }
                       ;
 
-Collection_sequential : Collection_simple Semicolon Collection_simple
-                      | Collection_simple Obrace_sequential Collection_sequential Cbrace Repetition_number
+Collection_sequential : Collection_simple Semicolon Collection_simple { $$ = $1; wave_collection_add_collection ($1, $3); }
+                      | Collection_simple Obrace_sequential Collection_sequential Cbrace Integer_litteral {
+                            $$ = $1;
+                            wave_collection * new_collection = wave_collection_alloc ();
+                            wave_collection_set_repetition_list (new_collection, $3);
+                            wave_collection_set_repetition_number (new_collection, $5);
+                            wave_collection_add_collection ($$, new_collection);
+                            }
+                    | Collection_simple Obrace_sequential Collection_sequential Cbrace Number_sign Location {
+                            $$ = $1;
+                            wave_collection * new_collection = wave_collection_alloc ();
+                            wave_collection_set_repetition_list (new_collection, $3);
+                            wave_collection_set_repetition_path (new_collection, $6);
+                            wave_collection_add_collection ($$, new_collection);
+                            }
                       ;
 
-Collection_parallel : Collection_simple Parallel Collection_simple
-                    | Collection_simple Obrace_parallel Collection_sequential Cbrace Repetition_number
+Collection_parallel : Collection_simple Parallel Collection_simple { $$ = $1; wave_collection_add_collection ($1, $3); }
+                    | Collection_simple Obrace_parallel Collection_sequential Cbrace Integer_litteral {
+                            $$ = $1;
+                            wave_collection * new_collection = wave_collection_alloc ();
+                            wave_collection_set_repetition_list (new_collection, $3);
+                            wave_collection_set_repetition_number (new_collection, $5);
+                            wave_collection_add_collection ($$, new_collection);
+                            }
+                    | Collection_simple Obrace_parallel Collection_sequential Cbrace Number_sign Location{
+                            $$ = $1;
+                            wave_collection * new_collection = wave_collection_alloc ();
+                            wave_collection_set_repetition_list (new_collection, $3);
+                            wave_collection_set_repetition_path (new_collection, $6);
+                            wave_collection_add_collection ($$, new_collection);
+                            }
                     ;
 
-Collection_simple : Oparentheses Collection_expression Cparentheses
-                  | Value
-                  | Operator
-                  | At Location
+Collection_simple : Oparentheses Collection_expression Cparentheses { $$ = $1; }
+                  | Value { $$ wave_collection_alloc (); wave_collection_set_atom ($$, $1); }
+                  | Operator { $$ wave_collection_alloc (); wave_collection_set_atom ($$, $1); }
+                  | At Location { $$ wave_collection_alloc (); wave_collection_set_path ($$, $1); }
                   ;
 
-Repetition_number : Integer_litteral
-                  | Number_sign Location
+Repetition_number : Integer_litteral { $$ = $1; }
+                  | Number_sign Location { $$ = $2; }
                   ;
 
-Value : Integer_litteral
-      | Float_litteral
-      | Boolean_litteral
-      | Char_litteral
-      | String_litteral
+Value : Integer_litteral { $$ = wave_atom_alloc (); wave_atom_set_int ($$, $1); }
+      | Float_litteral { $$ = wave_atom_alloc (); wave_atom_set_float ($$, $1); }
+      | Boolean_litteral { $$ = wave_atom_alloc (); wave_atom_set_bool ($$, $1); }
+      | Char_litteral { $$ = wave_atom_alloc (); wave_atom_set_char ($$, $1); }
+      | String_litteral { $$ = wave_atom_alloc (); wave_atom_set_string ($$, $1); }
       ;
 
-Location : Move Number
-         | Move
-         | Move Number Location
-         | Move Location
+Location : Move Number {
+                $$ = wave_path_alloc ();
+                wave_path_set_repeat_path ($$, $1);
+                if ($2 == Infinity)
+                    wave_path_set_repeat_type ($$, WAVE_PATH_REPEAT_INFINITE);
+                else
+                    wave_path_set_repeat_number ($$, $2);
+            }
+         | Move { $$ = $1; }
+         | Move Number Location {
+                $$ = wave_path_alloc ();
+                wave_path_set_repeat_path ($$, $1);
+                if ($2 == Infinity)
+                    wave_path_set_repeat_type ($$, WAVE_PATH_REPEAT_INFINITE);
+                else
+                    wave_path_set_repeat_number ($$, $2);
+                wave_path_add_path ($$, $3);
+            }
+         | Move Location { $$ = $1; wave_path_add_path ($$, $2); }
          ;
 
-Number : Infinity
-      | Integer_litteral
+Number : Infinity { $$ = Infinity; }
+      | Integer_litteral { $$ = $1; }
       ;
 
-Move : Prec
-     | Succ
-     | Up
-     | Down
-     | Rewind
-     | Oparentheses Location Cparentheses
-     | Osquare_brackets Location Csquare_brackets
+Move : Prec { $$ = wave_path_alloc (); wave_path_set_move ($$, WAVE_MOVE_PRE); }
+     | Succ { $$ = wave_path_alloc (); wave_path_set_move ($$, WAVE_MOVE_SUC); }
+     | Up { $$ = wave_path_alloc (); wave_path_set_move ($$, WAVE_MOVE_UP); }
+     | Down { $$ = wave_path_alloc (); wave_path_set_move ($$, WAVE_MOVE_DOWN); }
+     | Rewind { $$ = wave_path_alloc (); wave_path_set_move ($$, WAVE_MOVE_REWIND); }
+     | Oparentheses Location Cparentheses { $$ = $2; }
+     | Osquare_brackets Location Csquare_brackets { $$ = wave_path_alloc (); wave_path_set_part ($$, $2); }
      ;
 
-Operator : Binary_operator
-         | Unary_operator
-         | Specific_operator
+Operator : Binary_operator { $$ = $1; }
+         | Unary_operator { $$ = $1; }
+         | Specific_operator { $$ = $1; }
          ;
 
-Unary_operator : Unary_plus
-               | Unary_minus
-               | Increment
-               | Decrement
-               | Square_root
-               | Sin
-               | Cos
-               | Not
-               | Log
-               | Exp
-               | Ceil
-               | Floor
+Unary_operator : Unary_plus { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_UNARY_PLUS); }
+               | Unary_minus { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_UNARY_MINUS); }
+               | Increment { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_UNARY_INCREMENT); }
+               | Decrement { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_UNARY_DECREMENT); }
+               | Square_root { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_UNARY_SQRT); }
+               | Sin { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_UNARY_SIN); }
+               | Cos { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_UNARY_COS); }
+               | Not { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_UNARY_NOT); }
+               | Log { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_UNARY_LOG); }
+               | Exp { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_UNARY_EXP); }
+               | Ceil { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_UNARY_CEIL); }
+               | Floor { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_UNARY_FLOOR); }
                ;
 
-Binary_operator : Plus
-                | Minus
-                | Times
-                | Divid
-                | Min
-                | Max
-                | Mod
-                | Equal
-                | Not_equal
-                | Upper_equal
-                | Lesser_equal
-                | Upper
-                | Lesser
-                | And
-                | Or
-                | Get
+Binary_operator : Plus { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_PLUS); }
+                | Minus { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_MINUS); }
+                | Times { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_TIMES); }
+                | Divid { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_DIVIDE); }
+                | Min { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_MIN); }
+                | Max { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_MAX); }
+                | Mod { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_MOD); }
+                | Equal { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_EQUALS); }
+                | Not_equal { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_DIFFERS); }
+                | Upper_equal { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_GREATER_OR_EQUALS); }
+                | Lesser_equal { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_LESSER_OR_EQUALS); }
+                | Upper { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_GREATER); }
+                | Lesser { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_LESSER); }
+                | And { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_AND); }
+                | Or { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_OR); }
+                | Get { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_BINARY_GET); }
                 ;
 
-Specific_operator : Atom
-                  | Question_mark
-                  | Exclamation_mark
-                  | Read
-                  | Print
+Specific_operator : Atom { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_SPECIFIC_ATOM); }
+                  | Question_mark { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_SPECIFIC_STOP); }
+                  | Exclamation_mark { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_SPECIFIC_CUT); }
+                  | Read { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_SPECIFIC_READ); }
+                  | Print { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_SPECIFIC_PRINT); }
                   ;
