@@ -54,16 +54,18 @@ typedef enum wave_move_type
 } wave_move_type;
 
 /**
- * \brief Repeat value type.
+ * \brief Repeat type.
  */
-typedef enum repeat_value_type
+typedef enum wave_path_repeat_type
 {
-    REPEAT_VALUE_CONSTANT = 0,  /**<- Constant. */
-    REPEAT_VALUE_INFINITE       /**<- Infinite. */
-} repeat_value_type;
+    WAVE_PATH_REPEAT_CONSTANT = 0,  /**<- Constant. */
+    WAVE_PATH_REPEAT_INFINITE       /**<- Infinite. */
+} wave_path_repeat_type;
 
 /**
  * \brief Wave path.
+ * \warning Paths not obtained using wave_path_alloc() must be initialized using wave_path_init() !
+ * \sa wave_path_repeat_type, wave_move_type
  */
 typedef struct wave_path
 {
@@ -73,7 +75,7 @@ typedef struct wave_path
         struct wave_path * _part;           /**<- Part. */
         struct
         {
-            repeat_value_type _type;        /**<- Repeat type. */
+            wave_path_repeat_type _type;    /**<- Repeat type. */
             unsigned int _number;           /**<- Repeat number. */
             struct wave_path * _path;       /**<- Path to repeat. */
         } _repeat;                          /**<- Repeat. */
@@ -83,6 +85,16 @@ typedef struct wave_path
 } wave_path;
 
 ////////////////////////////////////////////////////////////////////////////////
+// Initialization.
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \brief Initialize a wave_path.
+ * \param p Path.
+ */
+void wave_path_init (wave_path * p);
+
+////////////////////////////////////////////////////////////////////////////////
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -90,6 +102,7 @@ typedef struct wave_path
  * \brief Alloc for Wave paths.
  * \return Wave path
  * \relatesalso wave_path
+ * \note Paths obtained using wave_path_alloc() are already initialized, it is not needed to use wave_path_init().
  */
 void * wave_path_alloc (void);
 
@@ -150,7 +163,7 @@ wave_path * wave_path_get_part (const wave_path * p);
  * \relatesalso wave_path
  * \warning \c must be not \c NULL.
  */
-repeat_value_type wave_path_get_repeat_type (const wave_path * p);
+wave_path_repeat_type wave_path_get_repeat_type (const wave_path * p);
 
 /**
  * \brief Get a path's repeat number.
@@ -219,7 +232,7 @@ void wave_path_set_part (wave_path * p, wave_path * part);
  * \warning \c must be not \c NULL.
  * \post wave_path_get_type() == #WAVE_MOVE_REP
  */
-void wave_path_set_repeat_type (wave_path * p, repeat_value_type t);
+void wave_path_set_repeat_type (wave_path * p, wave_path_repeat_type t);
 
 /**
  * \brief Set a path's repeat number.
@@ -228,6 +241,7 @@ void wave_path_set_repeat_type (wave_path * p, repeat_value_type t);
  * \relatesalso wave_path
  * \warning \c must be not \c NULL.
  * \post wave_path_get_type() == #WAVE_MOVE_REP
+ * \post wave_path_get_repeat_type() == #WAVE_PATH_REPEAT_CONSTANT
  */
 void wave_path_set_repeat_number (wave_path * p, unsigned int n);
 

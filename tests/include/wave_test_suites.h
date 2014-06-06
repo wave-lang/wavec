@@ -42,13 +42,15 @@
  */
 static CU_TestInfo test_wave_path_info [] =
 {
+    { "Test wave_path_init",                test_wave_path_init                 },
     { "Test wave_path_alloc",               test_wave_path_alloc                },
     { "Test wave_path_free",                test_wave_path_free                 },
     { "Test wave_path_has_next",            test_wave_path_has_next             },
+    { "Test wave_path_has_previous",        test_wave_path_has_previous         },
     { "Test wave_path_get_move",            test_wave_path_get_move             },
     { "Test wave_path_get_part",            test_wave_path_get_part             },
     { "Test wave_path_get_repeat_type",     test_wave_path_get_repeat_type      },
-    { "Test wave_path_get_repeat_nuber",    test_wave_path_get_repeat_number    },
+    { "Test wave_path_get_repeat_number",   test_wave_path_get_repeat_number    },
     { "Test wave_path_get_repeat_path",     test_wave_path_get_repeat_path      },
     { "Test wave_path_get_next",            test_wave_path_get_next             },
     { "Test wave_path_set_move",            test_wave_path_set_move             },

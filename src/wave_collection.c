@@ -30,21 +30,28 @@
 #include "wave_collection.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+// Initialization.
+////////////////////////////////////////////////////////////////////////////////
+
+void wave_collection_init (wave_collection * const c)
+{
+    c->_type = WAVE_COLLECTION_UNKNOWN;
+    c->_next_collection = NULL;
+    c->_previous_collection = NULL;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
 void * wave_collection_alloc (void)
 {
-    wave_collection * const w = malloc (sizeof * w);
-    if (w == NULL)
+    wave_collection * const c = malloc (sizeof * c);
+    if (c == NULL)
         perror ("malloc");
     else
-    {
-        w->_type = WAVE_COLLECTION_UNKNOWN;
-        w->_next_collection = NULL;
-        w->_previous_collection = NULL;
-    }
-    return w;
+        wave_collection_init (c);
+    return c;
 }
 
 static inline void _wave_collection_free_atom (wave_collection * c)

@@ -85,12 +85,23 @@ typedef union wave_atom_content
  * - an operator
  * - a path
  * \sa wave_atom_type, wave_atom_content
+ * \warning Atoms not obtained using wave_atom_alloc() must be initialized using wave_atom_init() !
  */
 typedef struct wave_atom
 {
     wave_atom_type _type;           /**<- The atom's type. */
     wave_atom_content _content;     /**<- The atom's content. */
 } wave_atom;
+
+////////////////////////////////////////////////////////////////////////////////
+// Initialization.
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \brief Initialize a wave_atom.
+ * \param atom Atom.
+ */
+void wave_atom_init (wave_atom * atom);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Allocation, free.
@@ -100,6 +111,7 @@ typedef struct wave_atom
  * \brief Alloc for atoms.
  * \return Atom.
  * \relatesalso wave_atom
+ * \note Atoms obtained using wave_atom_alloc() are already initialized. It is not needed to use wave_atom_init().
  */
 void * wave_atom_alloc (void);
 

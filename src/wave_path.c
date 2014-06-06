@@ -30,6 +30,17 @@
 #include "wave_path.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+// Initialization.
+////////////////////////////////////////////////////////////////////////////////
+
+void wave_path_init (wave_path * const p)
+{
+    p->_move = WAVE_MOVE_UNKNOWN;
+    p->_next_path = NULL;
+    p->_previous_path = NULL;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -39,11 +50,7 @@ void * wave_path_alloc (void)
     if (p == NULL)
         perror ("malloc");
     else
-    {
-        p->_move = WAVE_MOVE_UNKNOWN;
-        p->_next_path = NULL;
-        p->_previous_path = NULL;
-    }
+        wave_path_init (p);
     return p;
 }
 
@@ -97,7 +104,7 @@ wave_path * wave_path_get_part (const wave_path * const p)
     return p->_complex_move._part;
 }
 
-repeat_value_type wave_path_get_repeat_type (const wave_path * const p)
+wave_path_repeat_type wave_path_get_repeat_type (const wave_path * const p)
 {
     return p->_complex_move._repeat._type;
 }
@@ -141,7 +148,7 @@ void wave_path_set_part (wave_path * const p, wave_path * const part)
     p->_complex_move._part = part;
 }
 
-void wave_path_set_repeat_type (wave_path * const p, repeat_value_type t)
+void wave_path_set_repeat_type (wave_path * const p, wave_path_repeat_type t)
 {
     wave_path_set_move (p, WAVE_MOVE_REP);
     p->_complex_move._repeat._type = t;
@@ -149,7 +156,7 @@ void wave_path_set_repeat_type (wave_path * const p, repeat_value_type t)
 
 void wave_path_set_repeat_number (wave_path * const p, unsigned int n)
 {
-    wave_path_set_move (p, WAVE_MOVE_REP);
+    wave_path_set_repeat_type (p, WAVE_PATH_REPEAT_CONSTANT);
     p->_complex_move._repeat._number = n;
 }
 

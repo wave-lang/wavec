@@ -64,6 +64,7 @@ typedef enum wave_collection_repetition_type
 
 /**
  * \brief Collection.
+ * \warning Collections not obtained with wave_collection_alloc() must be initialized using wave_collection_init() !
  */
 typedef struct wave_collection
 {
@@ -93,12 +94,23 @@ typedef struct wave_collection
 } wave_collection;
 
 ////////////////////////////////////////////////////////////////////////////////
+// Initialization.
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \brief Initialize a wave_collection.
+ * \param c Collection.
+ */
+void wave_collection_init (wave_collection * c);
+
+////////////////////////////////////////////////////////////////////////////////
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Alloc for collections.
  * \relatesalso wave_collection
+ * \note Collections obtained using wave_collection_alloc() are already initialized. It is not necessary to use wave_collection_init().
  */
 void * wave_collection_alloc (void);
 

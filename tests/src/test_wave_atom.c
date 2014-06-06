@@ -33,8 +33,11 @@
 // Static variables.
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool must_free_atoms = true;
+/**
+ * \brief Number of atoms for the tests.
+ */
 #define WAVE_ATOM_NUMBER 10
+static bool must_free_atoms = true;
 static wave_atom * atoms[WAVE_ATOM_NUMBER];
 static wave_atom_type WAVE_ATOM_TYPES[] =
 {
@@ -89,7 +92,7 @@ static wave_operator WAVE_OPERATORS[] =
 // Suite related functions.
 ////////////////////////////////////////////////////////////////////////////////
 
-void _test_init (void)
+static void _test_init (void)
 {
     for (unsigned int i = 0; i < WAVE_ATOM_NUMBER; ++i)
         atoms[i] = malloc (sizeof * atoms[i]);
@@ -104,7 +107,7 @@ void _test_init (void)
     * atoms[5] = (wave_atom) { ._type = WAVE_ATOM_OPERATOR, ._content._operator = WAVE_OP_BINARY_PLUS };
 }
 
-void _test_clean (void)
+static void _test_clean (void)
 {
     if (must_free_atoms)
         for (unsigned int i = 0; i < WAVE_ATOM_NUMBER; ++i)
@@ -181,10 +184,13 @@ void test_wave_atom_from_char (void)
 void test_wave_atom_from_bool (void)
 {
     _test_init ();
-    bool value = true;
-    wave_atom atom = wave_atom_from_bool (value);
-    CU_ASSERT_EQUAL (atom._type, WAVE_ATOM_LITERAL_BOOL)
-    CU_ASSERT_EQUAL (atom._content._bool, value)
+    wave_atom atom_true = wave_atom_from_bool (true);
+    wave_atom atom_false = wave_atom_from_bool (false);
+
+    CU_ASSERT_EQUAL (atom_true._type, WAVE_ATOM_LITERAL_BOOL)
+    CU_ASSERT_EQUAL (atom_false._type, WAVE_ATOM_LITERAL_BOOL)
+    CU_ASSERT_EQUAL (atom_true._content._bool, true)
+    CU_ASSERT_EQUAL (atom_false._content._bool, false)
     _test_clean ();
 }
 
