@@ -71,7 +71,7 @@ static void _test_init (void)
         ._move = WAVE_MOVE_REP,
         ._complex_move._repeat =
         {
-            ._type = REPEAT_VALUE_CONSTANT,
+            ._type = WAVE_PATH_REPEAT_CONSTANT,
             ._number = 10,
             ._path = paths[7]
         },
@@ -227,7 +227,7 @@ void test_wave_path_get_repeat_type (void)
 {
     _test_init ();
 
-    CU_ASSERT_EQUAL (wave_path_get_repeat_type (paths[6]), REPEAT_VALUE_CONSTANT)
+    CU_ASSERT_EQUAL (wave_path_get_repeat_type (paths[6]), WAVE_PATH_REPEAT_CONSTANT)
 
     _test_clean ();
 }
@@ -335,13 +335,13 @@ void test_wave_path_set_repeat_type (void)
     wave_path_init (& p[0]);
     wave_path_init (& p[1]);
 
-    wave_path_set_repeat_type (& p[0], REPEAT_VALUE_CONSTANT);
-    wave_path_set_repeat_type (& p[1], REPEAT_VALUE_INFINITE);
+    wave_path_set_repeat_type (& p[0], WAVE_PATH_REPEAT_CONSTANT);
+    wave_path_set_repeat_type (& p[1], WAVE_PATH_REPEAT_INFINITE);
 
     CU_ASSERT_EQUAL (wave_path_get_move (& p[0]), WAVE_MOVE_REP)
-    CU_ASSERT_EQUAL (wave_path_get_repeat_type (& p[0]), REPEAT_VALUE_CONSTANT)
+    CU_ASSERT_EQUAL (wave_path_get_repeat_type (& p[0]), WAVE_PATH_REPEAT_CONSTANT)
     CU_ASSERT_EQUAL (wave_path_get_move (& p[1]), WAVE_MOVE_REP)
-    CU_ASSERT_EQUAL (wave_path_get_repeat_type (& p[1]), REPEAT_VALUE_INFINITE)
+    CU_ASSERT_EQUAL (wave_path_get_repeat_type (& p[1]), WAVE_PATH_REPEAT_INFINITE)
 
     _test_clean ();
 }
@@ -355,7 +355,7 @@ void test_wave_path_set_repeat_number (void)
     wave_path_set_repeat_number (& p, 10);
 
     CU_ASSERT_EQUAL (wave_path_get_move (& p), WAVE_MOVE_REP)
-    CU_ASSERT_EQUAL (wave_path_get_repeat_type (& p), REPEAT_VALUE_CONSTANT)
+    CU_ASSERT_EQUAL (wave_path_get_repeat_type (& p), WAVE_PATH_REPEAT_CONSTANT)
     CU_ASSERT_EQUAL (wave_path_get_repeat_number (& p), 10)
 
     _test_clean ();
