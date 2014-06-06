@@ -33,8 +33,11 @@
 // Static variables.
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool must_free_atoms = true;
+/**
+ * \brief Number of atoms for the tests.
+ */
 #define WAVE_ATOM_NUMBER 10
+static bool must_free_atoms = true;
 static wave_atom * atoms[WAVE_ATOM_NUMBER];
 static wave_atom_type WAVE_ATOM_TYPES[] =
 {
@@ -89,7 +92,7 @@ static wave_operator WAVE_OPERATORS[] =
 // Suite related functions.
 ////////////////////////////////////////////////////////////////////////////////
 
-void _test_init (void)
+static void _test_init (void)
 {
     for (unsigned int i = 0; i < WAVE_ATOM_NUMBER; ++i)
         atoms[i] = malloc (sizeof * atoms[i]);
@@ -104,7 +107,7 @@ void _test_init (void)
     * atoms[5] = (wave_atom) { ._type = WAVE_ATOM_OPERATOR, ._content._operator = WAVE_OP_BINARY_PLUS };
 }
 
-void _test_clean (void)
+static void _test_clean (void)
 {
     if (must_free_atoms)
         for (unsigned int i = 0; i < WAVE_ATOM_NUMBER; ++i)

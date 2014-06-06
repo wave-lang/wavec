@@ -40,7 +40,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Wave bool.
+ * \class wave_bool
+ * \brief Wave boolean.
+ */
+/**
+ * \brief Wave boolean.
  */
 typedef bool wave_bool;
 
@@ -89,7 +93,11 @@ wave_bool wave_bool_not (wave_bool b);
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Wave int.
+ * \class wave_int
+ * \brief Wave integer.
+ */
+/**
+ * \brief Wave integer.
  */
 typedef int wave_int;
 
@@ -127,6 +135,10 @@ wave_int wave_int_max (wave_int a, wave_int b);
 // wave_float
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * \class wave_float
+ * \brief Wave float.
+ */
 /**
  * \brief Wave float.
  */
@@ -211,22 +223,29 @@ wave_float wave_float_max (wave_float a, wave_float b);
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Wave char.
+ * \class wave_char
+ * \brief Wave character.
+ */
+/**
+ * \brief Wave character.
  */
 typedef char wave_char;
 
 /**
  * \brief Number of bits in a type wave_char.
+ * \relatesalso wave_char
  */
 #define WAVE_CHAR_BIT CHAR_BIT
 
 /**
  * \brief Wave character maximum value.
+ * \relatesalso wave_char
  */
 static const wave_char WAVE_CHAR_MAX = CHAR_MAX;
 
 /**
  * \brief Wave character minimum value.
+ * \relatesalso wave_char
  */
 static const wave_char WAVE_CHAR_MIN = CHAR_MIN;
 

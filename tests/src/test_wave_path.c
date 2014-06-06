@@ -33,6 +33,9 @@
 // Static variables.
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * \brief Number of paths for the tests.
+ */
 #define WAVE_PATH_NUMBER 12
 static bool must_free_paths = true;
 static wave_path * paths[WAVE_PATH_NUMBER];
