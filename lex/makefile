@@ -11,6 +11,7 @@ YACC_INCLUDE = $(YACC_PATH)include/
 YACC_OBJ = $(YACC_PATH)obj/
 
 CC = gcc -std=gnu99
+LL = lex
 
 DEBUG_FLAGS = -g
 WARNING_FLAGS = -Wall -Wextra -Wfloat-equal -Wdouble-promotion -Wswitch-default -Winit-self -Wshadow -Wbad-function-cast -Wcast-qual -Wcast-align -Wconversion -Wlogical-op -Wstrict-prototypes -Wnested-externs
@@ -38,10 +39,10 @@ wave_yacc : wave_yacc.o
 	(cd $(YACCPATH); make)
 
 wave_lex.c : wave_lex.l
-	lex -o $(SRC_PATH)$@ $<
+	$(LEX) -o $(SRC_PATH)$@ $<
 
 wave_preprocessor.c : wave_preprocessor.l
-	lex -o $(SRC_PATH)$@ $<
+	$(LEX) -o $(SRC_PATH)$@ $<
 
 %.c :
 
@@ -55,7 +56,7 @@ preproc_utils.o : preproc_utils.c preproc_utils.h | obj
 
 
 obj :
-	mkdir -p $(OBJ_PATH)
+	@mkdir -p $(OBJ_PATH)
 
 clean :
 	@rm -rf $(OBJ_PATH) wave_preprocessor $(SRC_PATH)wave_preprocessor.c $(SRC_PATH)wave_lex.c 2>/dev/null; echo Directory cleaned.
