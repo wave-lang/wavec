@@ -241,6 +241,7 @@ void wave_path_set_repeat_type (wave_path * p, repeat_value_type t);
  * \relatesalso wave_path
  * \warning \c must be not \c NULL.
  * \post wave_path_get_type() == #WAVE_MOVE_REP
+ * \post wave_path_get_repeat_type() == #REPEAT_VALUE_CONSTANT
  */
 void wave_path_set_repeat_number (wave_path * p, unsigned int n);
 

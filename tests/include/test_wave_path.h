@@ -52,6 +52,16 @@ int test_wave_path_suite_init (void);
 int test_wave_path_suite_clean (void);
 
 ////////////////////////////////////////////////////////////////////////////////
+// Initialization tests.
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \brief Test wave_path_init().
+ * \test wave_path_init()
+ */
+void test_wave_path_init (void);
+
+////////////////////////////////////////////////////////////////////////////////
 // Allocation and free tests.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -78,6 +88,12 @@ void test_wave_path_free (void);
 void test_wave_path_has_next (void);
 
 /**
+ * \brief Test wave_path_has_previous().
+ * \test wave_path_has_previous()
+ */
+void test_wave_path_has_previous (void);
+
+/**
  * \brief Tet wave_path_get_move().
  * \test wave_path_get_move()
  */
@@ -86,28 +102,24 @@ void test_wave_path_get_move (void);
 /**
  * \brief Test wave_path_get_part().
  * \test wave_path_get_part()
- * \todo implementation
  */
 void test_wave_path_get_part (void);
 
 /**
  * \brief Test wave_path_get_repeat_type().
  * \test wave_path_get_repeat_type()
- * \todo implementation
  */
 void test_wave_path_get_repeat_type (void);
 
 /**
  * \brief Test wave_path_get_repeat_number().
  * \test wave_path_get_repeat_number()
- * \todo implementation
  */
 void test_wave_path_get_repeat_number (void);
 
 /**
  * \brief Test wave_path_get_repeat_path().
  * \test wave_path_get_repeat_path()
- * \todo implementation
  */
 void test_wave_path_get_repeat_path (void);
 
@@ -124,42 +136,36 @@ void test_wave_path_get_next (void);
 /**
  * \brief Test wave_path_set_move().
  * \test wave_path_set_move()
- * \todo implementation
  */
 void test_wave_path_set_move (void);
 
 /**
  * \brief Test wave_path_add_path().
  * \test wave_path_add_path()
- * \todo implementation
  */
 void test_wave_path_add_path (void);
 
 /**
  * \brief Test wave_path_set_part().
  * \test wave_path_set_part()
- * \todo implementation
  */
 void test_wave_path_set_part (void);
 
 /**
  * \brief Test wave_path_set_repeat_type().
  * \test wave_path_set_repeat_path()
- * \todo implementation
  */
 void test_wave_path_set_repeat_type (void);
 
 /**
  * \brief Test wave_path_set_repeat_number().
  * \test wave_path_set_repeat_number()
- * \todo implementation
  */
 void test_wave_path_set_repeat_number (void);
 
 /**
  * \brief Test wave_path_set_repeat_path().
  * \test wave_path_set_repeat_path()
- * \todo implementation
  */
 void test_wave_path_set_repeat_path (void);
 

@@ -156,7 +156,7 @@ void wave_path_set_repeat_type (wave_path * const p, repeat_value_type t)
 
 void wave_path_set_repeat_number (wave_path * const p, unsigned int n)
 {
-    wave_path_set_move (p, WAVE_MOVE_REP);
+    wave_path_set_repeat_type (p, REPEAT_VALUE_CONSTANT);
     p->_complex_move._repeat._number = n;
 }
 
