@@ -64,6 +64,8 @@ typedef enum repeat_value_type
 
 /**
  * \brief Wave path.
+ * \warning Paths not obtained using wave_path_alloc() must be initialized using wave_path_init() !
+ * \sa repeat_value_type, wave_move_type
  */
 typedef struct wave_path
 {
@@ -83,6 +85,16 @@ typedef struct wave_path
 } wave_path;
 
 ////////////////////////////////////////////////////////////////////////////////
+// Initialization.
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \brief Initialize a wave_path.
+ * \param p Path.
+ */
+void wave_path_init (wave_path * p);
+
+////////////////////////////////////////////////////////////////////////////////
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -90,6 +102,7 @@ typedef struct wave_path
  * \brief Alloc for Wave paths.
  * \return Wave path
  * \relatesalso wave_path
+ * \note Paths obtained using wave_path_alloc() are already initialized, it is not needed to use wave_path_init().
  */
 void * wave_path_alloc (void);
 
