@@ -181,6 +181,17 @@ int preproc_test_or_add_identifier(const char* id_or_not){
     }
     return 0;
 }
-int preproc_check_identifier(yytext, &value){
-
+int preproc_check_identifier(char* identifier, char** associated_value){
+    char* val;
+    if(preproc_is_reserved_id(identifier))
+        *associated_value = identifier;
+    else{
+        if( preproc_get_value_by_id(identifier, &val) == 0){
+            *associated_value = val;
+        }
+        else{
+            return 1;
+        }
+    }
+    return 0;
 }

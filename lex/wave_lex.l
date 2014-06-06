@@ -1,3 +1,11 @@
+%top{
+#include "wave_yacc.h"
+#include "preproc_utils.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
+}
 %{
 /*
 The MIT License (MIT)
@@ -23,14 +31,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "wave_yacc.h"
-#include "preproc_utils.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
 static unsigned int nb_rows = 1;
 static unsigned int let_row = 1;
-char** value = NULL;
+char* value = NULL;
 static int retval = 0;
 static char* _temp_expression = NULL;
 extern int yylval;
@@ -55,9 +58,11 @@ Boolean     True|False
 }
 <PREPROCESSOR>[a-zA-Z][a-zA-Z0-9_]*                     {
     retval = preproc_check_identifier(yytext, &value);
-    if(retval == 1)
+    if(retval == 1){
+        fprintf(stderr, "The identifier %s line %d is not defined yet.\n", yytext, nb_rows);
         return 1;
-    fprintf(yyout, value);
+    }
+    fprintf(yyout, "%s", value);
 }
 <Naming><<EOF>>                                         return preproc_err_eof(let_row);
 <Naming>[a-zA-Z][a-zA-Z0-9\_]*                          {
@@ -90,6 +95,7 @@ Boolean     True|False
     BEGIN(PREPROCESSOR);
 }
 <PREPROCESSOR,Definition,Naming,Be,Macro>"%"[^\n]*      /* eat up one line comments */
+
 
 "."                                     return Dot;
 "{||"                                   return Obrace_parallel;

@@ -68,4 +68,6 @@ int preproc_test_or_add_identifier(const char* id_or_not);
 
 void preproc_add_to_current_expression(const char* str);
 
+int preproc_check_identifier(char* identifier, char** associated_value);
+
 #endif // ( __PREPROC_BUFFER_H )

@@ -5,16 +5,21 @@ INCLUDE_PATH = include/
 SRC_PATH = src/
 OBJ_PATH = obj/
 YACCPATH = ../grammar/
+
 YACCNAME = wave_yacc.o
-CC = gcc -std=c99
+
+CC = gcc -std=gnu99
+
 DEBUG_FLAGS = -g
 WARNING_FLAGS = -Wall -Wextra -Wfloat-equal -Wdouble-promotion -Wswitch-default -Winit-self -Wshadow -Wbad-function-cast -Wcast-qual -Wcast-align -Wconversion -Wlogical-op -Wstrict-prototypes -Wnested-externs
 COMPILE_FLAGS = $(WARNING_FLAGS) # $(DEBUG_FLAGS)
+
 IFLAGS = -I$(YACCPATH) -I$(INCLUDE_PATH) -I$(HASH_INCLUDE)
 LINK_FLAGS = -L$(HASH_LIB) -lhash -lfl -ly
 
 vpath %.c $(SRC_PATH)
 vpath %.h $(INCLUDE_PATH)
+vpath %.o $(OBJ_PATH)
 vpath libhash.a $(HASH_LIB)
 
 wave_lex : wave_lex.o libhash.a preproc_utils.o
