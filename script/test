@@ -1,0 +1,28 @@
+#!/bin/sh
+
+function _print_sep
+{
+    echo -e "********************************************************************************"
+}
+
+function _print_section
+{
+    echo ""
+    _print_sep
+    echo -e "* $*"
+    _print_sep
+    echo ""
+}
+
+if ! [ -f bin/unit_tests ]; then
+    echo "Are you sure you ran make ?" 1>&2
+    exit 66
+fi
+
+_print_section "Running unit tests"
+bin/unit_tests
+
+_print_section "Running pretty printer tests"
+bin/print_tests
+
+exit $?
