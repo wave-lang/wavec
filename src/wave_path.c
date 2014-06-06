@@ -30,6 +30,17 @@
 #include "wave_path.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+// Initialization.
+////////////////////////////////////////////////////////////////////////////////
+
+void wave_path_init (wave_path * const p)
+{
+    p->_move = WAVE_MOVE_UNKNOWN;
+    p->_next_path = NULL;
+    p->_previous_path = NULL;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -39,11 +50,7 @@ void * wave_path_alloc (void)
     if (p == NULL)
         perror ("malloc");
     else
-    {
-        p->_move = WAVE_MOVE_UNKNOWN;
-        p->_next_path = NULL;
-        p->_previous_path = NULL;
-    }
+        wave_path_init (p);
     return p;
 }
 
