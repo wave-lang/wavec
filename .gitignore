@@ -33,4 +33,7 @@ a.out
 # Lex and Yacc files.
 y.*
 y.*.*
-*.yy.c
+*.yy.cc
+wave_yacc.*
+wave_preprocessor.c
+wave_preprocessor
