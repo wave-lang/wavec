@@ -21,6 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#include "wave_phrase.h"
+wave_phrase p;
 %}
 
 %token Dot /* "." */
@@ -39,12 +41,11 @@ SOFTWARE.
 
 %%
 
-Program : Phrase
-        | Phrase Phrase
-        |
+Program : Phrase { wave_phrase_add_phrase (&p, $1); wave_phrase_print (&p); }
+        | Phrase Program { wave_phrase_add_phrase (&p, $1); }
         ;
 
-Phrase : Collection_expression Dot
+Phrase : Collection_expression Dot { $$ = wave_phrase_alloc (); wave_phrase_set_collection ($$, $1); }
        ;
 
 Collection_expression : Collection_simple { $$ = $1; }
@@ -54,7 +55,7 @@ Collection_expression : Collection_simple { $$ = $1; }
                             wave_collection_set_cyclic_seq_list ($$, $1);
                             wave_collection_set_cyclic_seq_cycle ($$, $3);
                         }
-                      | Collection_parallel { $$ = wave_collection_aloc (); wave_collection_set_par_list ($$, $1); }
+                      | Collection_parallel { $$ = wave_collection_alloc (); wave_collection_set_par_list ($$, $1); }
                       | Collection_parallel Obrace_parallel Collection_parallel Cbrace{
                             $$ = wave_collection_alloc ();
                             wave_collection_set_cyclic_par_list ($$, $1);
@@ -67,7 +68,7 @@ Collection_sequential : Collection_simple Semicolon Collection_simple { $$ = $1;
                             $$ = $1;
                             wave_collection * new_collection = wave_collection_alloc ();
                             wave_collection_set_repetition_list (new_collection, $3);
-                            wave_collection_set_repetition_number (new_collection, $5);
+                            wave_collection_set_repetition_times (new_collection, $5);
                             wave_collection_add_collection ($$, new_collection);
                             }
                     | Collection_simple Obrace_sequential Collection_sequential Cbrace Number_sign Location {
@@ -84,7 +85,7 @@ Collection_parallel : Collection_simple Parallel Collection_simple { $$ = $1; wa
                             $$ = $1;
                             wave_collection * new_collection = wave_collection_alloc ();
                             wave_collection_set_repetition_list (new_collection, $3);
-                            wave_collection_set_repetition_number (new_collection, $5);
+                            wave_collection_set_repetition_times (new_collection, $5);
                             wave_collection_add_collection ($$, new_collection);
                             }
                     | Collection_simple Obrace_parallel Collection_sequential Cbrace Number_sign Location{
@@ -97,13 +98,9 @@ Collection_parallel : Collection_simple Parallel Collection_simple { $$ = $1; wa
                     ;
 
 Collection_simple : Oparentheses Collection_expression Cparentheses { $$ = $1; }
-                  | Value { $$ wave_collection_alloc (); wave_collection_set_atom ($$, $1); }
-                  | Operator { $$ wave_collection_alloc (); wave_collection_set_atom ($$, $1); }
-                  | At Location { $$ wave_collection_alloc (); wave_collection_set_path ($$, $1); }
-                  ;
-
-Repetition_number : Integer_litteral { $$ = $1; }
-                  | Number_sign Location { $$ = $2; }
+                  | Value { $$ = wave_collection_alloc (); wave_collection_set_atom ($$, $1); }
+                  | Operator { $$ = wave_collection_alloc (); wave_collection_set_atom ($$, $1); }
+                  | At Location { $$ = wave_collection_alloc (); wave_collection_set_atom ($$, wave_atom_alloc ()); wave_atom_set_path (wave_collection_get_atom ($$), $1); }
                   ;
 
 Value : Integer_litteral { $$ = wave_atom_alloc (); wave_atom_set_int ($$, $1); }
@@ -190,3 +187,10 @@ Specific_operator : Atom { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, 
                   | Read { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_SPECIFIC_READ); }
                   | Print { $$ = wave_atom_alloc (); wave_atom_set_operator ($$, WAVE_OP_SPECIFIC_PRINT); }
                   ;
+
+%%
+int main(int argc, char ** argv)
+{
+    wave_phrase_init (&p);
+    yyparse();
+}
