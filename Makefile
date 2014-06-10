@@ -45,6 +45,7 @@ wave_operator.o: wave_operator.c wave_operator.h
 wave_path.o: wave_path.c wave_path.h
 wave_atom.o: wave_atom.c wave_atom.h wave_types.h wave_path.h wave_operator.h
 wave_collection.o: wave_collection.c wave_collection.h wave_atom.h
+wave_phrase.o: wave_phrase.c wave_phrase.h wave_collection.h
 main.o: main.c wave_path.h wave_atom.h wave_collection.h wave_compiler_version.h
 
 # Tests
@@ -55,8 +56,8 @@ test_wave_collection.o: test_wave_collection.c test_wave_collection.h wave_colle
 unit_tests.o: unit_tests.c wave_test_suites.h
 
 # Compiler lib
-libwavecompiler.a: wave_types.o wave_operator.o wave_path.o wave_atom.o wave_collection.o | lib_dir
-		ar -crv $(PATH_LIB)/libwavecompiler.a $(PATH_OBJ)/wave_types.o $(PATH_OBJ)/wave_operator.o $(PATH_OBJ)/wave_path.o $(PATH_OBJ)/wave_atom.o $(PATH_OBJ)/wave_collection.o
+libwavecompiler.a: wave_types.o wave_operator.o wave_path.o wave_atom.o wave_collection.o wave_phrase.o | lib_dir
+		ar -crv $(PATH_LIB)/libwavecompiler.a $(PATH_OBJ)/wave_types.o $(PATH_OBJ)/wave_operator.o $(PATH_OBJ)/wave_path.o $(PATH_OBJ)/wave_atom.o $(PATH_OBJ)/wave_collection.o $(PATH_OBJ)/wave_phrase.o
 		ranlib $(PATH_LIB)/libwavecompiler.a
 
 # Unit tests lib

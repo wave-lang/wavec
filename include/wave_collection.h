@@ -100,6 +100,7 @@ typedef struct wave_collection
 /**
  * \brief Initialize a wave_collection.
  * \param c Collection.
+ * \relatesalso wave_collection
  */
 void wave_collection_init (wave_collection * c);
 
