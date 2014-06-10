@@ -100,6 +100,7 @@ typedef struct wave_atom
 /**
  * \brief Initialize a wave_atom.
  * \param atom Atom.
+ * \relatesalso wave_atom
  */
 void wave_atom_init (wave_atom * atom);
 

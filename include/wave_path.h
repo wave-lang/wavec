@@ -91,6 +91,7 @@ typedef struct wave_path
 /**
  * \brief Initialize a wave_path.
  * \param p Path.
+ * \relatesalso wave_path
  */
 void wave_path_init (wave_path * p);
 
