@@ -248,11 +248,14 @@ static void _wave_path_print_current (FILE * stream, const wave_path * p)
 
 void wave_path_fprint (FILE * stream, const wave_path * p)
 {
-    const wave_path * last = p;
-    while (last != NULL)
+    if (p != NULL)
     {
-        _wave_path_print_current (stream, last);
-        last = wave_path_get_next (last);
+        const wave_path * last = p;
+        while (last != NULL)
+        {
+            _wave_path_print_current (stream, last);
+            last = wave_path_get_next (last);
+        }
     }
 }
 
