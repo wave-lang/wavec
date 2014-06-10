@@ -175,28 +175,39 @@ static inline void _wave_path_fprint_char_move (FILE * stream, char c)
     fprintf (stream, "%c", c);
 }
 
+/* _wave_path_fprint_{up,down,pre,suc,rewind}:
+ * The functions need to be of type "(FILE *, const wave_path *) -> void", even
+ * though the "p" parameter is not used, hence the use of the "(void) p;" line.
+ * (In order to suppress the -Wunused-parameter warning. The warning can be
+ * useful, but not using the "p" parameter is deliberate here.)
+ */
 static inline void _wave_path_fprint_up (FILE * stream, const wave_path * p)
 {
+    (void) p;
     _wave_path_fprint_char_move (stream, 'u');
 }
 
 static inline void _wave_path_fprint_down (FILE * stream, const wave_path * p)
 {
+    (void) p;
     _wave_path_fprint_char_move (stream, 'd');
 }
 
 static inline void _wave_path_fprint_pre (FILE * stream, const wave_path * p)
 {
+    (void) p;
     _wave_path_fprint_char_move (stream, 'p');
 }
 
 static inline void _wave_path_fprint_suc (FILE * stream, const wave_path * p)
 {
+    (void) p;
     _wave_path_fprint_char_move (stream, 's');
 }
 
 static inline void _wave_path_fprint_rewind (FILE * stream, const wave_path * p)
 {
+    (void) p;
     _wave_path_fprint_char_move (stream, 'r');
 }
 
