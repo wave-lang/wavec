@@ -37,6 +37,8 @@ y.*.*
 wave_yacc.*
 wave_preprocessor.c
 wave_yacc
+lex/src/wave_lex.c
+parse_out.wave
 
 # Wave comp
 wavec
