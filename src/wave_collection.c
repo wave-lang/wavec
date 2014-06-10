@@ -381,7 +381,8 @@ void _wave_collection_fprint_sep (FILE * stream, const wave_collection * c, cons
 
 void wave_collection_fprint (FILE * stream, const wave_collection * c)
 {
-    _fprint_current (stream, c);
+    if (c != NULL)
+        _fprint_current (stream, c);
 }
 
 void wave_collection_print (const wave_collection * c)

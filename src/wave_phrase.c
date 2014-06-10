@@ -124,8 +124,11 @@ void wave_phrase_fprint (FILE * stream, const wave_phrase * const p)
     do
     {
         wave_collection * c = wave_phrase_get_collection (current);
-        wave_collection_fprint (stream, c);
-        fprintf (stream, ".\n");
+        if (c != NULL)
+        {
+            wave_collection_fprint (stream, c);
+            fprintf (stream, ".\n");
+        }
         current = wave_phrase_get_next (current);
     }
     while (current != NULL);

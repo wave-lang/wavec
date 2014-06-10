@@ -380,9 +380,12 @@ void wave_atom_set_string (wave_atom * const atom, wave_char * string)
 
 void wave_atom_fprint (FILE * stream, const wave_atom * a)
 {
-    wave_atom_type atom_type = wave_atom_get_type (a);
-    const wave_atom_content * const content = _wave_atom_get_content (a);
-    _wave_atom_content_fprint (stream, content, atom_type);
+    if (a != NULL)
+    {
+        wave_atom_type atom_type = wave_atom_get_type (a);
+        const wave_atom_content * const content = _wave_atom_get_content (a);
+        _wave_atom_content_fprint (stream, content, atom_type);
+    }
 }
 
 void wave_atom_print (const wave_atom * a)
