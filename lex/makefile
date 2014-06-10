@@ -1,66 +1,99 @@
-INCLUDE_PATH = include/
-SRC_PATH = src/
-OBJ_PATH = obj/
+################################################################################
+# Programs
+################################################################################
+CC = gcc
+LEX = lex
 
-HASH_PATH = ../hash_table_c_language/
-HASH_INCLUDE = $(HASH_PATH)include/
-HASH_LIB = $(HASH_PATH)lib/
+################################################################################
+# Paths
+################################################################################
+PATH_SRC = src
+PATH_OBJ = obj
+PATH_INCLUDE = include
 
-YACC_PATH = ../yacc/
-YACC_INCLUDE = $(YACC_PATH)include/
-YACC_OBJ = $(YACC_PATH)obj/
+PATH_HASH_SRC = ../hash_table_c_language
+PATH_HASH_INCLUDE = $(PATH_HASH_SRC)/include
+PATH_HASH_LIB = $(PATH_HASH_SRC)/lib
 
-CC = gcc -std=gnu99
-LL = lex
+PATH_YACC = ../yacc
+PATH_YACC_INCLUDE = $(PATH_YACC)/include
+PATH_YACC_OBJ = $(PATH_YACC)/obj
 
-DEBUG_FLAGS = -g
-WARNING_FLAGS = -Wall -Wextra -Wfloat-equal -Wdouble-promotion -Wswitch-default -Winit-self -Wshadow -Wbad-function-cast -Wcast-qual -Wcast-align -Wconversion -Wlogical-op -Wstrict-prototypes -Wnested-externs
-COMPILE_FLAGS = $(WARNING_FLAGS) # $(DEBUG_FLAGS)
+PATH_WAVE_COMPILER = ..
+PATH_WAVE_COMPILER_LIB = $(PATH_WAVE_COMPILER)/lib
 
-IFLAGS = -I$(YACC_INCLUDE) -I$(INCLUDE_PATH) -I$(HASH_INCLUDE)
-LINK_FLAGS = -L$(HASH_LIB) -lhash -lfl -ly
+################################################################################
+# Flags
+################################################################################
+FLAGS_CC_INCLUDE = -I$(PATH_YACC_INCLUDE) -I$(PATH_INCLUDE) -I$(PATH_HASH_INCLUDE)
+FLAGS_CC_LIB = -L$(PATH_HASH_LIB) -L$(PATH_WAVE_COMPILER_LIB)
+FLAGS_CC_LINK = $(FLAGS_CC_LIB) -lhash -lfl -ly
+FLAGS_CC_DEBUG = -g
+FLAGS_CC_WARNING = -Wall -Wextra -Wfloat-equal -Wdouble-promotion \
+	-Wswitch-default -Winit-self -Wshadow -Wbad-function-cast -Wcast-qual \
+	-Wcast-align -Wconversion -Wlogical-op -Wstrict-prototypes -Wnested-externs
 
-vpath %.c $(SRC_PATH)
-vpath %.h $(INCLUDE_PATH)
-vpath %.o $(OBJ_PATH)
-vpath libhash.a $(HASH_LIB)
+FLAGS_CC = $(FLAGS_CC_INCLUDE) $(FLAGS_CC_WARNING) -std=c99 -pedantic -O0 # $(FLAGS_CC_DEBUG)
+
+################################################################################
+# Files
+################################################################################
+vpath %.c $(PATH_SRC)
+vpath %.h $(PATH_INCLUDE)
+vpath %.o $(PATH_OBJ) $(PATH_YACC_OBJ)
+vpath *.a $(PATH_HASH_LIB) $(PATH_WAVE_COMPILER_LIB)
+
+################################################################################
+# Compiling
+################################################################################
+all: wave_preprocessor wavec
+
+## Final binaries.
+wavec: wave_lex.o wave_yacc libhash.a libwavecompiler.a
+	$(CC) -o $@ $(PATH_OBJ)/wave_lex.o $(PATH_YACC_OBJ)/wave_yacc.o $(FLAGS_CC_LINK) -lwavecompiler
 
 wave_preprocessor : wave_preprocessor.o preproc_utils.o libhash.a
-	$(CC) -o $@ $(OBJ_PATH)wave_preprocessor.o $(OBJ_PATH)preproc_utils.o $(LINK_FLAGS)
+	$(CC) $(FLAGS_CC) -o $@ $(PATH_OBJ)/wave_preprocessor.o \
+		$(PATH_OBJ)/preproc_utils.o $(FLAGS_CC_LINK)
 
+## Required libraries.
 libhash.a :
-	(cd $(HASH_PATH); make)
+	(cd $(PATH_HASH_SRC); make)
 
+libwavecompiler.a:
+	(cd $(PATH_WAVE_COMPILER); make)
 
 wave_lex.o : wave_lex.c wave_yacc
-	$(CC) $(COMPILE_FLAGS) $(IFLAGS) -c $< -o $@
+	$(CC) $(FLAGS_CC) -c $(PATH_SRC)/wave_lex.c -o $(PATH_OBJ)/$@
 
-wave_yacc : wave_yacc.o
-	(cd $(YACCPATH); make)
+wave_yacc :
+	(cd $(PATH_YACC); make)
 
 wave_lex.c : wave_lex.l
-	$(LEX) -o $(SRC_PATH)$@ $<
+	$(LEX) -o $(PATH_SRC)/$@ $<
 
 wave_preprocessor.c : wave_preprocessor.l
-	$(LEX) -o $(SRC_PATH)$@ $<
-
-%.c :
+	$(LEX) -o $(PATH_SRC)/$@ $<
 
 wave_preprocessor.o : wave_preprocessor.c | obj
-	$(CC) $(COMPILE_FLAGS) $(IFLAGS) -c $(SRC_PATH)$< -o $(OBJ_PATH)$@
+	$(CC) $(FLAGS_CC) -c $(PATH_SRC)/$< -o $(PATH_OBJ)/$@
 
 preproc_utils.o : preproc_utils.c preproc_utils.h | obj
+	$(CC) $(FLAGS_CC) -c $< -o $(PATH_OBJ)/$@
 
-%.o :
-	$(CC) $(COMPILE_FLAGS) $(IFLAGS) -c $< -o $(OBJ_PATH)$@
-
-
+################################################################################
+# Directories
+################################################################################
 obj :
-	@mkdir -p $(OBJ_PATH)
+	@mkdir -p $(PATH_OBJ)
 
+################################################################################
+# Cleaning
+################################################################################
 clean :
-	@rm -rf $(OBJ_PATH) wave_preprocessor $(SRC_PATH)wave_preprocessor.c $(SRC_PATH)wave_lex.c 2>/dev/null; echo Directory cleaned.
+	@rm -rf $(PATH_OBJ) wave_preprocessor wavec $(PATH_SRC)/wave_preprocessor.c \
+		$(PATH_SRC)/wave_lex.c 2>/dev/null; echo Directory cleaned.
 
 clean-all : clean
-	@(cd $(YACCPATH); make clean 1>/dev/null 2>&1; echo $(YACC_PATH) Cleaned.)
-	@(cd $(HASH_PATH); make clean 1>/dev/null 2>&1; echo $(HASH_PATH) Cleaned.)
+	@(cd $(PATH_YACC); make clean 1>/dev/null 2>&1; echo $(PATH_YACC) Cleaned.)
+	@(cd $(PATH_HASH_SRC); make clean 1>/dev/null 2>&1; echo $(PATH_HASH_SRC) Cleaned.)

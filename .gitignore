@@ -36,4 +36,8 @@ y.*.*
 *.yy.cc
 wave_yacc.*
 wave_preprocessor.c
+wave_yacc
+
+# Wave comp
+wavec
 wave_preprocessor
