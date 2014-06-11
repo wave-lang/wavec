@@ -46,6 +46,7 @@ Boolean     True|False
 
 %%
 <PREPROCESSOR,Definition,Naming,Be,MacroDefinition>"\n"                        ++nb_rows;
+<PREPROCESSOR,Definition,Naming,Be,MacroDefinition>[ \t]
 <PREPROCESSOR>"Let "+                                   {
     printf("Let ligne %u\n", nb_rows);
     let_row = nb_rows;
@@ -65,7 +66,7 @@ Boolean     True|False
 <Naming>[a-zA-Z][a-zA-Z0-9\_]*                          {
     retval = preproc_check_identifier(yytext, &value);
     if(retval == 0){
-        fprintf(stderr, "Error :The identifier %s line %d is already defined yet.\n", yytext, nb_rows);
+        fprintf(stderr, "Error :The identifier %s line %d is already defined.\n", yytext, nb_rows);
         return 1;
     }
     preproc_new_identifier(yytext);
@@ -91,11 +92,10 @@ Boolean     True|False
 <MacroDefinition>[a-zA-Z][a-zA-Z0-9_]*                            { /* Encontered macro into the macro */
     retval = preproc_add_id_definition_to_current_expression(yytext);
     if( retval == 1 ){
-        fprintf(stderr, "Error : The identifier %s line %d does not exist\n", preproc_get_actual_identifier(), let_row);
+        fprintf(stderr, "Error : The identifier %s line %d does not exist\n", yytext, let_row);
         return 1;
     }
 }
-<MacroDefinition>" "[^a-zA-Z]                                       /* Delete crap space */
 <MacroDefinition>\".*\"                                           { /* Strings */
     preproc_add_to_current_expression(yytext);
 }

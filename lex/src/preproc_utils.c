@@ -63,7 +63,9 @@ enum{
     READ,
     PRINT,
     ATOM,
-    END_RES_ID
+    TRUE,
+    FALSE,
+    END_RES_ID,
 };
 
 /**
@@ -91,6 +93,8 @@ static const char* wave_reserved_id[] = {
     [REWIND] = "r",
     [READ] = "read",
     [PRINT] = "print",
+    [TRUE] = "true",
+    [FALSE] = "false",
     [ATOM] = "atom"
 };
 
