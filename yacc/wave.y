@@ -29,7 +29,7 @@ wave_phrase p;
 
 %union{
     wave_int Wave_int;
-    wave_double Wave_double;
+    wave_float Wave_float;
     wave_bool Wave_bool;
     wave_char Wave_char;
     wave_char* Wave_string;
@@ -50,11 +50,11 @@ wave_phrase p;
 %token Atom Question_mark Exclamation_mark Read Print
 
 %type <Wave_int> Integer_litteral
-%type <Wave_Double> Float_litteral
+%type <Wave_float> Float_litteral
 %type <Wave_bool> Boolean_litteral
 %type <Wave_char> Char_litteral
-%type <Wave_String> String_litteral
-%type <Wave_pointer> Program Phrase Collection_expression Collection_simple Collection_parallel Collection_sequential Value Operator Move Number Binary_operator Unary_operator Specific_operator Location
+%type <Wave_string> String_litteral
+%type <Wave_pointer> Program Phrase Collection_expression Collection_simple Collection_parallel Collection_sequential Value Operator Move Binary_operator Unary_operator Specific_operator Location
 
 %start Program
 
@@ -122,7 +122,7 @@ Collection_parallel : Collection_simple Parallel Collection_simple { $$ = $1; wa
 Collection_simple : Oparentheses Collection_expression Cparentheses { $$ = $2; }
                   | Value { $$ = wave_collection_alloc (); wave_collection_set_atom ($$, $1); }
                   | Operator { $$ = wave_collection_alloc (); wave_collection_set_atom ($$, $1); }
-                  | At Location { $$ = wave_collection_alloc (); wave_collection_set_atom ($$, wave_atom_alloc ()); wave_atom_set_path (wave_collection_get_atom ($$), $1); }
+                  | At Location { $$ = wave_collection_alloc (); wave_collection_set_atom ($$, wave_atom_alloc ()); wave_atom_set_path (wave_collection_get_atom ($$), $2); }
                   ;
 
 Value : Integer_litteral { $$ = wave_atom_alloc (); wave_atom_set_int ($$, $1); }
@@ -132,30 +132,31 @@ Value : Integer_litteral { $$ = wave_atom_alloc (); wave_atom_set_int ($$, $1); 
       | String_litteral { $$ = wave_atom_alloc (); wave_atom_set_string ($$, $1); }
       ;
 
-Location : Move Number {
+Location : Move Integer_litteral {
                 $$ = wave_path_alloc ();
                 wave_path_set_repeat_path ($$, $1);
-                if ($2 == Infinity)
-                    wave_path_set_repeat_type ($$, WAVE_PATH_REPEAT_INFINITE);
-                else
-                    wave_path_set_repeat_number ($$, $2);
+                wave_path_set_repeat_number ($$, $2);
+            }
+         | Move Infinity{
+                $$ = wave_path_alloc ();
+                wave_path_set_repeat_path ($$, $1);
+                wave_path_set_repeat_type ($$, WAVE_PATH_REPEAT_INFINITE);
             }
          | Move { $$ = $1; }
-         | Move Number Location {
+         | Move Integer_litteral Location {
                 $$ = wave_path_alloc ();
                 wave_path_set_repeat_path ($$, $1);
-                if ($2 == Infinity)
-                    wave_path_set_repeat_type ($$, WAVE_PATH_REPEAT_INFINITE);
-                else
-                    wave_path_set_repeat_number ($$, $2);
+                wave_path_set_repeat_number ($$, $2);
+                wave_path_add_path ($$, $3);
+            }
+         | Move Infinity Location {
+                $$ = wave_path_alloc ();
+                wave_path_set_repeat_path ($$, $1);
+                wave_path_set_repeat_type ($$, WAVE_PATH_REPEAT_INFINITE);
                 wave_path_add_path ($$, $3);
             }
          | Move Location { $$ = $1; wave_path_add_path ($$, $2); }
          ;
-
-Number : Infinity { $$ = Infinity; }
-      | Integer_litteral { $$ = $1; }
-      ;
 
 Move : Prec { $$ = wave_path_alloc (); wave_path_set_move ($$, WAVE_MOVE_PRE); }
      | Succ { $$ = wave_path_alloc (); wave_path_set_move ($$, WAVE_MOVE_SUC); }
