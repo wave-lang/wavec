@@ -91,6 +91,7 @@ typedef struct wave_collection
     } _inner;                                       /**<- Inner. */
     struct wave_collection * _next_collection;      /**<- Next. */
     struct wave_collection * _previous_collection;  /**<- Previous. */
+    struct wave_collection * _parent_collection;    /**<- Up. */
 } wave_collection;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -145,6 +146,16 @@ bool wave_collection_has_next (const wave_collection * c);
  * \retval false otherwise.
  */
 bool wave_collection_has_previous (const wave_collection * c);
+
+/**
+ * \brief Determine whether a collection has a parent.
+ * \param c Collection.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ * \retval true if the collection has a parent.
+ * \retval false otherwise.
+ */
+bool wave_collection_has_parent (const wave_collection * c);
 
 /**
  * \brief Get a collection's type.
@@ -244,6 +255,15 @@ wave_collection * wave_collection_get_next (const wave_collection * c);
  * \warning \c c must be not \c NULL.
  */
 wave_collection * wave_collection_get_previous (const wave_collection * c);
+
+/**
+ * \brief Get the parent collection.
+ * \param c Collection.
+ * \return Collection.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
+wave_collection * wave_collection_get_parent (const wave_collection * c);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
