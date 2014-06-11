@@ -22,8 +22,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 #include "wave_phrase.h"
+#include "wave_types.h"
 wave_phrase p;
+
 %}
+
+%union{
+    wave_int Wave_int;
+    wave_double Wave_double;
+    wave_bool Wave_bool;
+    wave_char Wave_char;
+    wave_char* Wave_string;
+    void* Wave_pointer;
+}
 
 %token Dot /* "." */
 %token Osquare_brackets Csquare_brackets Obrace_sequential Obrace_parallel Cbrace /* [ ] { {; {|| } */
@@ -37,6 +48,14 @@ wave_phrase p;
 %token Unary_plus Unary_minus Increment Decrement Square_root Sin Cos Not Log Exp Ceil Floor
 %token Plus Minus Min Max Times Divid Mod Equal Not_equal Upper_equal Lesser_equal Lesser Upper And Or Get
 %token Atom Question_mark Exclamation_mark Read Print
+
+%type <Wave_int> Integer_litteral
+%type <Wave_Double> Float_litteral
+%type <Wave_bool> Boolean_litteral
+%type <Wave_char> Char_litteral
+%type <Wave_String> String_litteral
+%type <Wave_pointer> Program Phrase Collection_expression Collection_simple Collection_parallel Collection_sequential Value Operator Move Number Binary_operator Unary_operator Specific_operator Location
+
 %start Program
 
 %%
