@@ -222,7 +222,10 @@ static inline void _wave_path_fprint_rep (FILE * stream, const wave_path * p)
 {
     fprintf (stream, "(");
     wave_path_fprint (stream, p->_complex_move._repeat._path);
-    fprintf (stream, ") %d", p->_complex_move._repeat._number);
+    if (p->_complex_move._repeat._type == WAVE_PATH_REPEAT_CONSTANT)
+        fprintf (stream, ") %d", p->_complex_move._repeat._number);
+    else
+        fprintf (stream, ") *");
 }
 
 static void (* const _wave_path_fprint_functions []) (FILE * , const wave_path *) =
