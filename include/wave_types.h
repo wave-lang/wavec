@@ -34,6 +34,7 @@
 #include <limits.h>
 #include <math.h>
 #include <sys/types.h>
+#include <stdlib.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // wave_bool
@@ -131,6 +132,14 @@ wave_int wave_int_min (wave_int a, wave_int b);
  */
 wave_int wave_int_max (wave_int a, wave_int b);
 
+/**
+ * \brief Convert a null terminated string to a wave_int.
+ * \param str A null terminated string.
+ * \return The wave_int associated.
+ * \relatesalso wave_int
+ */
+wave_int wave_int_from_string(const char* str);
+
 ////////////////////////////////////////////////////////////////////////////////
 // wave_float
 ////////////////////////////////////////////////////////////////////////////////
@@ -217,6 +226,14 @@ wave_float wave_float_min (wave_float a, wave_float b);
  * \relatesalso wave_float
  */
 wave_float wave_float_max (wave_float a, wave_float b);
+
+/**
+ * \brief Convert a null terminated string to a wave_float.
+ * \param str A null terminated string.
+ * \return The wave_float associated.
+ * \relatesalso wave_float
+ */
+wave_float wave_float_from_string(const char* str);
 
 ////////////////////////////////////////////////////////////////////////////////
 // wave_char

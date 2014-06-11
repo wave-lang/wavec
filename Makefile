@@ -37,6 +37,7 @@ vpath %.h $(PATH_INCLUDE) $(PATH_TESTS_INCLUDE)
 vpath %.c $(PATH_SRC) $(PATH_TESTS_SRC)
 vpath %.o $(PATH_OBJ)
 vpath %.a $(PATH_LIB)
+vpath main $(PATH_BIN)
 
 ################################################################################
 # Compiling
@@ -74,17 +75,15 @@ unit_tests.o: unit_tests.c wave_test_suites.h
 
 # Compiler lib
 libwavecompiler.a: wave_types.o wave_operator.o wave_path.o wave_atom.o wave_collection.o wave_phrase.o | lib_dir
-	ar -crv $(PATH_LIB)/libwavecompiler.a $(PATH_OBJ)/wave_types.o \
+	ar crvs $(PATH_LIB)/libwavecompiler.a $(PATH_OBJ)/wave_types.o \
 		$(PATH_OBJ)/wave_operator.o $(PATH_OBJ)/wave_path.o \
 		$(PATH_OBJ)/wave_atom.o $(PATH_OBJ)/wave_collection.o \
 		$(PATH_OBJ)/wave_phrase.o
-	ranlib $(PATH_LIB)/libwavecompiler.a
 
 # Unit tests lib
 libwavetests.a: test_wave_path.o test_wave_atom.o test_wave_collection.o | lib_dir
-	ar -crv $(PATH_LIB)/libwavetests.a $(PATH_OBJ)/test_wave_path.o \
+	ar crvs $(PATH_LIB)/libwavetests.a $(PATH_OBJ)/test_wave_path.o \
 		$(PATH_OBJ)/test_wave_atom.o $(PATH_OBJ)/test_wave_collection.o
-	ranlib $(PATH_LIB)/libwavetests.a
 
 test: tests
 tests: unit_tests print_tests

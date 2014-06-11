@@ -28,7 +28,7 @@ PATH_WAVE_COMPILER_INCLUDE = $(PATH_WAVE_COMPILER)/include
 ################################################################################
 FLAGS_CC_INCLUDE = -I$(PATH_YACC_INCLUDE) -I$(PATH_INCLUDE) -I$(PATH_HASH_INCLUDE) -I$(PATH_WAVE_COMPILER_INCLUDE)
 FLAGS_CC_LIB = -L$(PATH_HASH_LIB) -L$(PATH_WAVE_COMPILER_LIB)
-FLAGS_CC_LINK = $(FLAGS_CC_LIB) -lhash -lfl -ly
+FLAGS_CC_LINK = $(FLAGS_CC_LIB) -lhash -lfl -ly -lm
 FLAGS_CC_DEBUG = -g
 FLAGS_CC_WARNING = -Wall -Wextra -Wfloat-equal -Wdouble-promotion \
 	-Wswitch-default -Winit-self -Wshadow -Wbad-function-cast -Wcast-qual \

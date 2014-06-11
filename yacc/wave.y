@@ -137,7 +137,7 @@ Location : Move Integer_litteral {
                 wave_path_set_repeat_path ($$, $1);
                 wave_path_set_repeat_number ($$, $2);
             }
-         | Move Infinity{
+         | Move Times{
                 $$ = wave_path_alloc ();
                 wave_path_set_repeat_path ($$, $1);
                 wave_path_set_repeat_type ($$, WAVE_PATH_REPEAT_INFINITE);
@@ -149,7 +149,7 @@ Location : Move Integer_litteral {
                 wave_path_set_repeat_number ($$, $2);
                 wave_path_add_path ($$, $3);
             }
-         | Move Infinity Location {
+         | Move Times Location {
                 $$ = wave_path_alloc ();
                 wave_path_set_repeat_path ($$, $1);
                 wave_path_set_repeat_type ($$, WAVE_PATH_REPEAT_INFINITE);

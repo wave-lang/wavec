@@ -58,6 +58,10 @@ wave_int wave_int_max (wave_int a, wave_int b)
     return a > b ? a : b;
 }
 
+wave_int wave_int_from_string(const char* str){
+    return atoi(str);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // wave_float
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,6 +109,10 @@ wave_float wave_float_min (wave_float a, wave_float b)
 wave_float wave_float_max (wave_float a, wave_float b)
 {
     return fmaxf (a, b);
+}
+
+wave_float wave_float_from_string(const char* str){
+    return strtof(str, NULL);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

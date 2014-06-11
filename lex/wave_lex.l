@@ -30,17 +30,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+wave_int W_int;
+wave_float W_float;
 %}
 
-Integer     -[0-9]+|[0-9]+
-Float       -" "*[0-9]+","[0-9]*|-" "*[0-9]*","[0-9]+|[0-9]+","[0-9]*|[0-9]*","[0-9]+
+Integer     [-][0-9]+|[0-9]+
+Float       [0-9]+"."[0-9]+|[0-9]*"."[0-9]+
 Character   "'"."'"
 String      \".*\"
 Boolean     True|False
 
 %%
-{Integer}                               yylval.Wave_int = atoi (yytext); return Integer_litteral;
-{Float}                                 yylval.Wave_float = atof (yytext); return Float_litteral;
+{Integer}                               yylval.Wave_int = wave_int_from_string(yytext); return Integer_litteral;
+{Float}                                 yylval.Wave_float = wave_float_from_string(yytext); return Float_litteral;
 {Character}                             yylval.Wave_char = * (yytext + 1); return Char_litteral;
 {String}                                return String_litteral;
 "True"                                  yylval.Wave_bool = true; return Boolean_litteral;
@@ -92,5 +94,4 @@ get                                     return Get;
 "!"                                     return Exclamation_mark;
 read                                    return Read;
 print                                   return Print;
-[ \n\t]
 
