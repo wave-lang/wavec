@@ -50,12 +50,41 @@ Phrase : Collection_expression Dot { $$ = wave_phrase_alloc (); wave_phrase_set_
 
 Collection_expression : Collection_simple { $$ = $1; }
                       | Collection_sequential { $$ = wave_collection_alloc (); wave_collection_set_seq_list ($$, $1); }
+                      | Collection_sequential Obrace_sequential Collection_sequential Cbrace Integer_litteral {
+                            $$ = $1;
+                            wave_collection * new_collection = wave_collection_alloc ();
+                            wave_collection_set_repetition_list (new_collection, $3);
+                            wave_collection_set_repetition_times (new_collection, $5);
+                            wave_collection_add_collection ($$, new_collection);
+                            }
+                      | Collection_sequential Obrace_sequential Collection_sequential Cbrace Number_sign Location {
+                            $$ = $1;
+                            wave_collection * new_collection = wave_collection_alloc ();
+                            wave_collection_set_repetition_list (new_collection, $3);
+                            wave_collection_set_repetition_path (new_collection, $6);
+                            wave_collection_add_collection ($$, new_collection);
+                            }
                       | Collection_sequential Obrace_sequential Collection_sequential Cbrace {
                             $$ = wave_collection_alloc ();
                             wave_collection_set_cyclic_seq_list ($$, $1);
                             wave_collection_set_cyclic_seq_cycle ($$, $3);
                         }
                       | Collection_parallel { $$ = wave_collection_alloc (); wave_collection_set_par_list ($$, $1); }
+                      | Collection_parallel Obrace_parallel Collection_parallel Cbrace Integer_litteral {
+                            $$ = $1;
+                            wave_collection * new_collection = wave_collection_alloc ();
+                            wave_collection_set_repetition_list (new_collection, $3);
+                            wave_collection_set_repetition_times (new_collection, $5);
+                            wave_collection_add_collection ($$, new_collection);
+                            }
+                      | Collection_parallel Obrace_parallel Collection_parallel Cbrace Number_sign Location{
+                            $$ = $1;
+                            wave_collection * new_collection = wave_collection_alloc ();
+                            wave_collection_set_repetition_list (new_collection, $3);
+                            wave_collection_set_repetition_path (new_collection, $6);
+                            wave_collection_add_collection ($$, new_collection);
+                            }
+
                       | Collection_parallel Obrace_parallel Collection_parallel Cbrace{
                             $$ = wave_collection_alloc ();
                             wave_collection_set_cyclic_par_list ($$, $1);
@@ -63,41 +92,15 @@ Collection_expression : Collection_simple { $$ = $1; }
                         }
                       ;
 
-Collection_sequential : Collection_simple Semicolon Collection_expression { $$ = $1; wave_collection_add_collection ($1, $3); }
-                      | Collection_simple Obrace_sequential Collection_sequential Cbrace Integer_litteral {
-                            $$ = $1;
-                            wave_collection * new_collection = wave_collection_alloc ();
-                            wave_collection_set_repetition_list (new_collection, $3);
-                            wave_collection_set_repetition_times (new_collection, $5);
-                            wave_collection_add_collection ($$, new_collection);
-                            }
-                    | Collection_simple Obrace_sequential Collection_sequential Cbrace Number_sign Location {
-                            $$ = $1;
-                            wave_collection * new_collection = wave_collection_alloc ();
-                            wave_collection_set_repetition_list (new_collection, $3);
-                            wave_collection_set_repetition_path (new_collection, $6);
-                            wave_collection_add_collection ($$, new_collection);
-                            }
+Collection_sequential : Collection_simple Semicolon Collection_simple { $$  = $1; wave_collection_add_collection ($1, $3); }
+                      | Collection_simple Semicolon Collection_sequential { $$ = $1; wave_collection_add_collection ($1, $3); }
                       ;
 
-Collection_parallel : Collection_simple Parallel Collection_expression { $$ = $1; wave_collection_add_collection ($1, $3); }
-                    | Collection_simple Obrace_parallel Collection_sequential Cbrace Integer_litteral {
-                            $$ = $1;
-                            wave_collection * new_collection = wave_collection_alloc ();
-                            wave_collection_set_repetition_list (new_collection, $3);
-                            wave_collection_set_repetition_times (new_collection, $5);
-                            wave_collection_add_collection ($$, new_collection);
-                            }
-                    | Collection_simple Obrace_parallel Collection_sequential Cbrace Number_sign Location{
-                            $$ = $1;
-                            wave_collection * new_collection = wave_collection_alloc ();
-                            wave_collection_set_repetition_list (new_collection, $3);
-                            wave_collection_set_repetition_path (new_collection, $6);
-                            wave_collection_add_collection ($$, new_collection);
-                            }
+Collection_parallel : Collection_simple Parallel Collection_simple { $$ = $1; wave_collection_add_collection ($1, $3); }
+                    | Collection_simple Parallel Collection_parallel { $$ = $1; wave_collection_add_collection ($1, $3); }
                     ;
 
-Collection_simple : Oparentheses Collection_expression Cparentheses { $$ = $1; }
+Collection_simple : Oparentheses Collection_expression Cparentheses { $$ = $2; }
                   | Value { $$ = wave_collection_alloc (); wave_collection_set_atom ($$, $1); }
                   | Operator { $$ = wave_collection_alloc (); wave_collection_set_atom ($$, $1); }
                   | At Location { $$ = wave_collection_alloc (); wave_collection_set_atom ($$, wave_atom_alloc ()); wave_atom_set_path (wave_collection_get_atom ($$), $1); }
