@@ -38,6 +38,7 @@ void wave_collection_init (wave_collection * const c)
     c->_type = WAVE_COLLECTION_UNKNOWN;
     c->_next_collection = NULL;
     c->_previous_collection = NULL;
+    c->_parent_collection = NULL;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -125,6 +126,11 @@ bool wave_collection_has_previous (const wave_collection * const c)
     return c->_next_collection != NULL;
 }
 
+bool wave_collection_has_parent (const wave_collection * const c)
+{
+    return c->_parent_collection != NULL;
+}
+
 wave_collection_type wave_collection_get_type (const wave_collection * const c)
 {
     return c->_type;
@@ -180,6 +186,11 @@ wave_collection * wave_collection_get_previous (const wave_collection * const c)
     return c->_previous_collection;
 }
 
+wave_collection * wave_collection_get_parent (const wave_collection * const c)
+{
+    return c->_parent_collection;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
 ////////////////////////////////////////////////////////////////////////////////
@@ -191,6 +202,7 @@ void wave_collection_add_collection (wave_collection * const c, wave_collection 
         last = wave_collection_get_next (last);
     last->_next_collection = next;
     next->_previous_collection = last;
+    next->_parent_collection = last->_parent_collection;
 }
 
 void wave_collection_set_type (wave_collection * const c, wave_collection_type t)
@@ -204,10 +216,21 @@ void wave_collection_set_atom (wave_collection * const c, wave_atom * const a)
     c->_inner._atom = a;
 }
 
+static inline void _wave_collection_set_parent (wave_collection * const c, wave_collection * parent)
+{
+    wave_collection * current = c;
+    while (current != NULL)
+    {
+        current->_parent_collection = parent;
+        current = wave_collection_get_next (current);
+    }
+}
+
 static inline void _wave_collection_set_list (wave_collection * const c, wave_collection * list, wave_collection_type t)
 {
     wave_collection_set_type (c, t);
     c->_inner._list = list;
+    _wave_collection_set_parent (list, c);
 }
 
 void wave_collection_set_seq_list (wave_collection * c, wave_collection * list)
@@ -230,6 +253,7 @@ void wave_collection_set_repetition_list (wave_collection * const c, wave_collec
 {
     wave_collection_set_type (c, WAVE_COLLECTION_REP);
     c->_inner._repetition._list = list;
+    _wave_collection_set_parent (list, c);
 }
 
 void wave_collection_set_repetition_times (wave_collection * c, unsigned int times)
@@ -250,12 +274,14 @@ static inline void _wave_collection_set_cyclic_list (wave_collection * const c, 
 {
     wave_collection_set_type (c, t);
     c->_inner._cyclic._list = list;
+    _wave_collection_set_parent (list, c);
 }
 
 static inline void _wave_collection_set_cyclic_cycle (wave_collection * const c, wave_collection * const cycle, wave_collection_type t)
 {
     wave_collection_set_type (c, t);
     c->_inner._cyclic._cycle = cycle;
+    _wave_collection_set_parent (cycle, c);
 }
 
 void wave_collection_set_cyclic_seq_list (wave_collection * c, wave_collection * list)
