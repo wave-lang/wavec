@@ -21,11 +21,12 @@ PATH_YACC_OBJ = $(PATH_YACC)/obj
 
 PATH_WAVE_COMPILER = ..
 PATH_WAVE_COMPILER_LIB = $(PATH_WAVE_COMPILER)/lib
+PATH_WAVE_COMPILER_INCLUDE = $(PATH_WAVE_COMPILER)/include
 
 ################################################################################
 # Flags
 ################################################################################
-FLAGS_CC_INCLUDE = -I$(PATH_YACC_INCLUDE) -I$(PATH_INCLUDE) -I$(PATH_HASH_INCLUDE)
+FLAGS_CC_INCLUDE = -I$(PATH_YACC_INCLUDE) -I$(PATH_INCLUDE) -I$(PATH_HASH_INCLUDE) -I$(PATH_WAVE_COMPILER_INCLUDE)
 FLAGS_CC_LIB = -L$(PATH_HASH_LIB) -L$(PATH_WAVE_COMPILER_LIB)
 FLAGS_CC_LINK = $(FLAGS_CC_LIB) -lhash -lfl -ly
 FLAGS_CC_DEBUG = -g

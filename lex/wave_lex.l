@@ -1,8 +1,9 @@
 %top{
-#include "wave_yacc.h"
+#include "wave_types.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "wave_yacc.h"
 }
 %{
 /*
@@ -29,7 +30,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-extern int yylval;
 %}
 
 Integer     -[0-9]+|[0-9]+
@@ -39,12 +39,12 @@ String      \".*\"
 Boolean     True|False
 
 %%
-{Integer}                               yylval = atoi (yytext); return Integer_litteral;
-{Float}                                 yylval = atof (yytext); return Float_litteral;
-{Character}                             yylval = * (yytext + 1); return Char_litteral;
+{Integer}                               yylval.Wave_int = atoi (yytext); return Integer_litteral;
+{Float}                                 yylval.Wave_float = atof (yytext); return Float_litteral;
+{Character}                             yylval.Wave_char = * (yytext + 1); return Char_litteral;
 {String}                                return String_litteral;
-"True"                                  yylval = true; return Boolean_litteral;
-"False"                                 yylval = false; return Boolean_litteral;
+"True"                                  yylval.Wave_bool = true; return Boolean_litteral;
+"False"                                 yylval.Wave_bool = false; return Boolean_litteral;
 "."                                     return Dot;
 "{||"                                   return Obrace_parallel;
 "{;"                                    return Obrace_sequential;
