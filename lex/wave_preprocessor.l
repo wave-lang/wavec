@@ -42,58 +42,82 @@ Float       [0-9]+"."[0-9]*|[0-9]*"."[0-9]+
 Character   "'"."'"
 String      "\"".*"\""
 Boolean     True|False
-%x Definition Naming Be Macro Comment PREPROCESSOR
+%x Definition Naming Be MacroDefinition Comment PREPROCESSOR
 
 %%
-<Definition,Naming,Be,Macro>"\n"                        ++nb_rows;
-<PREPROCESSOR>"\n"                                      {
-    ++nb_rows;
-    fprintf(yyout, "\n");
-}
+<PREPROCESSOR,Definition,Naming,Be,MacroDefinition>"\n"                        ++nb_rows;
 <PREPROCESSOR>"Let "+                                   {
     printf("Let ligne %u\n", nb_rows);
     let_row = nb_rows;
     BEGIN(Naming);
 }
-<PREPROCESSOR>[a-zA-Z][a-zA-Z0-9_]*                     {
+<PREPROCESSOR>[a-zA-Z][a-zA-Z0-9_]*                     { /* If an identifier is encontered outside of a declaration */
     retval = preproc_check_identifier(yytext, &value);
     if(retval == 1){
-        fprintf(stderr, "The identifier %s line %d is not defined yet.\n", yytext, nb_rows);
+        fprintf(stderr, "Error : The identifier %s line %d is not defined yet.\n", yytext, nb_rows);
         return 1;
     }
     fprintf(yyout, "%s", value);
 }
-<Naming><<EOF>>                                         return preproc_err_eof(let_row);
+<Naming><<EOF>>                                         {
+    printf(stderr, "Error : Encontered end of file while waiting for a declaration. \"Let\" encontered line %d\n", let_row);
+}
 <Naming>[a-zA-Z][a-zA-Z0-9\_]*                          {
+    retval = preproc_check_identifier(yytext, &value);
+    if(retval == 0){
+        fprintf(stderr, "Error :The identifier %s line %d is already defined yet.\n", yytext, nb_rows);
+        return 1;
+    }
     preproc_new_identifier(yytext);
     printf("Name found : %s\n", yytext);
     BEGIN(Be);
 }
-<Be>[^ ]*" "be                                          return preproc_err_double_id();
+<Be>[^ \n]*" "be                                          {
+    fprintf(stderr, "Error : Found %s but expected \"be\" line %d\n", yytext, nb_rows);
+    return 1;
+}
 <Be>" "+be[ ]+                                          {
-    printf("Found the be %s\n", yytext);
-    BEGIN(Macro);
+    printf("Found the be\n");
+    BEGIN(MacroDefinition);
 }
 <Be>" "+be[\n]                                          {
     printf("Found the be\n");
     ++nb_rows;
-    BEGIN(Macro);
+    BEGIN(MacroDefinition);
 }
-<Be><<EOF>>                                             return preproc_err_eof(let_row);
-<Macro>[a-zA-Z][a-zA-Z0-9_]*                            {
-    if( preproc_test_or_add_identifier(yytext) != 0)
+<Be><<EOF>>                                             {
+    printf(stderr, "Error : Encontered end of file while waiting for a declaration. \"Let\" encontered line %d\n", let_row);
+}
+<MacroDefinition>[a-zA-Z][a-zA-Z0-9_]*                            { /* Encontered macro into the macro */
+    retval = preproc_add_id_definition_to_current_expression(yytext);
+    if( retval == 1 ){
+        fprintf(stderr, "Error : The identifier %s line %d does not exist\n", preproc_get_actual_identifier(), let_row);
         return 1;
+    }
 }
-<Macro>\".*\"                                           preproc_add_to_current_expression(yytext);
-<Macro>'.*'                                             preproc_add_to_current_expression(yytext);
-<Macro>[^.\n% a-zA-Z"']*                                 {
+<MacroDefinition>" "[^a-zA-Z]                                       /* Delete crap space */
+<MacroDefinition>\".*\"                                           { /* Strings */
     preproc_add_to_current_expression(yytext);
 }
-<Macro>"."                                              {
-    preproc_add_current_id_with_current_expression();
+<MacroDefinition>'.*'                                             { /* Character */
+    preproc_add_to_current_expression(yytext);
+}
+<MacroDefinition>[^.\n% a-zA-Z"']*                                 { /* Not identifier */
+    preproc_add_to_current_expression(yytext);
+}
+<MacroDefinition>"."                                              {
+    retval = preproc_add_current_id_with_current_expression();
+    if(retval == 1){
+        fprintf(stderr, "Error : No definition between the \"be\" and \".\" for the identifier %s.\n", preproc_get_actual_identifier());
+        return 1;
+    }
+    if( retval == 2 ){
+        fprintf(stderr, "Error : The identifier %s line %d does not exist\n", preproc_get_actual_identifier(), let_row);
+        return 1;
+    }
     BEGIN(PREPROCESSOR);
 }
-<PREPROCESSOR,Definition,Naming,Be,Macro>"%"[^\n]*      /* eat up one line comments */
+<PREPROCESSOR,Definition,Naming,Be,MacroDefinition>"%"[^\n]*      /* eat up one line comments */
 
 %%
 
