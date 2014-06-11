@@ -45,7 +45,7 @@ libwavecompiler.a:
 wave_yacc.o : wave_yacc.c
 	$(CC) $(FLAGS_CC) -c $(PATH_SRC)/wave_yacc.c -o $(PATH_OBJ)/wave_yacc.o
 
-wave_yacc.c : wave2.y
+wave_yacc.c : wave.y
 	$(YACC) -d -o wave_yacc.c $<
 	mv wave_yacc.c $(PATH_SRC)/
 	mv wave_yacc.h $(PATH_INCLUDE)/

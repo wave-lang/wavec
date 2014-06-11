@@ -32,12 +32,11 @@ SOFTWARE.
 extern int yylval;
 %}
 
-Integer     -" "*[0-9]+|[0-9]+
-Float       -" "*[0-9]+"."[0-9]*|-" "*[0-9]*"."[0-9]+|[0-9]+"."[0-9]*|[0-9]*"."[0-9]+
+Integer     -[0-9]+|[0-9]+
+Float       -" "*[0-9]+","[0-9]*|-" "*[0-9]*","[0-9]+|[0-9]+","[0-9]*|[0-9]*","[0-9]+
 Character   "'"."'"
 String      \".*\"
 Boolean     True|False
-%x Definition Naming Be Macro Comment PREPROCESSOR
 
 %%
 {Integer}                               yylval = atoi (yytext); return Integer_litteral;
@@ -93,5 +92,5 @@ get                                     return Get;
 "!"                                     return Exclamation_mark;
 read                                    return Read;
 print                                   return Print;
-%%
+[ \n\t]
 
