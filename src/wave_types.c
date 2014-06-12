@@ -2,6 +2,7 @@
  * \file wave_types.c
  * \brief Wave types.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
+ * \author SCHMITT Maxime
  * \date 2014
  * \copyright MIT License
  */
