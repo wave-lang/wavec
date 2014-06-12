@@ -30,11 +30,13 @@
 #ifndef __WAVE_TYPES_H__
 #define __WAVE_TYPES_H__
 
+#include <stdlib.h>
 #include <stdbool.h>
 #include <limits.h>
 #include <math.h>
 #include <sys/types.h>
-#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // wave_bool
@@ -89,6 +91,15 @@ wave_bool wave_bool_or (wave_bool a, wave_bool b);
  */
 wave_bool wave_bool_not (wave_bool b);
 
+/**
+ * \brief Convert a null terminated string to wave_bool.
+ * \param s String.
+ * \retval true if the string starts with true.
+ * \retval false otherwise.
+ * \relatesalso wave_bool
+ */
+wave_bool wave_bool_from_string (const char * s);
+
 ////////////////////////////////////////////////////////////////////////////////
 // wave_int
 ////////////////////////////////////////////////////////////////////////////////
@@ -138,7 +149,7 @@ wave_int wave_int_max (wave_int a, wave_int b);
  * \return The wave_int associated.
  * \relatesalso wave_int
  */
-wave_int wave_int_from_string(const char* str);
+wave_int wave_int_from_string (const char * str);
 
 ////////////////////////////////////////////////////////////////////////////////
 // wave_float
@@ -233,7 +244,7 @@ wave_float wave_float_max (wave_float a, wave_float b);
  * \return The wave_float associated.
  * \relatesalso wave_float
  */
-wave_float wave_float_from_string(const char* str);
+wave_float wave_float_from_string (const char * str);
 
 ////////////////////////////////////////////////////////////////////////////////
 // wave_char
@@ -283,5 +294,119 @@ wave_char wave_char_min (wave_char a, wave_char b);
  * \relatesalso wave_char
  */
 wave_char wave_char_max (wave_char a, wave_char b);
+
+/**
+ * \brief Get a wave_char from a code.
+ * \param code Code.
+ * \return wave_char.
+ * \relatesalso wave_char
+ * \sa wave_char_code
+ */
+wave_char wave_char_from_wave_int (wave_int code);
+
+/**
+ * \brief Get the code of a wave_char.
+ * \param c Character.
+ * \return Code.
+ * \relatesalso wave_char
+ * \sa wave_char_from_wave_int
+ */
+wave_int wave_char_code (wave_char c);
+
+////////////////////////////////////////////////////////////////////////////////
+// wave_string
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \class wave_string
+ * \brief Wave string.
+ */
+/**
+ * \brief Wave string.
+ */
+typedef wave_char * wave_string;
+
+/**
+ * \brief Const wave_string.
+ */
+typedef const wave_char * const_wave_string;
+
+/**
+ * \brief Concatenate two wave_string.
+ * \param destination Destination.
+ * \param source Source.
+ * \return pointer to the resulting string \c destination.
+ * \warning \c destination must have enough space for the result.
+ * \warning The strings may not overlap.
+ * This function mimics \c strcat from \c string.h, please read its manual for further information.
+ */
+wave_string wave_string_cat (wave_string restrict destination, const_wave_string restrict source);
+
+/**
+ * \brief Compare two wave_string.
+ * \param a First string.
+ * \param b Second string.
+ * \return a wave_int less than, equal to, or greater than \c 0 if \c a is found, respectively, to be less than, to match, or be grater than \c b.
+ * This function mimics \c strcmp from \c string.h, please read its manual for further information.
+ */
+wave_int wave_string_compare (const_wave_string a, const_wave_string b);
+
+/**
+ * \brief Copy a wave_string.
+ * \param destination Destination.
+ * \param source Source.
+ * \return pointer to the resulting string \c destination.
+ * \warning \c destination must have enough space for the result.
+ * \warning The strings may not overlap.
+ * This function mimics \c strcpy from \c string.h, please read its manual for further information.
+ */
+wave_string wave_string_copy (wave_string restrict destination, const_wave_string restrict source);
+
+/**
+ * \brief Calculate the length of a wave_string.
+ * \param s string.
+ * \return The size of the string, excluding the terminating null character.
+ * This function mimics \c strlen from \c string.h, please read its manual for further information.
+ */
+size_t wave_string_length (const_wave_string s);
+
+/**
+ * \brief Locate the first occurence of a character in a wave_string.
+ * \param s string.
+ * \param c character.
+ * \retval NULL if the character is not found.
+ * \return pointer to the matched character if found.
+ * This function mimics \c strchr from \c string.h, please read its manual for further information.
+ */
+wave_string wave_string_first_character (const_wave_string s, wave_char c);
+
+/**
+ * \brief Locate the last occurence of a character in a wave_string.
+ * \param s string.
+ * \param c character.
+ * \retval NULL if the character is not found.
+ * \return pointer to the matched character if found.
+ * This function mimics \c strrchr from \c string.h, please read its manual for further information.
+ */
+wave_string wave_string_last_character (const_wave_string s, wave_char c);
+
+/**
+ * \brief Locate a substring in a wave_string.
+ * \param haystack Haystack.
+ * \param needle Needle.
+ * \retval NULL if the substring is not found.
+ * \return pointer to the beginning of the substring if found.
+ * This function mimics \c strstr from \c string.h, please read its manual for further information.
+ */
+wave_string wave_string_sub_string (const_wave_string haystack, const_wave_string needle);
+
+/**
+ * \brief Duplicate a wave_string.
+ * \param s String.
+ * \retval NULL if the allocation of new memory failed
+ * \return pointer to the duplicate in case of success.
+ * \note The memory for the duplicate is obtained using \c malloc and thus shall be freed using \c free.
+ */
+wave_string wave_string_duplicate (const_wave_string s);
 
 #endif /* __WAVE_TYPES_H__ */

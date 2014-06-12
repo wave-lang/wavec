@@ -44,6 +44,20 @@ wave_bool wave_bool_not (wave_bool b)
     return ! b;
 }
 
+static inline void _string_to_lower (char * s)
+{
+    for (int i = 0; s[i]; ++i)
+        s[i] = tolower (s[i]);
+}
+
+wave_bool wave_bool_from_string (const char * s)
+{
+    char word[5] = { '\0' };
+    strncpy (word, s, 4);
+    _string_to_lower (word);
+    return strcmp (word, "true") == 0;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // wave_int
 ////////////////////////////////////////////////////////////////////////////////
@@ -58,8 +72,9 @@ wave_int wave_int_max (wave_int a, wave_int b)
     return a > b ? a : b;
 }
 
-wave_int wave_int_from_string(const char* str){
-    return atoi(str);
+wave_int wave_int_from_string (const char * str)
+{
+    return atoi (str);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -111,8 +126,9 @@ wave_float wave_float_max (wave_float a, wave_float b)
     return fmaxf (a, b);
 }
 
-wave_float wave_float_from_string(const char* str){
-    return strtof(str, NULL);
+wave_float wave_float_from_string (const char * str)
+{
+    return strtof (str, NULL);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -127,4 +143,62 @@ wave_char wave_char_min (wave_char a, wave_char b)
 wave_char wave_char_max (wave_char a, wave_char b)
 {
     return a > b ? a : b;
+}
+
+wave_char wave_char_from_wave_int (wave_int code)
+{
+    return code;
+}
+
+wave_int wave_char_code (wave_char c)
+{
+    return c;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// wave_string
+////////////////////////////////////////////////////////////////////////////////
+
+wave_string wave_string_cat (wave_string restrict destination, const_wave_string restrict source)
+{
+    return strcat (destination, source);
+}
+
+wave_int wave_string_compare (const_wave_string a, const_wave_string b)
+{
+    return strcmp (a, b);
+}
+
+wave_string wave_string_copy (wave_string restrict destination, const_wave_string restrict source)
+{
+    return strcpy (destination, source);
+}
+
+size_t wave_string_length (const_wave_string s)
+{
+    return strlen (s);
+}
+
+wave_string wave_string_first_character (const_wave_string s, wave_char c)
+{
+    return strchr (s, c);
+}
+
+wave_string wave_string_last_character (const_wave_string s, wave_char c)
+{
+    return strrchr (s, c);
+}
+
+wave_string wave_string_sub_string (const_wave_string haystack, const_wave_string needle)
+{
+    return strstr (haystack, needle);
+}
+
+wave_string wave_string_duplicate (const_wave_string s)
+{
+    /* strdup is not available in all C versions. */
+    size_t length = wave_string_length (s) + 1;
+    wave_string duplicate = malloc (length * sizeof * duplicate);
+    wave_string_copy (duplicate, s);
+    return duplicate;
 }
