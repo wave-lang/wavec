@@ -131,6 +131,12 @@ bool wave_collection_has_parent (const wave_collection * const c)
     return c->_parent_collection != NULL;
 }
 
+bool wave_collection_has_down (const wave_collection * const c)
+{
+    wave_collection_type collection_type = wave_collection_get_type (c);
+    return collection_type == WAVE_COLLECTION_SEQ || collection_type == WAVE_COLLECTION_PAR;
+}
+
 wave_collection_type wave_collection_get_type (const wave_collection * const c)
 {
     return c->_type;
@@ -189,6 +195,17 @@ wave_collection * wave_collection_get_previous (const wave_collection * const c)
 wave_collection * wave_collection_get_parent (const wave_collection * const c)
 {
     return c->_parent_collection;
+}
+
+wave_collection * wave_collection_get_down (const wave_collection * const c)
+{
+    wave_collection * down = NULL;
+    wave_collection_type collection_type = wave_collection_get_type (c);
+
+    if (collection_type == WAVE_COLLECTION_SEQ || collection_type == WAVE_COLLECTION_PAR)
+        down = wave_collection_get_list (c);
+
+    return down;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -302,6 +319,75 @@ void wave_collection_set_cyclic_par_list (wave_collection * c, wave_collection *
 void wave_collection_set_cyclic_par_cycle (wave_collection * c, wave_collection * cycle)
 {
     _wave_collection_set_cyclic_cycle (c, cycle, WAVE_COLLECTION_CYCLIC_PAR);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Interaction with paths.
+////////////////////////////////////////////////////////////////////////////////
+
+static inline wave_collection * _access_collection_repeat_number (wave_collection * c, const wave_path * p)
+{
+    wave_collection * m = c;
+    for (int i = 0; m != NULL && i < p->_complex_move._repeat._number; ++i)
+        m = wave_collection_access (m, p->_complex_move._repeat._path);
+
+    return m;
+}
+
+static inline wave_collection * _access_collection_repeat_infinite (wave_collection * c, const wave_path * p)
+{
+    wave_collection * m = c;
+    wave_collection * next = m;
+
+    while (next != NULL)
+    {
+        m = next;
+        next = wave_collection_access (m, p->_complex_move._repeat._path);
+    }
+
+    return m;
+}
+
+static wave_collection * _access_collection (wave_collection * c, const wave_path * p)
+{
+    wave_collection * access = NULL;
+    wave_move_type m = wave_path_get_move (p);
+    if (m == WAVE_MOVE_UP)
+        access = wave_collection_get_parent (c);
+    else if (m == WAVE_MOVE_DOWN)
+        access = wave_collection_get_down (c);
+    else if (m == WAVE_MOVE_PRE)
+        access = wave_collection_get_previous (c);
+    else if (m == WAVE_MOVE_SUC)
+        access = wave_collection_get_next (c);
+    else if (m == WAVE_MOVE_REP)
+    {
+        if (wave_path_get_repeat_type (p) == WAVE_PATH_REPEAT_CONSTANT)
+            access = _access_collection_repeat_number (c, p);
+        else
+            access = _access_collection_repeat_infinite (c, p);
+    }
+
+    return access;
+}
+
+bool wave_collection_path_is_valid (wave_collection * c, const wave_path * p)
+{
+    return wave_collection_access (c, p) != NULL;
+}
+
+wave_collection * wave_collection_access (wave_collection * c, const wave_path * p)
+{
+    const wave_path * current_move = p;
+    wave_collection * current_collection = c;
+
+    while (current_move != NULL && current_collection != NULL)
+    {
+        current_collection = _access_collection (current_collection, current_move);
+        current_move = wave_path_get_next (p);
+    }
+
+    return current_collection;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

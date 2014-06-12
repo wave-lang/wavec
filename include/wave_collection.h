@@ -158,6 +158,16 @@ bool wave_collection_has_previous (const wave_collection * c);
 bool wave_collection_has_parent (const wave_collection * c);
 
 /**
+ * \brief Determine whether a collection has an underlying collection.
+ * \param c Collection.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ * \retval true if the collection has an underlying collection.
+ * \retval false otherwise.
+ */
+bool wave_collection_has_down (const wave_collection * c);
+
+/**
  * \brief Get a collection's type.
  * \param c Collection
  * \return Collection type.
@@ -264,6 +274,15 @@ wave_collection * wave_collection_get_previous (const wave_collection * c);
  * \warning \c c must be not \c NULL.
  */
 wave_collection * wave_collection_get_parent (const wave_collection * c);
+
+/**
+ * \brief Get the down collection.
+ * \param c Collection.
+ * \return Collection.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
+wave_collection * wave_collection_get_down (const wave_collection * c);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
@@ -394,6 +413,14 @@ void wave_collection_set_cyclic_par_list (wave_collection * c, wave_collection *
  * \warning \c c must be not \c NULL.
  */
 void wave_collection_set_cyclic_par_cycle (wave_collection * c, wave_collection * cycle);
+
+////////////////////////////////////////////////////////////////////////////////
+// Interaction with paths.
+////////////////////////////////////////////////////////////////////////////////
+
+bool wave_collection_path_is_valid (wave_collection * c, const wave_path * p);
+
+wave_collection * wave_collection_access (wave_collection * c, const wave_path * p);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Printing.
