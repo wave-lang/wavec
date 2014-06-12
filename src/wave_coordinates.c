@@ -51,15 +51,69 @@ void wave_coordinates_clean (wave_coordinates * const c)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Allocation, free.
+////////////////////////////////////////////////////////////////////////////////
+
+void * wave_coordinates_alloc (void)
+{
+    wave_coordinates * c = malloc (sizeof * c);
+    if (c == NULL)
+        perror ("malloc");
+    else
+    {
+        wave_coordinates_init (c);
+        if (c->_coordinates == NULL)
+        {
+            perror ("malloc");
+            free (c);
+            c = NULL;
+        }
+    }
+
+    return c;
+}
+
+void * wave_coordinates_free (wave_coordinates * coordinates)
+{
+    if (coordinates != NULL)
+    {
+        wave_coordinates_clean (coordinates);
+        free (coordinates);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Copying.
+////////////////////////////////////////////////////////////////////////////////
+
+void wave_coordinates_copy (wave_coordinates * const destination, const wave_coordinates * const source)
+{
+    * destination = * source;
+    destination->_coordinates = malloc (destination->_list_size * sizeof * destination->_coordinates);
+    if (destination->_coordinates != NULL)
+        for (int i = 0; i < destination->_max_depth; ++i)
+            destination->_coordinates[i] = source->_coordinates[i];
+}
+
+wave_coordinates * wave_coordinates_duplicate (const wave_coordinates * const c)
+{
+    wave_coordinates * duplicate = malloc (sizeof * duplicate);
+    if (duplicate != NULL)
+        wave_coordinates_copy (duplicate, c);
+
+    return duplicate;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////
 
-int wave_coordinates_get_index_at_depth (const wave_coordinates * c, int depth)
+int wave_coordinates_get_index_at_depth (const wave_coordinates * const c, int depth)
 {
     return c->_coordinates[depth];
 }
 
-int wave_coordinates_get_max_depth (const wave_coordinates * c)
+int wave_coordinates_get_max_depth (const wave_coordinates * const c)
 {
     return c->_max_depth;
 }
@@ -67,6 +121,18 @@ int wave_coordinates_get_max_depth (const wave_coordinates * c)
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
 ////////////////////////////////////////////////////////////////////////////////
+
+static inline void _wave_coordinates_realloc_and_set_index (wave_coordinates * const c, int depth, int i)
+{
+    int new_size = ((depth / _WAVE_COORDINATES_SIZE_STEP) + 1) * _WAVE_COORDINATES_SIZE_STEP;
+    int * new_coordinates = realloc (c->_coordinates, new_size * sizeof * new_coordinates);
+    if (new_coordinates != NULL)
+    {
+        c->_coordinates = new_coordinates;
+        c->_coordinates[depth] = i;
+        c->_list_size = new_size;
+    }
+}
 
 static inline void _wave_coordinates_correct_depth (wave_coordinates * const c, int depth)
 {
@@ -79,16 +145,7 @@ void wave_coordinates_set_index_at_depth (wave_coordinates * const c, int depth,
     if (depth < c->_list_size)
         c->_coordinates[depth] = i;
     else
-    {
-        int new_size = ((depth / _WAVE_COORDINATES_SIZE_STEP) + 1) * _WAVE_COORDINATES_SIZE_STEP;
-        int * new_coordinates = realloc (c->_coordinates, new_size * sizeof * new_coordinates);
-        if (new_coordinates != NULL)
-        {
-            c->_coordinates = new_coordinates;
-            c->_coordinates[depth] = i;
-            c->_list_size = new_size;
-        }
-    }
+        _wave_coordinates_realloc_and_set_index (c, depth, i);
 
     _wave_coordinates_correct_depth (c, depth);
 }
@@ -97,14 +154,14 @@ void wave_coordinates_set_index_at_depth (wave_coordinates * const c, int depth,
 // Printing.
 ////////////////////////////////////////////////////////////////////////////////
 
-void wave_coordinates_fprint (FILE * stream, const wave_coordinates * c)
+void wave_coordinates_fprint (FILE * stream, const wave_coordinates * const c)
 {
     int max_depth = wave_coordinates_get_max_depth (c);
     for (int i = 0; i < max_depth; ++i)
         fprintf (stream, "%d ", i);
 }
 
-void wave_coordinates_print (const wave_coordinates * c)
+void wave_coordinates_print (const wave_coordinates * const c)
 {
     wave_coordinates_fprint (stdout, c);
 }
