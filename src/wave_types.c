@@ -47,7 +47,7 @@ wave_bool wave_bool_not (wave_bool b)
 static inline void _string_to_lower (char * s)
 {
     for (int i = 0; s[i]; ++i)
-        s[i] = tolower (s[i]);
+        s[i] = (wave_char) tolower (s[i]);
 }
 
 wave_bool wave_bool_from_string (const char * s)
@@ -147,7 +147,7 @@ wave_char wave_char_max (wave_char a, wave_char b)
 
 wave_char wave_char_from_wave_int (wave_int code)
 {
-    return code;
+    return (wave_char) code;
 }
 
 wave_int wave_char_code (wave_char c)
