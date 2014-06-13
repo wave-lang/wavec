@@ -1,6 +1,6 @@
 /**
  * \file wave_path.h
- * \brief Wave PATH.
+ * \brief Wave path.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
  * \date 2014
  * \copyright MIT License
