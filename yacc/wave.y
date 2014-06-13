@@ -71,24 +71,29 @@ Program : Phrase
             }
         ;
 
-Phrase : Collection Dot { $$ = wave_phrase_alloc (); wave_phrase_set_collection ($$, $1); }
+Phrase : Collection Dot
+            {
+                $$ = wave_phrase_alloc ();
+                wave_phrase_set_collection ($$, $1);
+            }
        ;
 
 Collection : Atomic_collection
                     {
-                        $$ = $1;
+                        $$ = wave_collection_alloc();
+                        wave_collection_set_seq_list($$, $1);
                     }
            | Atomic_collection Collection_rep_seq
                     {
                         $$ = wave_collection_alloc();
                         wave_collection_add_collection($1, $2);
-                        wave_set_seq_list($$, $1);
+                        wave_collection_set_seq_list($$, $1);
                     }
            | Atomic_collection Collection_rep_par
                     {
                         $$ = wave_collection_alloc();
                         wave_collection_add_collection($1, $2);
-                        wave_set_par_list($$, $1);
+                        wave_collection_set_par_list($$, $1);
                     }
            ;
 
@@ -162,17 +167,20 @@ Atomic_collection : Oparentheses Collection Cparentheses
                         }
                   | Atomic_atom
                         {
-                            $$ = $1;
+                            $$ = wave_collection_alloc();
+                            wave_collection_set_atom($$, $1);
                         }
                   | Reference
                         {
-                            $$ = $1;
+                            $$ = wave_collection_alloc();
+                            wave_collection_set_atom($$, $1);
                         }
                   ;
 
 Reference : At Path
                 {
-                    $$ = $2;
+                    $$ = wave_atom_alloc();
+                    wave_atom_set_path($$, $2);
                 }
           ;
 
