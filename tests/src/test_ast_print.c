@@ -49,7 +49,7 @@
 /**
  * \brief Collection number.
  */
-#define _COLLECTION_NUMBER 11
+#define _COLLECTION_NUMBER 10
 
 static wave_path * p[_PATH_NUMBER];
 static wave_atom * a[_ATOM_NUMBER];
@@ -118,28 +118,26 @@ static int _init_collection (void)
     wave_collection_set_type (c[4], WAVE_COLLECTION_ATOM);
     wave_collection_set_type (c[5], WAVE_COLLECTION_ATOM);
     wave_collection_set_type (c[6], WAVE_COLLECTION_ATOM);
-    wave_collection_set_type (c[7], WAVE_COLLECTION_REP);
-    wave_collection_set_type (c[8], WAVE_COLLECTION_SEQ);
+    wave_collection_set_type (c[7], WAVE_COLLECTION_REP_SEQ);
+    wave_collection_set_type (c[8], WAVE_COLLECTION_ATOM);
     wave_collection_set_type (c[9], WAVE_COLLECTION_ATOM);
-    wave_collection_set_type (c[10], WAVE_COLLECTION_ATOM);
     wave_collection_add_collection (c[1], c[2]);
     wave_collection_add_collection (c[1], c[3]);
     wave_collection_add_collection (c[4], c[5]);
     wave_collection_add_collection (c[1], c[6]);
     wave_collection_add_collection (c[1], c[7]);
-    wave_collection_add_collection (c[9], c[10]);
+    wave_collection_add_collection (c[8], c[9]);
     wave_collection_set_seq_list (c[0], c[1]);
     wave_collection_set_par_list (c[3], c[4]);
-    wave_collection_set_seq_list (c[8], c[9]);
     wave_collection_set_atom (c[1], a[0]);
     wave_collection_set_atom (c[2], a[1]);
     wave_collection_set_atom (c[4], a[2]);
     wave_collection_set_atom (c[5], a[3]);
     wave_collection_set_atom (c[6], a[4]);
-    wave_collection_set_atom (c[9], a[5]);
-    wave_collection_set_atom (c[10], a[6]);
+    wave_collection_set_atom (c[8], a[5]);
+    wave_collection_set_atom (c[9], a[6]);
     wave_collection_set_repetition_type (c[7], WAVE_COLLECTION_REPETITION_PATH);
-    wave_collection_set_repetition_list (c[7], c[8]);
+    wave_collection_set_repetition_seq_list (c[7], c[8]);
     wave_collection_set_repetition_path (c[7], p[9]);
 
     return 0;

@@ -109,7 +109,7 @@ wave_path_repeat_type wave_path_get_repeat_type (const wave_path * const p)
     return p->_complex_move._repeat._type;
 }
 
-unsigned int wave_path_get_repeat_number (const wave_path * const p)
+int wave_path_get_repeat_number (const wave_path * const p)
 {
     return p->_complex_move._repeat._number;
 }
@@ -154,7 +154,7 @@ void wave_path_set_repeat_type (wave_path * const p, wave_path_repeat_type t)
     p->_complex_move._repeat._type = t;
 }
 
-void wave_path_set_repeat_number (wave_path * const p, unsigned int n)
+void wave_path_set_repeat_number (wave_path * const p, int n)
 {
     wave_path_set_repeat_type (p, WAVE_PATH_REPEAT_CONSTANT);
     p->_complex_move._repeat._number = n;
