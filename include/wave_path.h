@@ -76,7 +76,7 @@ typedef struct wave_path
         struct
         {
             wave_path_repeat_type _type;    /**<- Repeat type. */
-            unsigned int _number;           /**<- Repeat number. */
+            int _number;                    /**<- Repeat number. */
             struct wave_path * _path;       /**<- Path to repeat. */
         } _repeat;                          /**<- Repeat. */
     } _complex_move;                        /**<- Complex move. */
@@ -173,7 +173,7 @@ wave_path_repeat_type wave_path_get_repeat_type (const wave_path * p);
  * \relatesalso wave_path
  * \warning \c must be not \c NULL.
  */
-unsigned int wave_path_get_repeat_number (const wave_path * p);
+int wave_path_get_repeat_number (const wave_path * p);
 
 /**
  * \brief Get path's repeat path.
@@ -244,7 +244,7 @@ void wave_path_set_repeat_type (wave_path * p, wave_path_repeat_type t);
  * \post wave_path_get_type() == #WAVE_MOVE_REP
  * \post wave_path_get_repeat_type() == #WAVE_PATH_REPEAT_CONSTANT
  */
-void wave_path_set_repeat_number (wave_path * p, unsigned int n);
+void wave_path_set_repeat_number (wave_path * p, int n);
 
 /**
  * \brief Set a path's repetition.

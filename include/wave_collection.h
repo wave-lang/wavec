@@ -44,7 +44,8 @@
 typedef enum wave_collection_type
 {
     WAVE_COLLECTION_ATOM = 0,       /**<- Atom. */
-    WAVE_COLLECTION_REP,            /**<- Rep. */
+    WAVE_COLLECTION_REP_SEQ,        /**<- Rep seq. */
+    WAVE_COLLECTION_REP_PAR,        /**<- Rep par. */
     WAVE_COLLECTION_SEQ,            /**<- Seq. */
     WAVE_COLLECTION_PAR,            /**<- Par. */
     WAVE_COLLECTION_CYCLIC_SEQ,     /**<- Cyclic seq. */
@@ -72,7 +73,7 @@ typedef struct wave_collection
     union
     {
         wave_atom * _atom;                          /**<- Atom. */
-        struct wave_collection * _list;             /**<- Seq or Par. */
+        struct wave_collection * _list;             /**<- Seq, Par, Cyclic { Seq, Par }. */
         struct
         {
             wave_collection_repetition_type _type;  /**<- Repetition type. */
@@ -80,14 +81,9 @@ typedef struct wave_collection
             union
             {
                 wave_path * _path;                  /**<- Repeated path. */
-                unsigned int _times;                /**<- Repetition number. */
+                int _times;                         /**<- Repetition number. */
             } _description;                         /**<- Reptition description. */
         } _repetition;                              /**<- Repetition. */
-        struct
-        {
-            struct wave_collection * _list;         /**<- Normal collection. */
-            struct wave_collection * _cycle;        /**<- Cycle collection. */
-        } _cyclic;                                  /**<- Cyclic repetition. */
     } _inner;                                       /**<- Inner. */
     struct wave_collection * _next_collection;      /**<- Next. */
     struct wave_collection * _previous_collection;  /**<- Previous. */
@@ -228,25 +224,7 @@ wave_path * wave_collection_get_repetition_path (const wave_collection * c);
  * \relatesalso wave_collection
  * \warning \c c must be not \c NULL.
  */
-unsigned int wave_collection_get_repetition_times (const wave_collection * c);
-
-/**
- * \brief Get a collection's cyclic list.
- * \param c Collection.
- * \return Collection.
- * \relatesalso wave_collection
- * \warning \c c must be not \c NULL.
- */
-wave_collection * wave_collection_get_cyclic_list (const wave_collection * c);
-
-/**
- * \brief Get a collection's cycle.
- * \param c Collection.
- * \return Collection.
- * \relatesalso wave_collection
- * \warning \c c must be not \c NULL.
- */
-wave_collection * wave_collection_get_cyclic_cycle (const wave_collection * c);
+int wave_collection_get_repetition_times (const wave_collection * c);
 
 /**
  * \brief Get the next collection.
@@ -342,7 +320,6 @@ void wave_collection_set_par_list (wave_collection * c, wave_collection * list);
  * \param[in] t Repetition type.
  * \relatesalso wave_collection
  * \warning \c c must be not \c NULL.
- * \post wave_collection_get_type() == #WAVE_COLLECTION_REP
  */
 void wave_collection_set_repetition_type (wave_collection * c, wave_collection_repetition_type t);
 
@@ -352,9 +329,19 @@ void wave_collection_set_repetition_type (wave_collection * c, wave_collection_r
  * \param[in] list List.
  * \relatesalso wave_collection
  * \warning \c c must be not \c NULL.
- * \post wave_collection_get_type() == #WAVE_COLLECTION_REP
+ * \post wave_collection_get_type() == #WAVE_COLLECTION_REP_SEQ
  */
-void wave_collection_set_repetition_list (wave_collection * c, wave_collection * list);
+void wave_collection_set_repetition_seq_list (wave_collection * c, wave_collection * list);
+
+/**
+ * \brief Set repetition list.
+ * \param[in,out] c Collection.
+ * \param[in] list List.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ * \post wave_collection_get_type() == #WAVE_COLLECTION_REP_PAR
+ */
+void wave_collection_set_repetition_par_list (wave_collection * c, wave_collection * list);
 
 /**
  * \brief Set the repetition number.
@@ -362,10 +349,9 @@ void wave_collection_set_repetition_list (wave_collection * c, wave_collection *
  * \param[in] times Times.
  * \relatesalso wave_collection
  * \warning \c c must be not \c NULL.
- * \post wave_collection_get_type() == #WAVE_COLLECTION_REP
  * \post wave_collection_get_repetition_type() == #WAVE_COLLECTION_REPETITION_CONSTANT
  */
-void wave_collection_set_repetition_times (wave_collection * c, unsigned int times);
+void wave_collection_set_repetition_times (wave_collection * c, int times);
 
 /**
  * \brief Set repetition path.
@@ -373,7 +359,6 @@ void wave_collection_set_repetition_times (wave_collection * c, unsigned int tim
  * \param[in] p Path.
  * \relatesalso wave_collection
  * \warning \c c must be not \c NULL.
- * \post wave_collection_get_type() == #WAVE_COLLECTION_REP
  * \post wave_collection_get_repetition_type() == #WAVE_COLLECTION_REPETITION_PATH
  */
 void wave_collection_set_repetition_path (wave_collection * c, wave_path * p);
@@ -388,15 +373,6 @@ void wave_collection_set_repetition_path (wave_collection * c, wave_path * p);
 void wave_collection_set_cyclic_seq_list (wave_collection * c, wave_collection * list);
 
 /**
- * \brief Set cyclic seq cycle.
- * \param[in,out] c Collection.
- * \param[in] cycle Cycle.
- * \relatesalso wave_collection
- * \warning \c c must be not \c NULL.
- */
-void wave_collection_set_cyclic_seq_cycle (wave_collection * c, wave_collection * cycle);
-
-/**
  * \brief Set cyclic par list.
  * \param[in,out] c Collection.
  * \param[in] list List.
@@ -405,21 +381,28 @@ void wave_collection_set_cyclic_seq_cycle (wave_collection * c, wave_collection 
  */
 void wave_collection_set_cyclic_par_list (wave_collection * c, wave_collection * list);
 
-/**
- * \brief Set cyclic par cycle.
- * \param[in,out] c Collection.
- * \param[in] cycle Cycle.
- * \relatesalso wave_collection
- * \warning \c c must be not \c NULL.
- */
-void wave_collection_set_cyclic_par_cycle (wave_collection * c, wave_collection * cycle);
-
 ////////////////////////////////////////////////////////////////////////////////
 // Interaction with paths.
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * \brief Determine wether a path is valid for a collection.
+ * \param c Collection.
+ * \param p Path.
+ * \retval true if the path is valid.
+ * \retval false otherwise.
+ * \relatesalso wave_collection
+ */
 bool wave_collection_path_is_valid (wave_collection * c, const wave_path * p);
 
+/**
+ * \brief Access a collection following path.
+ * \param c Collection.
+ * \param p Path.
+ * \return The seeked collection, if valid.
+ * \retval NULL if the path is not valid.
+ * \relatesalso wave_collection
+ */
 wave_collection * wave_collection_access (wave_collection * c, const wave_path * p);
 
 ////////////////////////////////////////////////////////////////////////////////

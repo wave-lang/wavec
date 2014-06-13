@@ -72,20 +72,15 @@ static inline void _wave_collection_free_list (wave_collection * c)
     wave_collection_free (c->_inner._list);
 }
 
-static inline void _wave_collection_free_cyclic (wave_collection * c)
-{
-    wave_collection_free (c->_inner._cyclic._list);
-    wave_collection_free (c->_inner._cyclic._cycle);
-}
-
 static void (* const _wave_collection_free_functions []) (wave_collection *) =
 {
     [WAVE_COLLECTION_ATOM]          = _wave_collection_free_atom,
-    [WAVE_COLLECTION_REP]           = _wave_collection_free_repetition,
+    [WAVE_COLLECTION_REP_SEQ]       = _wave_collection_free_repetition,
+    [WAVE_COLLECTION_REP_PAR]       = _wave_collection_free_repetition,
     [WAVE_COLLECTION_SEQ]           = _wave_collection_free_list,
     [WAVE_COLLECTION_PAR]           = _wave_collection_free_list,
-    [WAVE_COLLECTION_CYCLIC_PAR]    = _wave_collection_free_cyclic,
-    [WAVE_COLLECTION_CYCLIC_SEQ]    = _wave_collection_free_cyclic,
+    [WAVE_COLLECTION_CYCLIC_PAR]    = _wave_collection_free_list,
+    [WAVE_COLLECTION_CYCLIC_SEQ]    = _wave_collection_free_list,
     [WAVE_COLLECTION_UNKNOWN]       = NULL,
 };
 
@@ -167,19 +162,9 @@ wave_path * wave_collection_get_repetition_path (const wave_collection * const c
     return c->_inner._repetition._description._path;
 }
 
-unsigned int wave_collection_get_repetition_times (const wave_collection * const c)
+int wave_collection_get_repetition_times (const wave_collection * const c)
 {
     return c->_inner._repetition._description._times;
-}
-
-wave_collection * wave_collection_get_cyclic_list (const wave_collection * const c)
-{
-    return c->_inner._cyclic._list;
-}
-
-wave_collection * wave_collection_get_cyclic_cycle (const wave_collection * const c)
-{
-    return c->_inner._cyclic._cycle;
 }
 
 wave_collection * wave_collection_get_next (const wave_collection * const c)
@@ -214,12 +199,15 @@ wave_collection * wave_collection_get_down (const wave_collection * const c)
 
 void wave_collection_add_collection (wave_collection * const c, wave_collection * const next)
 {
-    wave_collection * last = c;
-    while (wave_collection_has_next (last))
-        last = wave_collection_get_next (last);
-    last->_next_collection = next;
-    next->_previous_collection = last;
-    next->_parent_collection = last->_parent_collection;
+    if (next != NULL)
+    {
+        wave_collection * last = c;
+        while (wave_collection_has_next (last))
+            last = wave_collection_get_next (last);
+        last->_next_collection = next;
+        next->_previous_collection = last;
+        next->_parent_collection = last->_parent_collection;
+    }
 }
 
 void wave_collection_set_type (wave_collection * const c, wave_collection_type t)
@@ -262,63 +250,46 @@ void wave_collection_set_par_list (wave_collection * c, wave_collection * list)
 
 void wave_collection_set_repetition_type (wave_collection * const c, wave_collection_repetition_type t)
 {
-    wave_collection_set_type (c, WAVE_COLLECTION_REP);
     c->_inner._repetition._type = t;
 }
 
-void wave_collection_set_repetition_list (wave_collection * const c, wave_collection * const list)
+static inline void wave_collection_set_repetition_list (wave_collection * const c, wave_collection * const list, wave_collection_type t)
 {
-    wave_collection_set_type (c, WAVE_COLLECTION_REP);
+    wave_collection_set_type (c, t);
     c->_inner._repetition._list = list;
     _wave_collection_set_parent (list, c);
 }
 
-void wave_collection_set_repetition_times (wave_collection * c, unsigned int times)
+void wave_collection_set_repetition_seq_list (wave_collection * const c,wave_collection * const list)
 {
-    wave_collection_set_type (c, WAVE_COLLECTION_REP);
+    wave_collection_set_repetition_list (c, list, WAVE_COLLECTION_REP_SEQ);
+}
+
+void wave_collection_set_repetition_par_list (wave_collection * const c,wave_collection * const list)
+{
+    wave_collection_set_repetition_list (c, list, WAVE_COLLECTION_REP_PAR);
+}
+
+void wave_collection_set_repetition_times (wave_collection * c, int times)
+{
     wave_collection_set_repetition_type (c, WAVE_COLLECTION_REPETITION_CONSTANT);
     c->_inner._repetition._description._times = times;
 }
 
 void wave_collection_set_repetition_path (wave_collection * const c, wave_path * const p)
 {
-    wave_collection_set_type (c, WAVE_COLLECTION_REP);
     wave_collection_set_repetition_type (c, WAVE_COLLECTION_REPETITION_PATH);
     c->_inner._repetition._description._path = p;
 }
 
-static inline void _wave_collection_set_cyclic_list (wave_collection * const c, wave_collection * const list, wave_collection_type t)
-{
-    wave_collection_set_type (c, t);
-    c->_inner._cyclic._list = list;
-    _wave_collection_set_parent (list, c);
-}
-
-static inline void _wave_collection_set_cyclic_cycle (wave_collection * const c, wave_collection * const cycle, wave_collection_type t)
-{
-    wave_collection_set_type (c, t);
-    c->_inner._cyclic._cycle = cycle;
-    _wave_collection_set_parent (cycle, c);
-}
-
 void wave_collection_set_cyclic_seq_list (wave_collection * c, wave_collection * list)
 {
-    _wave_collection_set_cyclic_list (c, list, WAVE_COLLECTION_CYCLIC_SEQ);
-}
-
-void wave_collection_set_cyclic_seq_cycle (wave_collection * c, wave_collection * cycle)
-{
-    _wave_collection_set_cyclic_cycle (c, cycle, WAVE_COLLECTION_CYCLIC_SEQ);
+    _wave_collection_set_list (c, list, WAVE_COLLECTION_CYCLIC_SEQ);
 }
 
 void wave_collection_set_cyclic_par_list (wave_collection * c, wave_collection * list)
 {
-    _wave_collection_set_cyclic_list (c, list, WAVE_COLLECTION_CYCLIC_PAR);
-}
-
-void wave_collection_set_cyclic_par_cycle (wave_collection * c, wave_collection * cycle)
-{
-    _wave_collection_set_cyclic_cycle (c, cycle, WAVE_COLLECTION_CYCLIC_PAR);
+    _wave_collection_set_list (c, list, WAVE_COLLECTION_CYCLIC_PAR);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -418,20 +389,16 @@ static void _wave_collection_fprint_par (FILE * stream, const wave_collection * 
 
 static void _wave_collection_fprint_cyclic_sep (FILE * stream, const wave_collection * c, const char * sep)
 {
-    wave_collection_fprint (stream, wave_collection_get_cyclic_list (c));
     fprintf (stream, "{%s", sep);
-    wave_collection_fprint (stream, wave_collection_get_cyclic_cycle (c));
+    _wave_collection_fprint_sep (stream, wave_collection_get_list (c), sep);
     fprintf (stream, "}");
 }
 
-static void _wave_collection_fprint_rep (FILE * stream, const wave_collection * c)
+static void _wave_collection_fprint_rep (FILE * stream, const wave_collection * c, const char * sep)
 {
     const wave_collection * const repetition = wave_collection_get_repetition_list (c);
-    if (wave_collection_get_type (repetition) == WAVE_COLLECTION_SEQ)
-        fprintf (stream, "{;");
-    else
-        fprintf (stream, "{||");
-    wave_collection_fprint (stream, repetition);
+    fprintf (stream, "{%s", sep);
+    _wave_collection_fprint_sep (stream, repetition, sep);
     fprintf (stream, "}");
     if (wave_collection_get_repetition_type (c) == WAVE_COLLECTION_REPETITION_PATH)
     {
@@ -443,6 +410,16 @@ static void _wave_collection_fprint_rep (FILE * stream, const wave_collection * 
     {
         fprintf (stream, " %d", wave_collection_get_repetition_times (c));
     }
+}
+
+static void _wave_collection_fprint_rep_seq (FILE * stream, const wave_collection * c)
+{
+    _wave_collection_fprint_rep (stream, c, ";");
+}
+
+static void _wave_collection_fprint_rep_par (FILE * stream, const wave_collection * c)
+{
+    _wave_collection_fprint_rep (stream, c, "||");
 }
 
 static void _wave_collection_fprint_cyclic_seq (FILE * stream, const wave_collection * c)
@@ -459,7 +436,8 @@ static void _wave_collection_fprint_cyclic_par (FILE * stream, const wave_collec
 static void (* const _wave_collection_fprint_functions []) (FILE *, const wave_collection *) =
 {
     [WAVE_COLLECTION_ATOM]          = _wave_collection_fprint_atom,
-    [WAVE_COLLECTION_REP]           = _wave_collection_fprint_rep,
+    [WAVE_COLLECTION_REP_SEQ]       = _wave_collection_fprint_rep_seq,
+    [WAVE_COLLECTION_REP_PAR]       = _wave_collection_fprint_rep_par,
     [WAVE_COLLECTION_SEQ]           = _wave_collection_fprint_seq,
     [WAVE_COLLECTION_PAR]           = _wave_collection_fprint_par,
     [WAVE_COLLECTION_CYCLIC_SEQ]    = _wave_collection_fprint_cyclic_seq,
