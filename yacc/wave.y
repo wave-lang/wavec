@@ -151,7 +151,7 @@ Collection_rep_par : Obrace_parallel Atomic_collection Collection_rep_par Cbrace
                             {
                                 $$ = wave_collection_alloc();
                                 wave_collection_add_collection($2, $3);
-                                wave_collection_set_cyclic_seq_list($$, $2);
+                                wave_collection_set_cyclic_par_list($$, $2);
                                 wave_collection_add_collection($$, $5);
                             }
                    | Parallel Atomic_collection Collection_rep_par { $$ = $2; wave_collection_add_collection($2, $3); }

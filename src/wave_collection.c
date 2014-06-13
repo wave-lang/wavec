@@ -463,9 +463,13 @@ void _wave_collection_fprint_sep (FILE * stream, const wave_collection * c, cons
         _fprint_current (stream, last);
         if (collection_type == WAVE_COLLECTION_SEQ || collection_type == WAVE_COLLECTION_PAR)
             fprintf (stream, ")");
-        if (wave_collection_has_next (last))
-            fprintf (stream, "%s", sep);
         last = wave_collection_get_next (last);
+        if (last != NULL){
+            collection_type = wave_collection_get_type(last);
+            if(collection_type != WAVE_COLLECTION_REP_PAR && collection_type != WAVE_COLLECTION_REP_SEQ 
+                    && collection_type != WAVE_COLLECTION_CYCLIC_SEQ && collection_type != WAVE_COLLECTION_CYCLIC_PAR)
+                fprintf (stream, "%s", sep);
+        }
     }
 }
 

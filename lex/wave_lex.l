@@ -48,8 +48,8 @@ Boolean     True|False
 "True"                                  yylval.Wave_bool = true; return Boolean_litteral;
 "False"                                 yylval.Wave_bool = false; return Boolean_litteral;
 "."                                     return Dot;
-"{||"                                   printf("WOLALA\n");return Obrace_parallel;
-"{;"                                    printf("WOLALA\n");return Obrace_sequential;
+"{||"                                   return Obrace_parallel;
+"{;"                                    return Obrace_sequential;
 "}"                                     return Cbrace;
 "@"                                     return At;
 "#"                                     return Number_sign;
