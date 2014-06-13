@@ -54,7 +54,7 @@ wave_phrase p;
 %type <Wave_bool> Boolean_litteral
 %type <Wave_char> Char_litteral
 %type <Wave_string> String_litteral
-%type <Wave_pointer> Program Phrase Collection Atomic_collection Collection_rep_seq Collection_rep_par Atomic_atom Reference Value Operator Move Binary_operator Unary_operator Specific_operator Path
+%type <Wave_pointer> Program Phrase Collection Atomic_collection Collection_rep_seq Collection_rep_par Atomic_atom Elem_par Elem_seq Reference Value Operator Move Binary_operator Unary_operator Specific_operator Path
 
 %start Program
 
@@ -97,69 +97,113 @@ Collection : Atomic_collection
                     }
            ;
 
-Collection_rep_seq : Obrace_sequential Atomic_collection Collection_rep_seq Cbrace Integer_litteral Collection_rep_seq
+Collection_rep_seq : Elem_seq
                             {
-                                $$ = wave_collection_alloc();
-                                wave_collection_add_collection($2, $3);
-                                wave_collection_set_repetition_seq_list($$, $2);
-                                wave_collection_set_repetition_times($$, $5);
-                                wave_collection_add_collection($$, $6);
+                                $$ = $1;
                             }
-                   | Obrace_sequential Atomic_collection Collection_rep_seq Cbrace Number_sign Path Collection_rep_seq
+                   | Elem_seq Collection_rep_seq
                             {
-                                $$ = wave_collection_alloc();
-                                wave_collection_add_collection($2, $3);
-                                wave_collection_set_repetition_seq_list($$, $2);
-                                wave_collection_set_repetition_path($$, $6);
-                                wave_collection_add_collection($$, $7);
-                            }
-                   | Obrace_sequential Atomic_collection Collection_rep_seq Cbrace Collection_rep_seq
-                            {
-                                $$ = wave_collection_alloc();
-                                wave_collection_add_collection($2, $3);
-                                wave_collection_set_cyclic_seq_list($$, $2);
-                                wave_collection_add_collection($$, $5);
-                            }
-                   | Semicolon Atomic_collection Collection_rep_seq
-                            {
-                                wave_collection_add_collection($2, $3);
-                                $$ = $2;
-                            }
-                   | /* Empty */
-                            {
-                                $$ = NULL;
+                                $$ = $1;
+                                wave_collection_add_collection($$, $2);
                             }
                    ;
 
-Collection_rep_par : Obrace_parallel Atomic_collection Collection_rep_par Cbrace Integer_litteral Collection_rep_par
+Elem_seq : Obrace_sequential Atomic_collection Collection_rep_seq Cbrace Integer_litteral
+                  {
+                      $$ = wave_collection_alloc();
+                      wave_collection_add_collection($2, $3);
+                      wave_collection_set_repetition_seq_list($$, $2);
+                      wave_collection_set_repetition_times($$, $5);
+                  }
+         | Obrace_sequential Atomic_collection Cbrace Integer_litteral
+                  {
+                      $$ = wave_collection_alloc();
+                      wave_collection_set_repetition_seq_list($$, $2);
+                      wave_collection_set_repetition_times($$, $4);
+                  }
+         | Obrace_sequential Atomic_collection Collection_rep_seq Cbrace Number_sign Path
+                  {
+                      $$ = wave_collection_alloc();
+                      wave_collection_add_collection($2, $3);
+                      wave_collection_set_repetition_seq_list($$, $2);
+                      wave_collection_set_repetition_path($$, $6);
+                  }
+         | Obrace_sequential Atomic_collection Cbrace Number_sign Path
+                  {
+                      $$ = wave_collection_alloc();
+                      wave_collection_set_repetition_seq_list($$, $2);
+                      wave_collection_set_repetition_path($$, $5);
+                  }
+         | Obrace_sequential Atomic_collection Collection_rep_seq Cbrace
+                  {
+                      $$ = wave_collection_alloc();
+                      wave_collection_add_collection($2, $3);
+                      wave_collection_set_cyclic_seq_list($$, $2);
+                  }
+         | Obrace_sequential Atomic_collection Cbrace
+                  {
+                      $$ = wave_collection_alloc();
+                      wave_collection_set_cyclic_seq_list($$, $2);
+                  }
+         | Semicolon Atomic_collection
+                  {
+                      $$ = $2;
+                  }
+         ;
+
+Collection_rep_par : Elem_par
                             {
-                                $$ = wave_collection_alloc();
-                                wave_collection_add_collection($2, $3);
-                                wave_collection_set_repetition_par_list($$, $2);
-                                wave_collection_set_repetition_times($$, $5);
-                                wave_collection_add_collection($$, $6);
+                                $$ = $1;
                             }
-                   | Obrace_parallel Atomic_collection Collection_rep_par Cbrace Number_sign Path Collection_rep_par
+                   | Elem_par Collection_rep_par
                             {
-                                $$ = wave_collection_alloc();
-                                wave_collection_add_collection($2, $3);
-                                wave_collection_set_repetition_par_list($$, $2);
-                                wave_collection_set_repetition_path($$, $6);
-                                wave_collection_add_collection($$, $7);
-                            }
-                   | Obrace_parallel Atomic_collection Collection_rep_par Cbrace Collection_rep_par
-                            {
-                                $$ = wave_collection_alloc();
-                                wave_collection_add_collection($2, $3);
-                                wave_collection_set_cyclic_par_list($$, $2);
-                                wave_collection_add_collection($$, $5);
-                            }
-                   | Parallel Atomic_collection Collection_rep_par { $$ = $2; wave_collection_add_collection($2, $3); }
-                   |  /* Empty */
-                            {
-                                $$ = NULL;
+                                $$ = $1;
+                                wave_collection_add_collection($$, $2);
                             }
                    ;
+
+Elem_par : Obrace_parallel Atomic_collection Collection_rep_par Cbrace Integer_litteral
+                  {
+                      $$ = wave_collection_alloc();
+                      wave_collection_add_collection($2, $3);
+                      wave_collection_set_repetition_par_list($$, $2);
+                      wave_collection_set_repetition_times($$, $5);
+                  }
+         |  Obrace_parallel Atomic_collection Cbrace Integer_litteral
+                  {
+                      $$ = wave_collection_alloc();
+                      wave_collection_set_repetition_par_list($$, $2);
+                      wave_collection_set_repetition_times($$, $4);
+                  }
+         | Obrace_parallel Atomic_collection Collection_rep_par Cbrace Number_sign Path
+                  {
+                      $$ = wave_collection_alloc();
+                      wave_collection_add_collection($2, $3);
+                      wave_collection_set_repetition_par_list($$, $2);
+                      wave_collection_set_repetition_path($$, $6);
+                  }
+         | Obrace_parallel Atomic_collection Cbrace Number_sign Path
+                  {
+                      $$ = wave_collection_alloc();
+                      wave_collection_set_repetition_par_list($$, $2);
+                      wave_collection_set_repetition_path($$, $5);
+                  }
+         | Obrace_parallel Atomic_collection Collection_rep_par Cbrace
+                  {
+                      $$ = wave_collection_alloc();
+                      wave_collection_add_collection($2, $3);
+                      wave_collection_set_cyclic_par_list($$, $2);
+                  }
+         | Obrace_parallel Atomic_collection Cbrace
+                  {
+                      $$ = wave_collection_alloc();
+                      wave_collection_set_cyclic_par_list($$, $2);
+                  }
+         | Parallel Atomic_collection
+                  {
+                      $$ = $2;
+                  }
+         ;
 
 Atomic_collection : Oparentheses Collection Cparentheses
                         {
