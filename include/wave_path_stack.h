@@ -85,6 +85,7 @@ void * wave_path_stack_free (wave_path_stack * s);
  * \param s Wave path stack.
  * \return wave_path.
  * \relatesalso wave_path_stack
+ * \warning \c s must be not \c NULL.
  */
 wave_path * wave_path_stack_pop (wave_path_stack * s);
 
@@ -93,6 +94,7 @@ wave_path * wave_path_stack_pop (wave_path_stack * s);
  * \param s Stack.
  * \param p Path.
  * \relatesalso wave_path_stack
+ * \warning \c s must be not \c NULL.
  */
 void wave_path_stack_push (wave_path_stack * s, wave_path * p);
 
@@ -105,6 +107,7 @@ void wave_path_stack_push (wave_path_stack * s, wave_path * p);
  * \param s Stack.
  * \return wave_path
  * \relatesalso wave_path_stack.
+ * \warning \c s must be not \c NULL.
  */
 wave_path * wave_path_stack_head (const wave_path_stack * s);
 
@@ -113,7 +116,18 @@ wave_path * wave_path_stack_head (const wave_path_stack * s);
  * \param s Stack.
  * \return wave_path
  * \relatesalso wave_path_stack.
+ * \warning \c s must be not \c NULL.
  */
 wave_path * wave_path_stack_tail (const wave_path_stack * s);
+
+/**
+ * \brief Determine whether the stack is empty.
+ * \param s Stack
+ * \retval true if the stack is empty.
+ * \retval false otherwise.
+ * \relatesalso wave_path_stack.
+ * \warning \c s must be not \c NULL.
+ */
+bool wave_path_stack_is_empty (const wave_path_stack * s);
 
 #endif /* __WAVE_PATH_STACK_H__ */
