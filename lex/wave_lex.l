@@ -66,6 +66,8 @@ Boolean     True|False
 "~-"                                    return Unary_minus;
 "++"                                    return Increment;
 "--"                                    return Decrement;
+"["                                     return Osquare_brackets;
+"]"                                     return Csquare_brackets;
 sqrt                                    return Square_root;
 sin                                     return Sin;
 cos                                     return Cos;
