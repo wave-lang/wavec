@@ -30,6 +30,8 @@
 #ifndef __WAVE_COLLECTION_H__
 #define __WAVE_COLLECTION_H__
 
+#include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 
 #include "wave_atom.h"
