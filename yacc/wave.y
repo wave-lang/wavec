@@ -23,7 +23,10 @@ SOFTWARE.
 */
 #include "wave_phrase.h"
 #include "wave_types.h"
-wave_phrase p;
+extern wave_phrase p;
+extern void yacc_error_print(void);
+void yacc_init(void);
+void yacc_error_print();
 
 %}
 
@@ -63,11 +66,15 @@ wave_phrase p;
 Program : Phrase
             {
                 wave_phrase_add_phrase (&p, $1);
-                wave_phrase_print (&p);
             }
-        | Phrase Program
+        | Program Phrase
             {
-                wave_phrase_add_phrase (&p, $1);
+                wave_phrase_add_phrase (&p, $2);
+            }
+        | error
+            {
+                yacc_error_print();
+                return 1;
             }
         ;
 
@@ -300,11 +307,6 @@ Path : Move
                 $$ = $1;
                 wave_path_add_path ($$, $2);
             }
-     | error
-            {
-                fprintf(stderr, "Error on Path\n");
-                return 1;
-            }
      ;
 
 Move : Prec
@@ -527,10 +529,3 @@ Specific_operator : Atom
                             wave_atom_set_operator ($$, WAVE_OP_SPECIFIC_PRINT);
                         }
                   ;
-
-%%
-int main(int argc, char ** argv)
-{
-    wave_phrase_init (&p);
-    yyparse();
-}

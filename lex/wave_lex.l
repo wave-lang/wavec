@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "wave_yacc.h"
+#include "wave_phrase.h"
 }
 %{
 /*
@@ -29,9 +30,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
 wave_int W_int;
 wave_float W_float;
+int lex_current_line = 1;
+void incline(void);
+size_t lex_nbchars = 0;
+long total_chars = 0;
+wave_phrase p;
+void yacc_error_print();
+
+#define YY_USER_ACTION incline();
 %}
 
 Integer     [-][0-9]+|[0-9]+
@@ -97,4 +105,77 @@ get                                     return Get;
 read                                    return Read;
 print                                   return Print;
 atom                                    return Atom;
+"\n"                                    ++lex_current_line; lex_nbchars = 0;
+.                                       printf("Unknown character \" %c \"\n", yytext[0]); return 0;
 
+%%
+int main(int argc, char ** argv)
+{
+    ++argv; --argc;
+    if( argc < 1 || argc > 2 ){
+        fprintf(stderr, "No input file \n");
+        return EXIT_FAILURE;
+    }
+    yyin = fopen(argv[0], "r");
+    if( yyin == NULL ){
+        perror("fopen");
+        return EXIT_FAILURE;
+    }
+    if( argc == 2 ){
+        yyout = fopen(argv[1], "w");
+        if( yyout == NULL ){
+            fclose(yyin);
+            perror("fopen");
+            return EXIT_FAILURE;
+        }
+    }
+    wave_phrase_init (&p);
+    if(yyparse() == 1){
+        //wave_phrase_free(&p);
+        return EXIT_FAILURE;
+    }
+    wave_phrase_print(&p);
+    //wave_phrase_free(&p);
+    fclose(yyin);
+    if(argc == 2)
+        fclose(yyout);
+    return EXIT_SUCCESS;
+}
+
+void incline(void){
+    lex_nbchars+=yyleng;
+    total_chars+=yyleng;
+}
+
+#define NB_CHAR_ERROR_PRINT 40
+
+void yacc_error_print(){
+    char string_buf[40];
+    memset(string_buf, 0, 40);
+    int i;
+    int error_location;
+    long where_to_go = total_chars >= 20 ? (total_chars - 20) : 0;
+    fprintf(stderr,"Error encountered line %d at character %d\n", lex_current_line, lex_nbchars);
+    fseek(yyin, where_to_go, SEEK_SET);
+    fscanf(yyin, "%40c", string_buf);
+    for(i=0; i < 40 && string_buf[i] != '\0'; i++){
+        if( string_buf[i] == '\n' ){
+            if( i == 39 || i != 39 && (string_buf[i+1] == '\0' || string_buf[i+1] == '\n'))
+                continue;
+            if(i+1 > lex_nbchars){
+                break;
+            }
+        }
+        fprintf(stderr, "%c", string_buf[i]);
+    }
+    fprintf(stderr, "\n");
+    error_location = lex_nbchars >= 20 ? 20 : lex_nbchars;
+    for(i=1; i <= lex_nbchars; i++){
+        if(i == error_location){
+            fprintf(stderr, "^");
+            break;
+        }
+        fprintf(stderr, " ");
+    }
+    fprintf(stderr, "\n");
+}
