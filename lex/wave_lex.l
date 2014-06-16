@@ -55,7 +55,7 @@ Boolean     True|False
 "#"                                     return Number_sign;
 "("                                     return Oparentheses;
 ")"                                     return Cparentheses;
-"|""|"                                  return Parallel;
+"||"                                    return Parallel;
 ";"                                     return Semicolon;
 "p"                                     return Prec;
 "s"                                     return Succ;
@@ -78,7 +78,7 @@ floor                                   return Floor;
 "-"                                     return Minus;
 min                                     return Min;
 max                                     return Max;
-"*"                                     return Times;
+"*"                                     return Star;
 "/"                                     return Divid;
 mod                                     return Mod;
 "="                                     return Equal;
@@ -94,4 +94,5 @@ get                                     return Get;
 "!"                                     return Exclamation_mark;
 read                                    return Read;
 print                                   return Print;
+atom                                    return Atom;
 
