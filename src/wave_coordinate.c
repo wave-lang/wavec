@@ -40,8 +40,8 @@ void * wave_coordinate_alloc (void)
         * c = (wave_coordinate)
         {
             ._type = WAVE_COORD_UNKNOWN,
-            ._content._plus._left = NULL,
-            ._content._plus._right = NULL,
+            ._content._binary._left = NULL,
+            ._content._binary._right = NULL,
         };
 
     return c;
@@ -51,10 +51,10 @@ void wave_coordinate_free (wave_coordinate * c)
 {
     if (c != NULL)
     {
-        if (c->_type == WAVE_COORD_PLUS)
+        if (c->_type == WAVE_COORD_PLUS || c->_type == WAVE_COORD_TIMES)
         {
-            wave_coordinate_free (c->_content._plus._left);
-            wave_coordinate_free (c->_content._plus._right);
+            wave_coordinate_free (c->_content._binary._left);
+            wave_coordinate_free (c->_content._binary._right);
         }
         else if (c->_type == WAVE_COORD_VAR)
         {
@@ -85,12 +85,12 @@ int wave_coordinate_get_constant (const wave_coordinate * c)
 
 wave_coordinate * wave_coordinate_get_left (const wave_coordinate * c)
 {
-    return c->_content._plus._left;
+    return c->_content._binary._left;
 }
 
 wave_coordinate * wave_coordinate_get_right (const wave_coordinate * c)
 {
-    return c->_content._plus._right;
+    return c->_content._binary._right;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -114,20 +114,38 @@ void wave_coordinate_set_list (wave_coordinate * c, wave_int_list * list)
     c->_content._var = list;
 }
 
-void wave_coordinate_set_left (wave_coordinate * c, wave_coordinate * left)
+void wave_coordinate_set_plus_left (wave_coordinate * c, wave_coordinate * left)
 {
     _wave_coordinate_set_type (c, WAVE_COORD_PLUS);
-    c->_content._plus._left = left;
+    c->_content._binary._left = left;
 }
 
-void wave_coordinate_set_right (wave_coordinate * c, wave_coordinate * right)
+void wave_coordinate_set_plus_right (wave_coordinate * c, wave_coordinate * right)
 {
     _wave_coordinate_set_type (c, WAVE_COORD_PLUS);
-    c->_content._plus._right = right;
+    c->_content._binary._right = right;
 }
 
-void wave_coordinate_set_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right)
+void wave_coordinate_set_times_left (wave_coordinate * c, wave_coordinate * left)
 {
-    wave_coordinate_set_left (c, left);
-    wave_coordinate_set_right (c, right);
+    _wave_coordinate_set_type (c, WAVE_COORD_TIMES);
+    c->_content._binary._left = left;
+}
+
+void wave_coordinate_set_times_right (wave_coordinate * c, wave_coordinate * right)
+{
+    _wave_coordinate_set_type (c, WAVE_COORD_TIMES);
+    c->_content._binary._right = right;
+}
+
+void wave_coordinate_set_plus_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right)
+{
+    wave_coordinate_set_plus_left (c, left);
+    wave_coordinate_set_plus_right (c, right);
+}
+
+void wave_coordinate_set_times_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right)
+{
+    wave_coordinate_set_times_left (c, left);
+    wave_coordinate_set_times_right (c, right);
 }

@@ -46,7 +46,7 @@ void wave_collection_info_free (wave_collection_info * info)
     if (info != NULL)
     {
         wave_coordinate_free (info->_coordinate);
-        wave_length_free (info->_length);
+        wave_coordinate_free (info->_length);
         free (info);
     }
 }
@@ -65,7 +65,7 @@ wave_coordinate * wave_collection_info_get_coordinate (const wave_collection_inf
     return info->_coordinate;
 }
 
-wave_length * wave_collection_info_get_length (const wave_collection_info * info)
+wave_coordinate * wave_collection_info_get_length (const wave_collection_info * info)
 {
     return info->_length;
 }
@@ -84,8 +84,7 @@ void wave_collection_info_set_coordinate (wave_collection_info * info, wave_coor
     info->_coordinate = c;
 }
 
-void wave_collection_info_set_length (wave_collection_info * info, wave_length * l)
+void wave_collection_info_set_length (wave_collection_info * info, wave_coordinate * l)
 {
     info->_length = l;
 }
-

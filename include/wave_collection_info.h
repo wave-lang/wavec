@@ -49,7 +49,7 @@ typedef struct wave_collection_info
 {
     int _index;                         /**<- Index. */
     wave_coordinate * _coordinate;      /**<- Coordinate. */
-    wave_length * _length;              /**<- Length. */
+    wave_coordinate * _length;          /**<- Length. */
 } wave_collection_info;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ wave_coordinate * wave_collection_info_get_coordinate (const wave_collection_inf
  * \return Length.
  * \relatesalso wave_collection_info
  */
-wave_length * wave_collection_info_get_length (const wave_collection_info * info);
+wave_coordinate * wave_collection_info_get_length (const wave_collection_info * info);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
@@ -124,6 +124,6 @@ void wave_collection_info_set_coordinate (wave_collection_info * info, wave_coor
  * \param l Length.
  * \relatesalso wave_collection_info
  */
-void wave_collection_info_set_length (wave_collection_info * info, wave_length * l);
+void wave_collection_info_set_length (wave_collection_info * info, wave_coordinate * l);
 
 #endif /* __WAVE_COLLECTION_INFO_H */

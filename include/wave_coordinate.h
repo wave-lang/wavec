@@ -43,6 +43,7 @@ typedef enum wave_coordinate_type
 {
     WAVE_COORD_CONSTANT,        /**<- Constant. */
     WAVE_COORD_PLUS,            /**<- Plus. */
+    WAVE_COORD_TIMES,           /**<- Times. */
     WAVE_COORD_VAR,             /**<- Var. */
     WAVE_COORD_UNKNOWN,         /**<- Unknown. */
 } wave_coordinate_type;
@@ -61,7 +62,7 @@ typedef struct wave_coordinate
         {
             struct wave_coordinate * _left;     /**<- Plus left value. */
             struct wave_coordinate * _right;    /**<- Plus right value. */
-        } _plus;                                /**<- Plus. */
+        } _binary;                                /**<- Plus. */
     } _content;                                 /**<- Content. */
 } wave_coordinate;
 
@@ -153,7 +154,7 @@ void wave_coordinate_set_list (wave_coordinate * c, wave_int_list * list);
  * \param left Left.
  * \relatesalso wave_coordinate
  */
-void wave_coordinate_set_left (wave_coordinate * c, wave_coordinate * left);
+void wave_coordinate_set_plus_left (wave_coordinate * c, wave_coordinate * left);
 
 /**
  * \brief Set a coordinate's right.
@@ -161,7 +162,23 @@ void wave_coordinate_set_left (wave_coordinate * c, wave_coordinate * left);
  * \param right Right.
  * \relatesalso wave_coordinate
  */
-void wave_coordinate_set_right (wave_coordinate * c, wave_coordinate * right);
+void wave_coordinate_set_plus_right (wave_coordinate * c, wave_coordinate * right);
+
+/**
+ * \brief Set a coordinate's left.
+ * \param c Coordinate.
+ * \param left Left.
+ * \relatesalso wave_coordinate
+ */
+void wave_coordinate_set_times_left (wave_coordinate * c, wave_coordinate * left);
+
+/**
+ * \brief Set a coordinate's right.
+ * \param c Coordinate.
+ * \param right Right.
+ * \relatesalso wave_coordinate
+ */
+void wave_coordinate_set_times_right (wave_coordinate * c, wave_coordinate * right);
 
 /**
  * \brief Set a coordinate's left and right.
@@ -170,6 +187,15 @@ void wave_coordinate_set_right (wave_coordinate * c, wave_coordinate * right);
  * \param right Right.
  * \relatesalso wave_coordinate
  */
-void wave_coordinate_set_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right);
+void wave_coordinate_set_plus_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right);
+
+/**
+ * \brief Set a coordinate's left and right.
+ * \param c Coordinate.
+ * \param left Left.
+ * \param right Right.
+ * \relatesalso wave_coordinate
+ */
+void wave_coordinate_set_times_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right);
 
 #endif /* __WAVE_COORDINATE_H__ */
