@@ -51,6 +51,16 @@ int test_wave_path_suite_init (void);
  */
 int test_wave_path_suite_clean (void);
 
+/**
+ * \brief wave_path test suite set up.
+ */
+void test_wave_path_suite_test_setup (void);
+
+/**
+ * \brief wave_path test suite tear down.
+ */
+void test_wave_path_suite_test_teardown (void);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Initialization tests.
 ////////////////////////////////////////////////////////////////////////////////

@@ -33,7 +33,6 @@
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 #include <CUnit/Console.h>
-#include <CUnit/CUCurses.h>
 
 #include "wave_test_suites.h"
 
