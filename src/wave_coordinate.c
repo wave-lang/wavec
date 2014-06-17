@@ -33,25 +33,101 @@
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
-void * wave_coordinate_alloc (void);
-void wave_coordinate_free (wave_coordinate * c);
+void * wave_coordinate_alloc (void)
+{
+    wave_coordinate * c = malloc (sizeof * c);
+    if (c != NULL)
+        * c = (wave_coordinate)
+        {
+            ._type = WAVE_COORD_UNKNOWN,
+            ._content._plus._left = NULL,
+            ._content._plus._right = NULL,
+        };
+
+    return c;
+}
+
+void wave_coordinate_free (wave_coordinate * c)
+{
+    if (c != NULL)
+    {
+        if (c->_type == WAVE_COORD_PLUS)
+        {
+            wave_coordinate_free (c->_content._plus._left);
+            wave_coordinate_free (c->_content._plus._right);
+        }
+        else if (c->_type == WAVE_COORD_VAR)
+        {
+            wave_int_list_free (c->_content._var);
+        }
+        free (c);
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////
 
-wave_coordinate_type wave_coordinate_get_type (const wave_coordinate * c);
-wave_int_list * wave_coordinate_get_list (const wave_coordinate * c);
-int wave_coordinate_get_constant (const wave_coordinate * c);
-wave_coordinate * wave_coordinate_get_left (const wave_coordinate * c);
-wave_coordinate * wave_coordinate_get_right (const wave_coordinate * c);
+wave_coordinate_type wave_coordinate_get_type (const wave_coordinate * c)
+{
+    return c->_type;
+}
+
+wave_int_list * wave_coordinate_get_list (const wave_coordinate * c)
+{
+    return c->_content._var;
+}
+
+int wave_coordinate_get_constant (const wave_coordinate * c)
+{
+    return c->_content._constant;
+}
+
+wave_coordinate * wave_coordinate_get_left (const wave_coordinate * c)
+{
+    return c->_content._plus._left;
+}
+
+wave_coordinate * wave_coordinate_get_right (const wave_coordinate * c)
+{
+    return c->_content._plus._right;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
 ////////////////////////////////////////////////////////////////////////////////
 
-void wave_coordinate_set_constant (wave_coordinate * c, int constant);
-void wave_coordinate_set_list (wave_coordinate * c, const wave_int_list * list);
-void wave_coordinate_set_left (wave_coordinate * c, wave_coordinate * left);
-void wave_coordinate_set_right (wave_coordinate * c, wave_coordinate * right);
+static inline void _wave_coordinate_set_type (wave_coordinate * c, wave_coordinate_type t)
+{
+    c->_type = t;
+}
 
+void wave_coordinate_set_constant (wave_coordinate * c, int constant)
+{
+    _wave_coordinate_set_type (c, WAVE_COORD_CONSTANT);
+    c->_content._constant = constant;
+}
+
+void wave_coordinate_set_list (wave_coordinate * c, wave_int_list * list)
+{
+    _wave_coordinate_set_type (c, WAVE_COORD_VAR);
+    c->_content._var = list;
+}
+
+void wave_coordinate_set_left (wave_coordinate * c, wave_coordinate * left)
+{
+    _wave_coordinate_set_type (c, WAVE_COORD_PLUS);
+    c->_content._plus._left = left;
+}
+
+void wave_coordinate_set_right (wave_coordinate * c, wave_coordinate * right)
+{
+    _wave_coordinate_set_type (c, WAVE_COORD_PLUS);
+    c->_content._plus._right = right;
+}
+
+void wave_coordinate_set_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right)
+{
+    wave_coordinate_set_left (c, left);
+    wave_coordinate_set_right (c, right);
+}

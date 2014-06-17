@@ -59,8 +59,8 @@ typedef struct wave_length
     union
     {
         int _constant;          /**<- Constant. */
-        wave_int_list _var;     /**<- Var. */
-    }
+        wave_int_list * _var;   /**<- Var. */
+    } _content;
 } wave_length;
 
 ////////////////////////////////////////////////////////////////////////////////

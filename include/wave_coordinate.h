@@ -56,7 +56,7 @@ typedef struct wave_coordinate
     union
     {
         int _constant;                          /**<- Constant. */
-        wave_int_list _var;                     /**<- Var. */
+        wave_int_list * _var;                   /**<- Var. */
         struct
         {
             struct wave_coordinate * _left;     /**<- Plus left value. */
@@ -145,7 +145,7 @@ void wave_coordinate_set_constant (wave_coordinate * c, int constant);
  * \param list List.
  * \relatesalso wave_coordinate
  */
-void wave_coordinate_set_list (wave_coordinate * c, const wave_int_list * list);
+void wave_coordinate_set_list (wave_coordinate * c, wave_int_list * list);
 
 /**
  * \brief Set a coordinate's left.
@@ -162,5 +162,14 @@ void wave_coordinate_set_left (wave_coordinate * c, wave_coordinate * left);
  * \relatesalso wave_coordinate
  */
 void wave_coordinate_set_right (wave_coordinate * c, wave_coordinate * right);
+
+/**
+ * \brief Set a coordinate's left and right.
+ * \param c Coordinate.
+ * \param left Left.
+ * \param right Right.
+ * \relatesalso wave_coordinate
+ */
+void wave_coordinate_set_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right);
 
 #endif /* __WAVE_COORDINATE_H__ */

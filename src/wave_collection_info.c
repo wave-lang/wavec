@@ -33,22 +33,59 @@
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
-void * wave_collection_info_alloc (void);
-void wave_collection_info_free (wave_collection_info * info);
+void * wave_collection_info_alloc (void)
+{
+    wave_collection_info * i = malloc (sizeof * i);
+    if (i != NULL)
+        * i = (wave_collection_info) { ._index = 0, ._coordinate = NULL, ._length = NULL, };
+    return i;
+}
+
+void wave_collection_info_free (wave_collection_info * info)
+{
+    if (info != NULL)
+    {
+        wave_coordinate_free (info->_coordinate);
+        wave_length_free (info->_length);
+        free (info);
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////
 
-int wave_collection_info_get_index (const wave_collection_info * info);
-wave_coordinate * wave_collection_info_get_coordinate (const wave_collection_info * info);
-wave_length * wave_collection_info_get_length (const wave_collection_info * info);
+int wave_collection_info_get_index (const wave_collection_info * info)
+{
+    return info->_index;
+}
+
+wave_coordinate * wave_collection_info_get_coordinate (const wave_collection_info * info)
+{
+    return info->_coordinate;
+}
+
+wave_length * wave_collection_info_get_length (const wave_collection_info * info)
+{
+    return info->_length;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
 ////////////////////////////////////////////////////////////////////////////////
 
-void wave_collection_info_set_index (wave_collection_info * info, int i);
-void wave_collection_info_set_coordinate (wave_collection_info * info, wave_coordinate * c);
-void wave_collection_info_set_length (wave_collection_info * info, wave_length * l);
+void wave_collection_info_set_index (wave_collection_info * info, int i)
+{
+    info->_index = i;
+}
+
+void wave_collection_info_set_coordinate (wave_collection_info * info, wave_coordinate * c)
+{
+    info->_coordinate = c;
+}
+
+void wave_collection_info_set_length (wave_collection_info * info, wave_length * l)
+{
+    info->_length = l;
+}
 

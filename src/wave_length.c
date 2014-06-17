@@ -33,21 +33,61 @@
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
-void * wave_length_alloc (void);
-void wave_length_free (wave_length * l);
+void * wave_length_alloc (void)
+{
+    wave_length * l = malloc (sizeof * l);
+    if (l != NULL)
+        * l = (wave_length) { ._type = WAVE_LENGTH_UNKNOWN, ._content._constant = 0, };
+    return l;
+}
+
+void wave_length_free (wave_length * l)
+{
+    if (l != NULL)
+    {
+        if (l->_type == WAVE_LENGTH_VAR)
+            wave_int_list_free (l->_content._var);
+        free (l);
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////
 
-wave_length_type wave_length_get_type (const wave_length * l);
-int wave_length_get_constant (const wave_length * l);
-wave_int_list * wave_length_get_list (const wave_length * l);
+wave_length_type wave_length_get_type (const wave_length * l)
+{
+    return l->_type;
+}
+
+int wave_length_get_constant (const wave_length * l)
+{
+    return l->_content._constant;
+}
+
+wave_int_list * wave_length_get_list (const wave_length * l)
+{
+    return l->_content._var;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
 ////////////////////////////////////////////////////////////////////////////////
 
-void wave_length_set_constant (wave_length * l, int c);
-void wave_length_set_list (wave_length * l, wave_int_list * list);
+static inline void _wave_length_set_type (wave_length * l, wave_length_type t)
+{
+    l->_type = t;
+}
+
+void wave_length_set_constant (wave_length * l, int c)
+{
+    _wave_length_set_type (l, WAVE_LENGTH_CONSTANT);
+    l->_content._constant = c;
+}
+
+void wave_length_set_list (wave_length * l, wave_int_list * list)
+{
+    _wave_length_set_type (l, WAVE_LENGTH_VAR);
+    l->_content._var = list;
+}
 

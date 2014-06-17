@@ -59,7 +59,11 @@ void wave_int_list_free (wave_int_list * list)
 
 wave_int_list * wave_int_list_copy (const wave_int_list * list)
 {
-    return NULL;
+    wave_int_list * l = wave_int_list_alloc ();
+    for (wave_int_list_element * current = list->_first; current != NULL; current = current->_next_element)
+        wave_int_list_push_back (l, current->_content);
+
+    return l;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -78,10 +82,8 @@ size_t wave_int_list_size (const wave_int_list * list)
 {
     size_t size = 0;
     if (list != NULL)
-    {
         for (wave_int_list_element * current = list->_first; current != NULL; current = current->_next_element)
             size++;
-    }
 
     return size;
 }
@@ -129,14 +131,13 @@ static inline void * _wave_int_list_element_alloc (int element)
 {
     wave_int_list_element * e = malloc (sizeof * e);
     if (e != NULL)
-    {
         * e = (wave_int_list_element)
         {
             ._content = element,
             ._next_element = NULL,
             ._previous_element = NULL,
         };
-    }
+
     return e;
 }
 
