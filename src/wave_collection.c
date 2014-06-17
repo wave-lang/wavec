@@ -39,6 +39,7 @@ void wave_collection_init (wave_collection * const c)
     c->_next_collection = NULL;
     c->_previous_collection = NULL;
     c->_parent_collection = NULL;
+    c->_info = wave_collection_info_alloc ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -89,6 +90,7 @@ static inline void _wave_collection_free_current (wave_collection * c)
     wave_collection_type collection_type = wave_collection_get_type (c);
     if (collection_type >= 0 && collection_type < WAVE_COLLECTION_UNKNOWN)
         _wave_collection_free_functions [collection_type] (c);
+    wave_collection_info_free (c->_info);
     free (c);
 }
 
@@ -193,6 +195,11 @@ wave_collection * wave_collection_get_down (const wave_collection * const c)
     return down;
 }
 
+wave_collection_info * wave_collection_get_info (const wave_collection * c)
+{
+    return c->_info;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
 ////////////////////////////////////////////////////////////////////////////////
@@ -290,6 +297,34 @@ void wave_collection_set_cyclic_seq_list (wave_collection * c, wave_collection *
 void wave_collection_set_cyclic_par_list (wave_collection * c, wave_collection * list)
 {
     _wave_collection_set_list (c, list, WAVE_COLLECTION_CYCLIC_PAR);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Info generation.
+////////////////////////////////////////////////////////////////////////////////
+
+void wave_collection_compute_indexes (wave_collection * c)
+{
+    int current_index = 0;
+    for (wave_collection * current = c; current != NULL; current = wave_collection_get_next (current))
+    {
+        wave_collection_info * info = wave_collection_get_info (current);
+        wave_collection_info_set_index (info, current_index);
+        current_index++;
+
+        wave_collection_type t = wave_collection_get_type (current);
+        if (t == WAVE_COLLECTION_PAR || t == WAVE_COLLECTION_SEQ
+            || t == WAVE_COLLECTION_CYCLIC_SEQ || t == WAVE_COLLECTION_CYCLIC_PAR)
+        {
+            wave_collection * list = wave_collection_get_list (current);
+            wave_collection_compute_indexes (list);
+        }
+        else if (t == WAVE_COLLECTION_REP_SEQ || t == WAVE_COLLECTION_REP_PAR)
+        {
+            wave_collection * list = wave_collection_get_repetition_list (current);
+            wave_collection_compute_indexes (list);
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -466,7 +501,7 @@ void _wave_collection_fprint_sep (FILE * stream, const wave_collection * c, cons
         last = wave_collection_get_next (last);
         if (last != NULL){
             collection_type = wave_collection_get_type(last);
-            if(collection_type != WAVE_COLLECTION_REP_PAR && collection_type != WAVE_COLLECTION_REP_SEQ 
+            if(collection_type != WAVE_COLLECTION_REP_PAR && collection_type != WAVE_COLLECTION_REP_SEQ
                     && collection_type != WAVE_COLLECTION_CYCLIC_SEQ && collection_type != WAVE_COLLECTION_CYCLIC_PAR)
                 fprintf (stream, "%s", sep);
         }
@@ -483,4 +518,3 @@ void wave_collection_print (const wave_collection * c)
 {
     wave_collection_fprint (stdout, c);
 }
-

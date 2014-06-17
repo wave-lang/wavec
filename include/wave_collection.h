@@ -35,6 +35,7 @@
 #include <stdbool.h>
 
 #include "wave_atom.h"
+#include "wave_collection_info.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.
@@ -90,6 +91,7 @@ typedef struct wave_collection
     struct wave_collection * _next_collection;      /**<- Next. */
     struct wave_collection * _previous_collection;  /**<- Previous. */
     struct wave_collection * _parent_collection;    /**<- Up. */
+    struct wave_collection_info * _info;            /**<- Info. */
 } wave_collection;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -264,6 +266,15 @@ wave_collection * wave_collection_get_parent (const wave_collection * c);
  */
 wave_collection * wave_collection_get_down (const wave_collection * c);
 
+/**
+ * \brief Get the collection info.
+ * \param c Collection.
+ * \return Info.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
+wave_collection_info * wave_collection_get_info (const wave_collection * c);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
 ////////////////////////////////////////////////////////////////////////////////
@@ -382,6 +393,18 @@ void wave_collection_set_cyclic_seq_list (wave_collection * c, wave_collection *
  * \warning \c c must be not \c NULL.
  */
 void wave_collection_set_cyclic_par_list (wave_collection * c, wave_collection * list);
+
+////////////////////////////////////////////////////////////////////////////////
+// Info generation.
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \brief Compute a collection
+ * \param c Collection.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
+void wave_collection_compute_indexes (wave_collection * c);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Interaction with paths.
