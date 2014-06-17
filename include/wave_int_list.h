@@ -120,16 +120,18 @@ bool wave_int_list_is_empty (const wave_int_list * list);
 /**
  * \brief Pop back.
  * \param list List
+ * \return Back element.
  * \relatesalso wave_int_list
  */
-void wave_int_list_pop_back (wave_int_list * list);
+int wave_int_list_pop_back (wave_int_list * list);
 
 /**
  * \brief Pop front.
  * \param list List
+ * \return Front element.
  * \relatesalso wave_int_list
  */
-void wave_int_list_pop_front (wave_int_list * list);
+int wave_int_list_pop_front (wave_int_list * list);
 
 /**
  * \brief Push back.
