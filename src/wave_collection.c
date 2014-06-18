@@ -553,9 +553,8 @@ static void _wave_collection_fprint_rep (FILE * stream, const wave_collection * 
     fprintf (stream, "}");
     if (wave_collection_get_repetition_type (c) == WAVE_COLLECTION_REPETITION_PATH)
     {
-        fprintf (stream, "#[");
+        fprintf (stream, "#");
         wave_path_fprint (stream, wave_collection_get_repetition_path (c));
-        fprintf (stream, "]");
     }
     else
     {
