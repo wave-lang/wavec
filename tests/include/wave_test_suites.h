@@ -126,9 +126,9 @@ static CU_TestInfo test_wave_collection_info [] =
  */
 static CU_SuiteInfo wave_test_suites [] =
 {
-    { "Test wave_path", test_wave_path_suite_init, test_wave_path_suite_clean, test_wave_path_info },
-    { "Test wave_atom", test_wave_atom_suite_init, test_wave_atom_suite_clean, test_wave_atom_info },
-    { "Test wave_collection", test_wave_collection_suite_init, test_wave_collection_suite_clean, test_wave_collection_info },
+    { "Test wave_path", test_wave_path_suite_init, test_wave_path_suite_clean, test_wave_path_suite_test_setup, test_wave_path_suite_test_teardown, test_wave_path_info },
+    { "Test wave_atom", test_wave_atom_suite_init, test_wave_atom_suite_clean, NULL, NULL, test_wave_atom_info },
+    { "Test wave_collection", test_wave_collection_suite_init, test_wave_collection_suite_clean, NULL, NULL, test_wave_collection_info },
     CU_SUITE_INFO_NULL,
 };
 

@@ -87,28 +87,33 @@ wave_path * wave_path_stack_pop (wave_path_stack * s)
 {
     wave_path * p = s->_head->_path;
     s->_head = s->_head->_next;
+    return p;
 }
 
 void wave_path_stack_push (wave_path_stack * s, wave_path * p)
 {
     wave_path_stack_element * e = wave_path_stack_element_alloc ();
-    s->_tail->next = e;
-    s->_tail = e;
     e->_path = p;
+    s->_tail->_next = e;
+    s->_tail = e;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Getters
 ////////////////////////////////////////////////////////////////////////////////
 
-wave_path * wave_path_stack_head (const wave_path_stack * s)
+wave_path * wave_path_stack_head (const wave_path_stack * const s)
 {
     return s->_head == NULL ? NULL : s->_head->_path;
 }
 
-wave_path * wave_path_stack_tail (const wave_path_stack * s)
+wave_path * wave_path_stack_tail (const wave_path_stack * const s)
 {
     return s->_tail == NULL ? NULL : s->_tail->_path;
 }
 
+bool wave_path_stack_is_empty (const wave_path_stack * const s)
+{
+    return s->head == NULL;
+}
 

@@ -39,6 +39,7 @@ void wave_collection_init (wave_collection * const c)
     c->_next_collection = NULL;
     c->_previous_collection = NULL;
     c->_parent_collection = NULL;
+    c->_info = wave_collection_info_alloc ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -89,6 +90,7 @@ static inline void _wave_collection_free_current (wave_collection * c)
     wave_collection_type collection_type = wave_collection_get_type (c);
     if (collection_type >= 0 && collection_type < WAVE_COLLECTION_UNKNOWN)
         _wave_collection_free_functions [collection_type] (c);
+    wave_collection_info_free (c->_info);
     free (c);
 }
 
@@ -118,7 +120,7 @@ bool wave_collection_has_next (const wave_collection * const c)
 
 bool wave_collection_has_previous (const wave_collection * const c)
 {
-    return c->_next_collection != NULL;
+    return c->_previous_collection != NULL;
 }
 
 bool wave_collection_has_parent (const wave_collection * const c)
@@ -191,6 +193,29 @@ wave_collection * wave_collection_get_down (const wave_collection * const c)
         down = wave_collection_get_list (c);
 
     return down;
+}
+
+wave_collection_info * wave_collection_get_info (const wave_collection * c)
+{
+    return c->_info;
+}
+
+int wave_collection_get_index (const wave_collection * c)
+{
+    wave_collection_info * info = wave_collection_get_info (c);
+    return wave_collection_info_get_index (info);
+}
+
+wave_coordinate * wave_collection_get_coordinate (const wave_collection * c)
+{
+    wave_collection_info * info = wave_collection_get_info (c);
+    return wave_collection_info_get_coordinate (info);
+}
+
+wave_coordinate * wave_collection_get_length (const wave_collection * c)
+{
+    wave_collection_info * info = wave_collection_get_info (c);
+    return wave_collection_info_get_length (info);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -290,6 +315,132 @@ void wave_collection_set_cyclic_seq_list (wave_collection * c, wave_collection *
 void wave_collection_set_cyclic_par_list (wave_collection * c, wave_collection * list)
 {
     _wave_collection_set_list (c, list, WAVE_COLLECTION_CYCLIC_PAR);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Info generation.
+////////////////////////////////////////////////////////////////////////////////
+
+void wave_collection_compute_indexes (wave_collection * c)
+{
+    int current_index = 0;
+    for (wave_collection * current = c; current != NULL; current = wave_collection_get_next (current))
+    {
+        wave_collection_info * info = wave_collection_get_info (current);
+        wave_collection_info_set_index (info, current_index);
+        current_index++;
+
+        wave_collection_type t = wave_collection_get_type (current);
+        if (t == WAVE_COLLECTION_PAR || t == WAVE_COLLECTION_SEQ
+            || t == WAVE_COLLECTION_CYCLIC_SEQ || t == WAVE_COLLECTION_CYCLIC_PAR)
+        {
+            wave_collection * list = wave_collection_get_list (current);
+            wave_collection_compute_indexes (list);
+        }
+        else if (t == WAVE_COLLECTION_REP_SEQ || t == WAVE_COLLECTION_REP_PAR)
+        {
+            wave_collection * list = wave_collection_get_repetition_list (current);
+            wave_collection_compute_indexes (list);
+        }
+    }
+}
+
+static inline wave_int_list * _wave_collection_create_var (wave_collection * c)
+{
+    wave_int_list * list = wave_int_list_alloc ();
+    for (wave_collection * current = c; current != NULL; current = wave_collection_get_parent (current))
+    {
+        wave_collection_info * info = wave_collection_get_info (c);
+        wave_int_list_push_front (list, wave_collection_info_get_index (info));
+    }
+
+    return list;
+}
+
+static inline wave_coordinate * _wave_collection_sum_list_lengths (wave_collection * c)
+{
+    wave_coordinate * sum = wave_coordinate_copy (wave_collection_get_length (c));
+    for (wave_collection * current = wave_collection_get_next (c); current != NULL; current = wave_collection_get_next (current))
+    {
+        wave_coordinate * new_sum = wave_coordinate_alloc ();
+        wave_coordinate * right = wave_coordinate_copy (wave_collection_get_length (current));
+        wave_coordinate_set_plus_left_and_right (new_sum, sum, right);
+        sum = new_sum;
+    }
+    return sum;
+}
+
+static inline void  _wave_collection_set_length (wave_collection * c)
+{
+    wave_collection_type t = wave_collection_get_type (c);
+    wave_collection_info * info = wave_collection_get_info (c);
+    wave_coordinate * length = wave_coordinate_alloc ();
+    if (t == WAVE_COLLECTION_ATOM || t == WAVE_COLLECTION_SEQ || t == WAVE_COLLECTION_PAR)
+    {
+        wave_coordinate_set_constant (length, 1);
+    }
+    else if (t == WAVE_COLLECTION_REP_SEQ || t == WAVE_COLLECTION_REP_PAR)
+    {
+        wave_collection_repetition_type rt = wave_collection_get_repetition_type (c);
+        wave_collection * list = wave_collection_get_repetition_list (c);
+        wave_coordinate * length_sum = _wave_collection_sum_list_lengths (list);
+        wave_coordinate * repetition = wave_coordinate_alloc ();
+
+        if (rt == WAVE_COLLECTION_REPETITION_CONSTANT)
+        {
+            int repetition_number = wave_collection_get_repetition_times (c);
+            wave_coordinate_set_constant (repetition, repetition_number);
+        }
+        else
+        {
+            wave_int_list * var_length = _wave_collection_create_var (c);
+            wave_coordinate_set_list (repetition, var_length);
+        }
+        wave_coordinate_set_times_left_and_right (length, repetition, length_sum);
+    }
+    wave_collection_info_set_length (info, length);
+}
+
+static inline void _wave_collection_set_coords (wave_collection * c)
+{
+    wave_coordinate * coord = wave_coordinate_alloc ();
+    if (wave_collection_has_previous (c))
+    {
+        wave_collection * previous = wave_collection_get_previous (c);
+        wave_coordinate * previous_coord = wave_coordinate_copy (wave_collection_get_coordinate (previous));
+        wave_coordinate * previous_length = wave_coordinate_copy (wave_collection_get_length (previous));
+        wave_coordinate_set_plus_left_and_right (coord, previous_coord, previous_length);
+    }
+    else
+    {
+        wave_coordinate_set_constant (coord, 0);
+    }
+    wave_collection_info * info = wave_collection_get_info (c);
+    wave_collection_info_set_coordinate (info, coord);
+}
+
+static inline void _wave_collection_compute_current (wave_collection * c)
+{
+    wave_collection_type t = wave_collection_get_type (c);
+    wave_collection * list = NULL;
+
+    if (t == WAVE_COLLECTION_SEQ || t == WAVE_COLLECTION_PAR
+        || t == WAVE_COLLECTION_CYCLIC_SEQ || t == WAVE_COLLECTION_CYCLIC_PAR)
+        list = wave_collection_get_list (c);
+    else if (t == WAVE_COLLECTION_REP_SEQ || t == WAVE_COLLECTION_REP_PAR)
+        list = wave_collection_get_repetition_list (c);
+
+    if (list != NULL)
+        wave_collection_compute_length_and_coords (list);
+
+    _wave_collection_set_length (c);
+    _wave_collection_set_coords (c);
+}
+
+void wave_collection_compute_length_and_coords (wave_collection * c)
+{
+    for (wave_collection * current = c; current != NULL; current = wave_collection_get_next (current))
+        _wave_collection_compute_current (current);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -465,7 +616,7 @@ void _wave_collection_fprint_sep (FILE * stream, const wave_collection * c, cons
         last = wave_collection_get_next (last);
         if (last != NULL){
             collection_type = wave_collection_get_type(last);
-            if(collection_type != WAVE_COLLECTION_REP_PAR && collection_type != WAVE_COLLECTION_REP_SEQ 
+            if(collection_type != WAVE_COLLECTION_REP_PAR && collection_type != WAVE_COLLECTION_REP_SEQ
                     && collection_type != WAVE_COLLECTION_CYCLIC_SEQ && collection_type != WAVE_COLLECTION_CYCLIC_PAR)
                 fprintf (stream, "%s", sep);
         }
@@ -482,4 +633,3 @@ void wave_collection_print (const wave_collection * c)
 {
     wave_collection_fprint (stdout, c);
 }
-
