@@ -194,6 +194,8 @@ static void _print_atoms (void)
 
 static void _print_collections (void)
 {
+    wave_collection_compute_indexes (c[0]);
+    wave_collection_compute_length_and_coords (c[0]);
     wave_collection_print (c[0]);
     printf ("\n");
 }

@@ -275,6 +275,12 @@ wave_collection * wave_collection_get_down (const wave_collection * c);
  */
 wave_collection_info * wave_collection_get_info (const wave_collection * c);
 
+int wave_collection_get_index (const wave_collection * c);
+
+wave_coordinate * wave_collection_get_coordinate (const wave_collection * c);
+
+wave_coordinate * wave_collection_get_length (const wave_collection * c);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
 ////////////////////////////////////////////////////////////////////////////////
@@ -399,12 +405,20 @@ void wave_collection_set_cyclic_par_list (wave_collection * c, wave_collection *
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Compute a collection
+ * \brief Compute the indexes.
  * \param c Collection.
  * \relatesalso wave_collection
  * \warning \c c must be not \c NULL.
  */
 void wave_collection_compute_indexes (wave_collection * c);
+
+/**
+ * \brief Compute lengths and coordinates.
+ * \param c Collection.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
+void wave_collection_compute_length_and_coords (wave_collection * c);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Interaction with paths.
