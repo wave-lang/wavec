@@ -198,6 +198,15 @@ static void _print_collections (void)
     wave_collection_compute_length_and_coords (c[0]);
     wave_collection_print (c[0]);
     printf ("\n");
+    //wave_collection_print_infos (c[0]);
+    printf ("\n");
+    for (int i = 0; i < _COLLECTION_NUMBER; ++i)
+    {
+        printf ("%d: ", i);
+        wave_collection_info_print (wave_collection_get_info (c[i]));
+        printf ("\n");
+    }
+    printf ("\n");
 }
 
 /**
