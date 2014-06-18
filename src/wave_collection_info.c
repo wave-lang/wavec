@@ -88,3 +88,20 @@ void wave_collection_info_set_length (wave_collection_info * info, wave_coordina
 {
     info->_length = l;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Printing.
+////////////////////////////////////////////////////////////////////////////////
+
+void wave_collection_info_fprint (FILE * stream, const wave_collection_info * i)
+{
+    fprintf (stream, "index: %d, coord: ", i->_index);
+    wave_coordinate_fprint (stream, i->_coordinate);
+    fprintf (stream, ", length: ");
+    wave_coordinate_fprint (stream, i->_length);
+}
+
+void wave_collection_info_print (const wave_collection_info * i)
+{
+    wave_collection_info_fprint (stdout, i);
+}

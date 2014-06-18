@@ -36,7 +36,6 @@
 
 #include "wave_int_list.h"
 #include "wave_coordinate.h"
-#include "wave_length.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.
@@ -125,5 +124,22 @@ void wave_collection_info_set_coordinate (wave_collection_info * info, wave_coor
  * \relatesalso wave_collection_info
  */
 void wave_collection_info_set_length (wave_collection_info * info, wave_coordinate * l);
+
+////////////////////////////////////////////////////////////////////////////////
+// Printing.
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \brief Print wave_collection_info to a stream.
+ * \param stream Stream.
+ * \param i Info.
+ */
+void wave_collection_info_fprint (FILE * stream, const wave_collection_info * i);
+
+/**
+ * \brief Print wave_collection_info.
+ * \param i Info.
+ */
+void wave_collection_info_print (const wave_collection_info * i);
 
 #endif /* __WAVE_COLLECTION_INFO_H */

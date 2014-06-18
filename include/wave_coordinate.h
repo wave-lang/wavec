@@ -30,6 +30,9 @@
 #ifndef __WAVE_COORDINATE_H__
 #define __WAVE_COORDINATE_H__
 
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "wave_int_list.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -83,6 +86,13 @@ void * wave_coordinate_alloc (void);
  * \relatesalso wave_coordinate
  */
 void wave_coordinate_free (wave_coordinate * c);
+
+/**
+ * \brief Copy a wave_coordinate.
+ * \param c Coordinate
+ * \relatesalso wave_coordinate
+ */
+void * wave_coordinate_copy (const wave_coordinate * c);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Getters.
@@ -197,5 +207,22 @@ void wave_coordinate_set_plus_left_and_right (wave_coordinate * c, wave_coordina
  * \relatesalso wave_coordinate
  */
 void wave_coordinate_set_times_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right);
+
+////////////////////////////////////////////////////////////////////////////////
+// Printing.
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \brief Print wave_coordinate to a stream.
+ * \param stream Stream.
+ * \param c Coordinate.
+ */
+void wave_coordinate_fprint (FILE * stream, const wave_coordinate * c);
+
+/**
+ * \brief Print wave_coordinate.
+ * \param c Coordinate.
+ */
+void wave_coordinate_print (const wave_coordinate * c);
 
 #endif /* __WAVE_COORDINATE_H__ */

@@ -64,6 +64,22 @@ void wave_coordinate_free (wave_coordinate * c)
     }
 }
 
+void * wave_coordinate_copy (const wave_coordinate * c)
+{
+    wave_coordinate * copy = wave_coordinate_alloc ();
+    * copy = * c;
+    if (c->_type == WAVE_COORD_PLUS || c->_type == WAVE_COORD_TIMES)
+    {
+        copy->_content._binary._left = wave_coordinate_copy (c->_content._binary._left);
+        copy->_content._binary._right = wave_coordinate_copy (c->_content._binary._right);
+    }
+    else if (c->_type == WAVE_COORD_VAR)
+    {
+        copy->_content._var = wave_int_list_copy (c->_content._var);
+    }
+
+    return copy;
+}
 ////////////////////////////////////////////////////////////////////////////////
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////
@@ -148,4 +164,40 @@ void wave_coordinate_set_times_left_and_right (wave_coordinate * c, wave_coordin
 {
     wave_coordinate_set_times_left (c, left);
     wave_coordinate_set_times_right (c, right);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Printing.
+////////////////////////////////////////////////////////////////////////////////
+
+static inline void _wave_coordinate_var_fprint (FILE * stream, const wave_int_list * list)
+{
+    for (wave_int_list_element * e = list->_first; e != NULL; e = e->_next_element)
+        fprintf (stream, "%d", e->_content);
+}
+
+void wave_coordinate_fprint (FILE * stream, const wave_coordinate * c)
+{
+    wave_coordinate_type t = wave_coordinate_get_type (c);
+    if (t == WAVE_COORD_CONSTANT)
+        fprintf (stream, "%d", wave_coordinate_get_constant (c));
+    else if (t == WAVE_COORD_VAR)
+    {
+        fprintf (stream, "x");
+        _wave_coordinate_var_fprint (stream, wave_coordinate_get_list (c));
+    }
+    else
+    {
+        char op = '+';
+        if (t == WAVE_COORD_TIMES)
+            op = '*';
+        wave_coordinate_fprint (stream, wave_coordinate_get_left (c));
+        fprintf (stream, " %c ", op);
+        wave_coordinate_fprint (stream, wave_coordinate_get_right (c));
+    }
+}
+
+void wave_coordinate_print (const wave_coordinate * c)
+{
+    wave_coordinate_fprint (stdout, c);
 }
