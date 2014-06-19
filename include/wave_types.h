@@ -220,8 +220,8 @@ wave_bool wave_int_lesser (wave_int a, wave_int b);
 
 wave_float wave_float_from_wave_int (wave_int i);
 
-wave_float wave_float_unary_plus (wave_float a, wave_float b);
-wave_float wave_float_unary_minus (wave_float a, wave_float b);
+wave_float wave_float_unary_plus (wave_float a);
+wave_float wave_float_unary_minus (wave_float a);
 wave_float wave_float_increment (wave_float a);
 wave_float wave_float_decrement (wave_float a);
 
