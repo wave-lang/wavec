@@ -350,7 +350,7 @@ static inline wave_int_list * _wave_collection_create_var (wave_collection * c)
     wave_int_list * list = wave_int_list_alloc ();
     for (wave_collection * current = c; current != NULL; current = wave_collection_get_parent (current))
     {
-        wave_collection_info * info = wave_collection_get_info (c);
+        wave_collection_info * info = wave_collection_get_info (current);
         wave_int_list_push_front (list, wave_collection_info_get_index (info));
     }
 
