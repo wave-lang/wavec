@@ -194,12 +194,12 @@ static void (* _wave_code_generation_atom []) (FILE*, const wave_collection* col
 };
 
 static inline void wave_code_generation_alloc_collection_tab(FILE* output_file, const wave_collection* collection){
-    fprintf(output_file, "int wave_tab");
+    fprintf(output_file, "wave_data wave_tab");
     wave_collection_fprint_full_indexes(output_file, collection);
     wave_coordinate* collection_coordinate = wave_collection_get_coordinate (wave_collection_get_last (wave_collection_get_list (collection)));
     fprintf(output_file, "[");
     wave_coordinate_fprint(output_file, collection_coordinate);
-    fprintf(output_file, " + 1 ];\n");
+    fprintf(output_file, " + 1];\n");
 }
 
 void wave_code_generation_collection(FILE* output_file, const wave_collection* collection){

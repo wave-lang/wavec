@@ -52,6 +52,7 @@ void wave_code_generation_collection(FILE* output_file, const wave_collection* c
  * \note  Collections in phrases must have already been indexed.
  */
 static inline void wave_code_generation_generate(FILE* output_file, const wave_phrase* phrases){
+    fprintf(output_file, "#include \"wave_struct_def.h\"\n");
     do{
         const wave_collection* collection = wave_phrase_get_collection(phrases);
         wave_code_generation_collection(output_file, collection);

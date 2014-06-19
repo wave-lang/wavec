@@ -269,6 +269,7 @@ Value : Integer_litteral
                 {
                     $$ = wave_atom_alloc ();
                     wave_atom_set_string ($$, $1);
+                    free($1);
                 }
       ;
 
