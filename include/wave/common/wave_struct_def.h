@@ -1,7 +1,7 @@
 #ifndef __WAVE8STRUCT_DEF_H__
 #define __WAVE8STRUCT_DEF_H__
 
-#include "wave_types.h"
+#include "wave/common/wave_types.h"
 
 typedef enum wave_data_type{
     WAVE_DATA_INT = 0,

@@ -27,7 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "wave_path_stack.h"
+#include "wave/ast/wave_path_stack.h"
 
 static wave_path_stack_element * wave_path_stack_element_alloc (void)
 {
@@ -116,4 +116,3 @@ bool wave_path_stack_is_empty (const wave_path_stack * const s)
 {
     return s->head == NULL;
 }
-

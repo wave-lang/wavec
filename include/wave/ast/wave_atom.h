@@ -34,9 +34,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "wave_types.h"
-#include "wave_path.h"
-#include "wave_operator.h"
+#include "wave/common/wave_types.h"
+#include "wave/ast/wave_path.h"
+#include "wave/ast/wave_operator.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.

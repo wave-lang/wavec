@@ -30,7 +30,7 @@
 #ifndef __WAVE_CODE_GENERATION_H
 #define __WAVE_CODE_GENERATION_H
 
-#include "wave_phrase.h"
+#include "wave/ast/wave_phrase.h"
 #include <stdio.h>
 
 /**

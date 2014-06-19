@@ -28,7 +28,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "wave_types.h"
+#include "wave/common/wave_types.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // static utilities

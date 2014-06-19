@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "wave_int_list.h"
+#include "wave/ast/wave_int_list.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.

@@ -34,8 +34,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "wave_int_list.h"
-#include "wave_coordinate.h"
+#include "wave/ast/wave_int_list.h"
+#include "wave/ast/wave_coordinate.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.

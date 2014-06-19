@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "wave_collection.h"
+#include "wave/ast/wave_collection.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.

@@ -27,7 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "wave_int_list.h"
+#include "wave/ast/wave_int_list.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Allocation, free, copy.
@@ -196,4 +196,3 @@ void wave_int_list_insert (wave_int_list * list, size_t i, int element)
             wave_int_list_push_back (list, element);
     }
 }
-

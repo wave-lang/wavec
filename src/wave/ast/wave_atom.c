@@ -27,7 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "wave_atom.h"
+#include "wave/ast/wave_atom.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Static utilities (wave_atom_content).

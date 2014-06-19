@@ -34,8 +34,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "wave_atom.h"
-#include "wave_collection_info.h"
+#include "wave/ast/wave_atom.h"
+#include "wave/ast/wave_collection_info.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.

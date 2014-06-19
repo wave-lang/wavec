@@ -28,7 +28,7 @@
  * SOFTWARE.
  */
 
-#include "wave_code_generation.h"
+#include "wave/generation/wave_code_generation.h"
 
 /**
  * \brief Generate C source code giving an atom.

@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "wave_path.h"
+#include "wave/ast/wave_path.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.

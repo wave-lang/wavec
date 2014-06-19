@@ -27,7 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "wave_path.h"
+#include "wave/ast/wave_path.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Initialization.
