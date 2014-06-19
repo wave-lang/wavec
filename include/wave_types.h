@@ -162,6 +162,13 @@ static const wave_int WAVE_INT_MIN = INT_MIN;
  */
 static const wave_int WAVE_INT_MAX = INT_MAX;
 
+/**
+ * \brief Cast from wave_int to wave_float.
+ * \param f A wave_float.
+ * \return The floor of the float.
+ * \relatesalso wave_int
+ * \relatesalso wave_float
+ */
 wave_int wave_int_from_wave_float (wave_float f);
 
 /**
@@ -172,18 +179,117 @@ wave_int wave_int_from_wave_float (wave_float f);
  */
 wave_int wave_int_from_string (const char * str);
 
+/**
+ * \brief The \c unary \c plus operation.
+ * \param a A wave_int.
+ * \return +a.
+ * \relatesalso wave_int
+ */
 wave_int wave_int_unary_plus (wave_int a);
+
+/**
+ * \brief The \c unary \c minus operation.
+ * \param a A wave_int.
+ * \return -a.
+ * \relatesalso wave_int
+ */
 wave_int wave_int_unary_minus (wave_int a);
+
+/**
+ * \brief \c Increment an wave_int.
+ * \param a A wave_int.
+ * \return a+1.
+ * \relatesalso wave_int
+ */
 wave_int wave_int_increment (wave_int a);
+
+/**
+ * \brief \c Decrement an wave_int.
+ * \param a A wave_int.
+ * \return a-1.
+ * \relatesalso wave_int
+ */
 wave_int wave_int_decrement (wave_int a);
+
+/**
+ * \brief The \c square \c root of an wave_int.
+ * \param a A wave_int.
+ * \return sqrt(a).
+ * \relatesalso wave_int
+ * \relatesalso wave_float
+ */
 wave_float wave_int_sqrt (wave_int a);
+
+/**
+ * \brief The \c sin of an wave_int.
+ * \param a A wave_int.
+ * \return sin(a).
+ * \relatesalso wave_int
+ * \relatesalso wave_float
+ */
 wave_float wave_int_sin (wave_int a);
+
+/**
+ * \brief The \c cos of an wave_int.
+ * \param a A wave_int.
+ * \return cos(a).
+ * \relatesalso wave_int
+ * \relatesalso wave_float
+ */
 wave_float wave_int_cos (wave_int a);
+
+/**
+ * \brief The \c log of an wave_int.
+ * \param a A wave_int.
+ * \return log(a).
+ * \relatesalso wave_int
+ * \relatesalso wave_float
+ */
 wave_float wave_int_log (wave_int a);
+
+/**
+ * \brief The \c exp of an wave_int.
+ * \param a A wave_int.
+ * \return exp(a).
+ * \relatesalso wave_int
+ * \relatesalso wave_float
+ */
 wave_float wave_int_exp (wave_int a);
+
+/**
+ * \brief The \c ceil of an wave_int.
+ * \param a A wave_int.
+ * \return ceil(a).
+ * \relatesalso wave_int
+ * \relatesalso wave_float
+ */
 wave_float wave_int_ceil (wave_int a);
+
+/**
+ * \brief The \c floor of an wave_int.
+ * \param a A wave_int.
+ * \return floor(a).
+ * \relatesalso wave_int
+ * \relatesalso wave_float
+ */
 wave_float wave_int_floor (wave_int a);
+
+/**
+ * \brief The \c addition of two wave_int.
+ * \param a A wave_int.
+ * \param b A wave_int.
+ * \return a + b.
+ * \relatesalso wave_int
+ */
 wave_int wave_int_binary_plus (wave_int a, wave_int b);
+
+/**
+ * \brief The subtract of two wave_int.
+ * \param a A wave_int.
+ * \param b A wave_int.
+ * \return a - b.
+ * \relatesalso wave_int
+ */
 wave_int wave_int_binary_minus (wave_int a, wave_int b);
 
 /**
@@ -204,25 +310,148 @@ wave_int wave_int_min (wave_int a, wave_int b);
  */
 wave_int wave_int_max (wave_int a, wave_int b);
 
+/**
+ * \brief \c Multiplication operation for wave_int.
+ * \param a First wave_int.
+ * \param b Second wave_int.
+ * \return a * b.
+ * \relatesalso wave_int
+ */
 wave_int wave_int_times (wave_int a, wave_int b);
+
+/**
+ * \brief Division operation for wave_int.
+ * \param a First wave_int.
+ * \param b Second wave_int.
+ * \return a / b.
+ * \relatesalso wave_int
+ */
 wave_int wave_int_divide (wave_int a, wave_int b);
+
+/**
+ * \brief \c mod operation for wave_int.
+ * \param a First wave_int.
+ * \param b Second wave_int.
+ * \return a mod(b).
+ * \relatesalso wave_int
+ */
 wave_int wave_int_mod (wave_int a, wave_int b);
+
+/**
+ * \brief \c equals operation for wave_int.
+ * \param a First wave_int.
+ * \param b Second wave_int.
+ * \return a == b.
+ * \retval true True.
+ * \retval false False.
+ * \relatesalso wave_int
+ * \relatesalso wave_bool
+ */
 wave_bool wave_int_equals (wave_int a, wave_int b);
+
+/**
+ * \brief \c differs operation for wave_int.
+ * \param a First wave_int.
+ * \param b Second wave_int.
+ * \return a != b
+ * \retval true True.
+ * \retval false False.
+ * \relatesalso wave_int
+ * \relatesalso wave_bool
+ */
 wave_bool wave_int_differs (wave_int a, wave_int b);
+
+/**
+ * \brief \c lesser \c or \c equals operation for wave_int.
+ * \param a First wave_int.
+ * \param b Second wave_int.
+ * \return a <= b.
+ * \retval true True.
+ * \retval false False.
+ * \relatesalso wave_int
+ * \relatesalso wave_bool
+ */
 wave_bool wave_int_lesser_or_equals (wave_int a, wave_int b);
+
+/**
+ * \brief \c greater \c or \c equals operation for wave_int.
+ * \param a First wave_int.
+ * \param b Second wave_int.
+ * \return a >= b.
+ * \retval true True.
+ * \retval false False.
+ * \relatesalso wave_int
+ * \relatesalso wave_bool
+ */
 wave_bool wave_int_greater_or_equals (wave_int a, wave_int b);
+
+/**
+ * \brief \c greater operation for wave_int.
+ * \param a First wave_int.
+ * \param b Second wave_int.
+ * \return a > b.
+ * \retval true True.
+ * \retval false False.
+ * \relatesalso wave_int
+ * \relatesalso wave_bool
+ */
 wave_bool wave_int_greater (wave_int a, wave_int b);
+
+/**
+ * \brief \c lesser operation for wave_int.
+ * \param a First wave_int.
+ * \param b Second wave_int.
+ * \return a < b.
+ * \retval true True.
+ * \retval false False.
+ * \relatesalso wave_int
+ * \relatesalso wave_bool
+ */
 wave_bool wave_int_lesser (wave_int a, wave_int b);
 
 ////////////////////////////////////////////////////////////////////////////////
 // wave_float
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * \brief The cast from wave_float to wave_int.
+ * \param i The wave_int.
+ * \return A wave_float.
+ * \relatesalso wave_int
+ * \relatesalso wave_float
+ */
 wave_float wave_float_from_wave_int (wave_int i);
 
+/**
+ * \brief The unary plus of a.
+ * \param a The wave_float.
+ * \return +a.
+ * \relatesalso wave_float
+ */
 wave_float wave_float_unary_plus (wave_float a);
+
+/**
+ * \brief The unary minus of a.
+ * \param a The wave_float.
+ * \return +a.
+ * \relatesalso wave_float
+ */
 wave_float wave_float_unary_minus (wave_float a);
+
+/**
+ * \brief Increment a float.
+ * \param a The wave_float.
+ * \return a+1.0.
+ * \relatesalso wave_float
+ */
 wave_float wave_float_increment (wave_float a);
+
+/**
+ * \brief Decrement a float.
+ * \param a The wave_float.
+ * \return a-1.0.
+ * \relatesalso wave_float
+ */
 wave_float wave_float_decrement (wave_float a);
 
 /**
@@ -281,8 +510,22 @@ wave_float wave_float_ceil (wave_float f);
  */
 wave_float wave_float_floor (wave_float f);
 
+/**
+ * \brief The \c addition of two wave_float.
+ * \param a A wave_float.
+ * \param b A wave_float.
+ * \return a + b.
+ * \relatesalso wave_float
+ */
 wave_float wave_float_binary_plus (wave_float a, wave_float b);
 
+/**
+ * \brief The \c subtract of two wave_float.
+ * \param a A wave_float.
+ * \param b A wave_float.
+ * \return a - b.
+ * \relatesalso wave_float
+ */
 wave_float wave_float_binary_minus (wave_float a, wave_float b);
 
 /**
@@ -303,18 +546,91 @@ wave_float wave_float_min (wave_float a, wave_float b);
  */
 wave_float wave_float_max (wave_float a, wave_float b);
 
+/**
+ * \brief \c multiplication operation for wave_float.
+ * \param a First wave_float.
+ * \param b Second wave_float.
+ * \return a * b.
+ * \relatesalso wave_float
+ */
 wave_float wave_float_times (wave_float a, wave_float b);
 
+/**
+ * \brief \c division operation for wave_float.
+ * \param a First wave_float.
+ * \param b Second wave_float.
+ * \return a / b.
+ * \relatesalso wave_float
+ */
 wave_float wave_float_divide (wave_float a, wave_float b);
 
+/**
+ * \brief \c mod operation for wave_float.
+ * \param a First wave_float.
+ * \param b Second wave_float.
+ * \return a mod(b).
+ * \relatesalso wave_float
+ */
 wave_float wave_float_mod (wave_float a, wave_float b);
 
-wave_float wave_float_equals (wave_float a, wave_float b);
+/**
+ * \brief \c equals operation for wave_float.
+ * \param a First wave_float.
+ * \param b Second wave_float.
+ * \return a == b.
+ * \relatesalso wave_float
+ * \relatesalso wave_bool
+ */
+wave_bool wave_float_equals (wave_float a, wave_float b);
 
+/**
+ * \brief \c differs operation for wave_float.
+ * \param a First wave_float.
+ * \param b Second wave_float.
+ * \return a != b.
+ * \relatesalso wave_float
+ * \relatesalso wave_bool
+ */
 wave_bool wave_float_differs (wave_float a, wave_float b);
+
+/**
+ * \brief \c lesser \c or \c equals operation for wave_float.
+ * \param a First wave_float.
+ * \param b Second wave_float.
+ * \return a <= b.
+ * \relatesalso wave_float
+ * \relatesalso wave_bool
+ */
 wave_bool wave_float_lesser_or_equals (wave_float a, wave_float b);
+
+/**
+ * \brief \c greater \c or \c equals operation for wave_float.
+ * \param a First wave_float.
+ * \param b Second wave_float.
+ * \return a >= b.
+ * \relatesalso wave_float
+ * \relatesalso wave_bool
+ */
 wave_bool wave_float_greater_or_equals (wave_float a, wave_float b);
+
+/**
+ * \brief \c greater operation for wave_float.
+ * \param a First wave_float.
+ * \param b Second wave_float.
+ * \return a > b.
+ * \relatesalso wave_float
+ * \relatesalso wave_bool
+ */
 wave_bool wave_float_greater (wave_float a, wave_float b);
+
+/**
+ * \brief \c lesset operation for wave_float.
+ * \param a First wave_float.
+ * \param b Second wave_float.
+ * \return a < b.
+ * \relatesalso wave_float
+ * \relatesalso wave_bool
+ */
 wave_bool wave_float_lesser (wave_float a, wave_float b);
 
 /**
@@ -347,6 +663,12 @@ static const wave_char WAVE_CHAR_MAX = CHAR_MAX;
  */
 static const wave_char WAVE_CHAR_MIN = CHAR_MIN;
 
+/**
+ * \brief Concatenation of two chars.
+ * \param a A wave_char
+ * \param b A wave_char
+ * \return The wave_string.
+ */
 wave_string wave_char_plus (wave_char a, wave_char b);
 
 /**
@@ -367,11 +689,64 @@ wave_char wave_char_min (wave_char a, wave_char b);
  */
 wave_char wave_char_max (wave_char a, wave_char b);
 
+/**
+ * \brief \c equals operation for wave_char.
+ * \param a First wave_char.
+ * \param b Second wave_char.
+ * \return a == b
+ * \relatesalso wave_char
+ * \relatesalso wave_bool
+ */
 wave_bool wave_char_equals (wave_char a, wave_char b);
+
+/**
+ * \brief \c differs operation for wave_char.
+ * \param a First wave_char.
+ * \param b Second wave_char.
+ * \return a != b
+ * \relatesalso wave_char
+ * \relatesalso wave_bool
+ */
 wave_bool wave_char_differs (wave_char a, wave_char b);
+
+/**
+ * \brief \c lesser \c or \c equals operation for wave_char.
+ * \param a First wave_char.
+ * \param b Second wave_char.
+ * \return a <= b
+ * \relatesalso wave_char
+ * \relatesalso wave_bool
+ */
 wave_bool wave_char_lesser_or_equals (wave_char a, wave_char b);
+
+/**
+ * \brief \c greater \c or \c equals operation for wave_char.
+ * \param a First wave_char.
+ * \param b Second wave_char.
+ * \return a >= b
+ * \relatesalso wave_char
+ * \relatesalso wave_bool
+ */
 wave_bool wave_char_greater_or_equals (wave_char a, wave_char b);
+
+/**
+ * \brief \c greater operation for wave_char.
+ * \param a First wave_char.
+ * \param b Second wave_char.
+ * \return a > b
+ * \relatesalso wave_char
+ * \relatesalso wave_bool
+ */
 wave_bool wave_char_greater (wave_char a, wave_char b);
+
+/**
+ * \brief \c lesser operation for wave_char.
+ * \param a First wave_char.
+ * \param b Second wave_char.
+ * \return a < b
+ * \relatesalso wave_char
+ * \relatesalso wave_bool
+ */
 wave_bool wave_char_lesser (wave_char a, wave_char b);
 
 /**
@@ -396,17 +771,91 @@ wave_int wave_char_code (wave_char c);
 // wave_string
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * \brief Concatenate two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return "ab"
+ * \relatesalso wave_string
+ */
 wave_string wave_string_plus (const_wave_string a, const_wave_string b);
 
+/**
+ * \brief \c min of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return min(a,b)
+ * \relatesalso wave_string
+ */
 wave_string wave_string_min (const_wave_string a, const_wave_string b);
 
+/**
+ * \brief \c max of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return max(a,b)
+ * \relatesalso wave_string
+ */
 wave_string wave_string_max (const_wave_string a, const_wave_string b);
 
+/**
+ * \brief \c equality of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a == b
+ * \relatesalso wave_string
+ * \relatesalso wave_bool
+ */
 wave_bool wave_string_equals (const_wave_string a, const_wave_string b);
+
+/**
+ * \brief \c differs of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a != b
+ * \relatesalso wave_string
+ * \relatesalso wave_bool
+ */
 wave_bool wave_string_differs (const_wave_string a, const_wave_string b);
+
+/**
+ * \brief \c lesser \c or \c equals of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a <= b
+ * \relatesalso wave_string
+ * \relatesalso wave_bool
+ */
 wave_bool wave_string_lesser_or_equals (const_wave_string a, const_wave_string b);
+
+/**
+ * \brief \c greater \c or \c equals of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a >= b
+ * \relatesalso wave_string
+ * \relatesalso wave_bool
+ */
 wave_bool wave_string_greater_or_equals (const_wave_string a, const_wave_string b);
+
+/**
+ * \brief \c greater of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a > b
+ * \relatesalso wave_string
+ * \relatesalso wave_bool
+ */
 wave_bool wave_string_greater (const_wave_string a, const_wave_string b);
+
+/**
+ * \brief \c lesser of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a < b
+ * \relatesalso wave_string
+ * \relatesalso wave_bool
+ */
 wave_bool wave_string_lesser (const_wave_string a, const_wave_string b);
 
 /**
