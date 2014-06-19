@@ -451,7 +451,7 @@ wave_collection * wave_collection_access (wave_collection * c, const wave_path *
 /**
  * \brief Print a wave_collection to a stream.
  * \param stream Stream.
- * \param c Collection
+ * \param c Collection.
  */
 void wave_collection_fprint (FILE * stream, const wave_collection * c);
 
@@ -460,5 +460,12 @@ void wave_collection_fprint (FILE * stream, const wave_collection * c);
  * \param c Collection.
  */
 void wave_collection_print (const wave_collection * c);
+
+/**
+ * \brief Print a collection's full indexes to a stream.
+ * \param stream Stream.
+ * \param c Collection.
+ */
+void wave_collection_fprint_full_indexes (FILE * stream, const wave_collection * c);
 
 #endif /* __WAVE_COLLECTION_H__ */
