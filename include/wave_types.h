@@ -162,6 +162,8 @@ static const wave_int WAVE_INT_MIN = INT_MIN;
  */
 static const wave_int WAVE_INT_MAX = INT_MAX;
 
+wave_int wave_int_from_wave_float (wave_float f);
+
 /**
  * \brief Convert a null terminated string to a wave_int.
  * \param str A null terminated string.
@@ -215,6 +217,8 @@ wave_bool wave_int_lesser (wave_int a, wave_int b);
 ////////////////////////////////////////////////////////////////////////////////
 // wave_float
 ////////////////////////////////////////////////////////////////////////////////
+
+wave_float wave_float_from_wave_int (wave_int i);
 
 wave_float wave_float_unary_plus (wave_float a, wave_float b);
 wave_float wave_float_unary_minus (wave_float a, wave_float b);
