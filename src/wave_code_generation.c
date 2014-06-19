@@ -175,10 +175,10 @@ static void (* const _wave_code_generation_collection_generation []) (FILE*, con
     [WAVE_COLLECTION_ATOM]          = wave_code_generation_atom,
     [WAVE_COLLECTION_REP_SEQ]       = wave_code_generation_collection_rep_seq,
     [WAVE_COLLECTION_REP_PAR]       = wave_code_generation_collection_rep_par,
-    [WAVE_COLLECTION_SEQ]           = wave_code_generation_collection_rep_par,
-    [WAVE_COLLECTION_PAR]           = wave_code_generation_collection_rep_par,
-    [WAVE_COLLECTION_CYCLIC_SEQ]    = wave_code_generation_collection_rep_par,
-    [WAVE_COLLECTION_CYCLIC_PAR]    = wave_code_generation_collection_rep_par,
+    [WAVE_COLLECTION_SEQ]           = wave_code_generation_collection_seq,
+    [WAVE_COLLECTION_PAR]           = wave_code_generation_collection_par,
+    [WAVE_COLLECTION_CYCLIC_SEQ]    = wave_code_generation_collection_cyclic_seq,
+    [WAVE_COLLECTION_CYCLIC_PAR]    = wave_code_generation_collection_cyclic_par,
     [WAVE_COLLECTION_UNKNOWN]       = NULL,
 };
 static void (* _wave_code_generation_atom []) (FILE*, const wave_collection* collection) =

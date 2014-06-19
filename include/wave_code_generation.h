@@ -34,22 +34,6 @@
 #include <stdio.h>
 
 /**
- * \brief Generate C source code giving a wave AST.
- * \param output_file The file where the C code will be written.
- * \param phrases The structure containing the AST for the wave language.
- * \pre output_file and phrases must not be NULL.
- * \relatesalso wave_phrase
- * \note  Collections in phrases must have already been indexed.
- */
-void wave_code_generation_generate(FILE* output_file, const wave_phrase* phrases){
-    do{
-        const wave_collection* collection = wave_phrase_get_collection(phrases);
-        wave_code_generation_collection(output_file, collection);
-    }
-    while( wave_phrase_has_next(phrases) && ( phrases = wave_phrase_get_next(phrases) ) );
-}
-
-/**
  * \brief Generate C source code giving a collection.
  * \param output_file The file where the C code will be written.
  * \param collection The collection to translate into C code.
@@ -58,5 +42,21 @@ void wave_code_generation_generate(FILE* output_file, const wave_phrase* phrases
  * \note  Collections in phrases must have already been indexed.
  */
 void wave_code_generation_collection(FILE* output_file, const wave_collection* collection);
+
+/**
+ * \brief Generate C source code giving a wave AST.
+ * \param output_file The file where the C code will be written.
+ * \param phrases The structure containing the AST for the wave language.
+ * \pre output_file and phrases must not be NULL.
+ * \relatesalso wave_phrase
+ * \note  Collections in phrases must have already been indexed.
+ */
+static inline void wave_code_generation_generate(FILE* output_file, const wave_phrase* phrases){
+    do{
+        const wave_collection* collection = wave_phrase_get_collection(phrases);
+        wave_code_generation_collection(output_file, collection);
+    }
+    while( wave_phrase_has_next(phrases) && ( phrases = wave_phrase_get_next(phrases) ) );
+}
 
 #endif // ( __WAVE_CODE_GENERATION_H )

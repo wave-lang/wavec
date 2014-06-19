@@ -68,6 +68,7 @@ wave_int_list.o: wave_int_list.c wave_int_list.h
 wave_coordinate.o: wave_coordinate.c wave_coordinate.h wave_int_list.h
 wave_collection_info.o: wave_collection_info.c wave_collection_info.h \
 	wave_int_list.h wave_coordinate.h
+wave_code_generation.o : wave_code_generation.c wave_code_generation.h
 main.o: main.c wave_path.h wave_atom.h wave_collection.h wave_compiler_version.h
 
 # Tests
@@ -79,12 +80,14 @@ unit_tests.o: unit_tests.c wave_test_suites.h
 
 # Compiler lib
 libwavecompiler.a: wave_types.o wave_operator.o wave_path.o wave_atom.o \
-	wave_collection.o wave_phrase.o wave_int_list.o wave_coordinate.o wave_collection_info.o | lib_dir
+	wave_collection.o wave_phrase.o wave_int_list.o wave_coordinate.o \
+	wave_code_generation.o wave_collection_info.o | lib_dir
 	ar crvs $(PATH_LIB)/libwavecompiler.a $(PATH_OBJ)/wave_types.o \
 		$(PATH_OBJ)/wave_operator.o $(PATH_OBJ)/wave_path.o \
 		$(PATH_OBJ)/wave_atom.o $(PATH_OBJ)/wave_collection.o \
 		$(PATH_OBJ)/wave_phrase.o $(PATH_OBJ)/wave_int_list.o \
-		$(PATH_OBJ)/wave_coordinate.o $(PATH_OBJ)/wave_collection_info.o
+		$(PATH_OBJ)/wave_coordinate.o $(PATH_OBJ)/wave_collection_info.o \
+		$(PATH_OBJ)/wave_code_generation.o
 
 # Unit tests lib
 libwavetests.a: test_wave_path.o test_wave_atom.o test_wave_collection.o | lib_dir
