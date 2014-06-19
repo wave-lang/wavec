@@ -41,7 +41,7 @@ static inline int _wave_atom_content_get_int (const wave_atom_content * atom)
     return atom->_int;
 }
 
-static inline float _wave_atom_content_get_float (const wave_atom_content * atom)
+static inline double _wave_atom_content_get_float (const wave_atom_content * atom)
 {
     return atom->_float;
 }

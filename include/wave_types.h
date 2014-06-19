@@ -68,7 +68,7 @@ typedef int wave_int;
 /**
  * \brief Wave float.
  */
-typedef float wave_float;
+typedef double wave_float;
 
 /**
  * \class wave_char
