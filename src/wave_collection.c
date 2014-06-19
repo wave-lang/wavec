@@ -345,10 +345,10 @@ void wave_collection_compute_indexes (wave_collection * c)
     }
 }
 
-static inline wave_int_list * _wave_collection_create_var (wave_collection * c)
+static inline wave_int_list * _wave_collection_indexes (const wave_collection * c)
 {
     wave_int_list * list = wave_int_list_alloc ();
-    for (wave_collection * current = c; current != NULL; current = wave_collection_get_parent (current))
+    for (const wave_collection * current = c; current != NULL; current = wave_collection_get_parent (current))
     {
         wave_collection_info * info = wave_collection_get_info (current);
         wave_int_list_push_front (list, wave_collection_info_get_index (info));
@@ -393,7 +393,7 @@ static inline void  _wave_collection_set_length (wave_collection * c)
         }
         else
         {
-            wave_int_list * var_length = _wave_collection_create_var (c);
+            wave_int_list * var_length = _wave_collection_indexes (c);
             wave_coordinate_set_list (repetition, var_length);
         }
         wave_coordinate_set_times_left_and_right (length, repetition, length_sum);
@@ -632,4 +632,13 @@ void wave_collection_fprint (FILE * stream, const wave_collection * c)
 void wave_collection_print (const wave_collection * c)
 {
     wave_collection_fprint (stdout, c);
+}
+
+void wave_collection_fprint_full_indexes (FILE * stream, const wave_collection * c)
+{
+    wave_int_list * indexes = _wave_collection_indexes (c);
+    for (wave_int_list_element * e = indexes->_first; e != NULL; e = e->_next_element)
+        fprintf (stream, "%d", e->_content);
+
+    wave_int_list_free (indexes);
 }
