@@ -40,7 +40,7 @@
 #include <ctype.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-// wave_bool
+// Typedefs.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -51,6 +51,51 @@
  * \brief Wave boolean.
  */
 typedef bool wave_bool;
+
+/**
+ * \class wave_int
+ * \brief Wave integer.
+ */
+/**
+ * \brief Wave integer.
+ */
+typedef int wave_int;
+
+/**
+ * \class wave_float
+ * \brief Wave float.
+ */
+/**
+ * \brief Wave float.
+ */
+typedef float wave_float;
+
+/**
+ * \class wave_char
+ * \brief Wave character.
+ */
+/**
+ * \brief Wave character.
+ */
+typedef char wave_char;
+
+/**
+ * \class wave_string
+ * \brief Wave string.
+ */
+/**
+ * \brief Wave string.
+ */
+typedef wave_char * wave_string;
+
+/**
+ * \brief Const wave_string.
+ */
+typedef const wave_char * const_wave_string;
+
+////////////////////////////////////////////////////////////////////////////////
+// wave_bool
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Wave bool true.
@@ -106,15 +151,6 @@ wave_bool wave_bool_from_string (const char * s);
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \class wave_int
- * \brief Wave integer.
- */
-/**
- * \brief Wave integer.
- */
-typedef int wave_int;
-
-/**
  * \brief Wave integer minimum value.
  * \relatesalso wave_int
  */
@@ -125,6 +161,28 @@ static const wave_int WAVE_INT_MIN = INT_MIN;
  * \relatesalso wave_int
  */
 static const wave_int WAVE_INT_MAX = INT_MAX;
+
+/**
+ * \brief Convert a null terminated string to a wave_int.
+ * \param str A null terminated string.
+ * \return The wave_int associated.
+ * \relatesalso wave_int
+ */
+wave_int wave_int_from_string (const char * str);
+
+wave_int wave_int_unary_plus (wave_int a);
+wave_int wave_int_unary_minus (wave_int a);
+wave_int wave_int_increment (wave_int a);
+wave_int wave_int_decrement (wave_int a);
+wave_float wave_int_sqrt (wave_int a);
+wave_float wave_int_sin (wave_int a);
+wave_float wave_int_cos (wave_int a);
+wave_float wave_int_log (wave_int a);
+wave_float wave_int_exp (wave_int a);
+wave_float wave_int_ceil (wave_int a);
+wave_float wave_int_floor (wave_int a);
+wave_int wave_int_binary_plus (wave_int a, wave_int b);
+wave_int wave_int_binary_minus (wave_int a, wave_int b);
 
 /**
  * \brief \c min operation for wave_int.
@@ -144,26 +202,24 @@ wave_int wave_int_min (wave_int a, wave_int b);
  */
 wave_int wave_int_max (wave_int a, wave_int b);
 
-/**
- * \brief Convert a null terminated string to a wave_int.
- * \param str A null terminated string.
- * \return The wave_int associated.
- * \relatesalso wave_int
- */
-wave_int wave_int_from_string (const char * str);
+wave_int wave_int_times (wave_int a, wave_int b);
+wave_int wave_int_divide (wave_int a, wave_int b);
+wave_int wave_int_mod (wave_int a, wave_int b);
+wave_bool wave_int_equals (wave_int a, wave_int b);
+wave_bool wave_int_differs (wave_int a, wave_int b);
+wave_bool wave_int_lesser_or_equals (wave_int a, wave_int b);
+wave_bool wave_int_greater_or_equals (wave_int a, wave_int b);
+wave_bool wave_int_greater (wave_int a, wave_int b);
+wave_bool wave_int_lesser (wave_int a, wave_int b);
 
 ////////////////////////////////////////////////////////////////////////////////
 // wave_float
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * \class wave_float
- * \brief Wave float.
- */
-/**
- * \brief Wave float.
- */
-typedef float wave_float;
+wave_float wave_float_unary_plus (wave_float a, wave_float b);
+wave_float wave_float_unary_minus (wave_float a, wave_float b);
+wave_float wave_float_increment (wave_float a);
+wave_float wave_float_decrement (wave_float a);
 
 /**
  * \brief \c sqrt operation for wave_float.
@@ -221,6 +277,10 @@ wave_float wave_float_ceil (wave_float f);
  */
 wave_float wave_float_floor (wave_float f);
 
+wave_float wave_float_binary_plus (wave_float a, wave_float b);
+
+wave_float wave_float_binary_minus (wave_float a, wave_float b);
+
 /**
  * \brief \c min operation for wave_float.
  * \param a First wave_float.
@@ -239,6 +299,20 @@ wave_float wave_float_min (wave_float a, wave_float b);
  */
 wave_float wave_float_max (wave_float a, wave_float b);
 
+wave_float wave_float_times (wave_float a, wave_float b);
+
+wave_float wave_float_divide (wave_float a, wave_float b);
+
+wave_float wave_float_mod (wave_float a, wave_float b);
+
+wave_float wave_float_equals (wave_float a, wave_float b);
+
+wave_bool wave_float_differs (wave_float a, wave_float b);
+wave_bool wave_float_lesser_or_equals (wave_float a, wave_float b);
+wave_bool wave_float_greater_or_equals (wave_float a, wave_float b);
+wave_bool wave_float_greater (wave_float a, wave_float b);
+wave_bool wave_float_lesser (wave_float a, wave_float b);
+
 /**
  * \brief Convert a null terminated string to a wave_float.
  * \param str A null terminated string.
@@ -250,15 +324,6 @@ wave_float wave_float_from_string (const char * str);
 ////////////////////////////////////////////////////////////////////////////////
 // wave_char
 ////////////////////////////////////////////////////////////////////////////////
-
-/**
- * \class wave_char
- * \brief Wave character.
- */
-/**
- * \brief Wave character.
- */
-typedef char wave_char;
 
 /**
  * \brief Number of bits in a type wave_char.
@@ -278,6 +343,8 @@ static const wave_char WAVE_CHAR_MAX = CHAR_MAX;
  */
 static const wave_char WAVE_CHAR_MIN = CHAR_MIN;
 
+wave_string wave_char_plus (wave_char a, wave_char b);
+
 /**
  * \brief \c min operation for wave_char.
  * \param a First wave_char.
@@ -295,6 +362,13 @@ wave_char wave_char_min (wave_char a, wave_char b);
  * \relatesalso wave_char
  */
 wave_char wave_char_max (wave_char a, wave_char b);
+
+wave_bool wave_char_equals (wave_char a, wave_char b);
+wave_bool wave_char_differs (wave_char a, wave_char b);
+wave_bool wave_char_lesser_or_equals (wave_char a, wave_char b);
+wave_bool wave_char_greater_or_equals (wave_char a, wave_char b);
+wave_bool wave_char_greater (wave_char a, wave_char b);
+wave_bool wave_char_lesser (wave_char a, wave_char b);
 
 /**
  * \brief Get a wave_char from a code.
@@ -318,19 +392,18 @@ wave_int wave_char_code (wave_char c);
 // wave_string
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * \class wave_string
- * \brief Wave string.
- */
-/**
- * \brief Wave string.
- */
-typedef wave_char * wave_string;
+wave_string wave_string_plus (const_wave_string a, const_wave_string b);
 
-/**
- * \brief Const wave_string.
- */
-typedef const wave_char * const_wave_string;
+wave_string wave_string_min (const_wave_string a, const_wave_string b);
+
+wave_string wave_string_max (const_wave_string a, const_wave_string b);
+
+wave_bool wave_string_equals (const_wave_string a, const_wave_string b);
+wave_bool wave_string_differs (const_wave_string a, const_wave_string b);
+wave_bool wave_string_lesser_or_equals (const_wave_string a, const_wave_string b);
+wave_bool wave_string_greater_or_equals (const_wave_string a, const_wave_string b);
+wave_bool wave_string_greater (const_wave_string a, const_wave_string b);
+wave_bool wave_string_lesser (const_wave_string a, const_wave_string b);
 
 /**
  * \brief Concatenate two wave_string.
