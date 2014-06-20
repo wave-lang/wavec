@@ -64,7 +64,10 @@ vpath %.o $(PATH_OBJ)
 vpath %.a $(PATH_LIB) $(PATH_LIB_HASH)
 vpath %.y $(PATH_YACC)
 vpath %.l $(PATH_LEX)
+vpath wavec $(PATH_BIN)
 vpath main $(PATH_BIN)
+vpath wave_yacc.c $(PATH_SRC_YACC)
+vpath wave_lex.c $(PATH_SRC_LEX)
 
 ################################################################################
 # Main
