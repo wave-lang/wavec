@@ -39,6 +39,7 @@ size_t lex_nbchars = 0;
 long total_chars = 0;
 wave_phrase p;
 void yacc_error_print();
+int yyparse();
 
 #define YY_USER_ACTION incline();
 %}
@@ -156,8 +157,8 @@ void incline(void){
 void yacc_error_print(){
     char string_buf[40];
     memset(string_buf, 0, 40);
-    int i;
-    int error_location;
+    size_t i;
+    size_t error_location;
     long where_to_go = total_chars >= 20 ? (total_chars - 20) : 0;
     fprintf(stderr,"Error encountered line %d at character %d\n", lex_current_line, lex_nbchars);
     fseek(yyin, where_to_go, SEEK_SET);

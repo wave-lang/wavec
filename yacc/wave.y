@@ -27,6 +27,8 @@ extern wave_phrase p;
 extern void yacc_error_print(void);
 void yacc_init(void);
 void yacc_error_print();
+int yylex();
+void yyerror(const char * s);
 
 %}
 
