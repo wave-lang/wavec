@@ -21,8 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-#include "wave_phrase.h"
-#include "wave_types.h"
+#include "wave/ast/wave_phrase.h"
+#include "wave/common/wave_types.h"
 extern wave_phrase p;
 extern void yacc_error_print(void);
 void yacc_init(void);
