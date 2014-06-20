@@ -44,11 +44,13 @@ PATH_SRC_LEX = $(PATH_SRC)/wave/lex
 FLAGS_CC_INCLUDE = -I$(PATH_INCLUDE) -I$(PATH_INCLUDE_YACC) \
 	-I$(PATH_TESTS_INCLUDE) -I$(PATH_INCLUDE_HASH)
 FLAGS_CC_DEBUG = -g
-FLAGS_CC_WARNINGS = -Wall -Wextra -Wfloat-equal -Wdouble-promotion \
+FLAGS_CC_WARNINGS = -pedantic -Wall -Wextra -Wfloat-equal -Wdouble-promotion \
 	-Wswitch-default -Winit-self -Wshadow -Wbad-function-cast -Wcast-qual \
 	-Wcast-align -Wconversion -Wlogical-op -Wstrict-prototypes -Wnested-externs
+FLAGS_CC_MISC = -std=c99 -O0
 FLAGS_CC = $(FLAGS_CC_INCLUDE) $(FLAGS_CC_WARNINGS) $(FLAGS_CC_DEBUG) \
-	-std=c99 -pedantic -O0
+	$(FLAGS_CC_MISC)
+FLAGS_CC_LEX_YACC = -W $(FLAGS_CC_INCLUDE) $(FLAGS_CC_DEBUG) $(FLAGS_CC_MISC)
 FLAGS_CC_LIB = -L$(PATH_LIB) -L$(PATH_LIB_HASH)
 FLAGS_CC_LINK = $(FLAGS_CC_LIB) -lhash -lfl -ly -lm -lwave -lwaveast
 FLAGS_CC_UNIT_TESTS = -lcunit -lm -lwavetests $(FLAGS_CC_LINK)
@@ -79,20 +81,20 @@ all: wavec main
 # Hash
 ################################################################################
 
-libhash.a :
+libhash.a:
 	(cd $(PATH_HASH); make)
 
 ################################################################################
 # Yacc
 ################################################################################
 
-wave_yacc.c : wave.y | yacc_dir
+wave_yacc.c: wave.y | yacc_dir
 	$(YACC) -d -o wave_yacc.c $<
 	mv wave_yacc.c $(PATH_SRC_YACC)/
 	mv wave_yacc.h $(PATH_INCLUDE_YACC)/
 
-wave_yacc.o : wave_yacc.c | obj_dir
-	$(CC) $(FLAGS_CC) -c $(PATH_SRC_YACC)/wave_yacc.c -o $(PATH_OBJ)/wave_yacc.o
+wave_yacc.o: wave_yacc.c | obj_dir
+	$(CC) $(FLAGS_CC_LEX_YACC) -c $(PATH_SRC_YACC)/wave_yacc.c -o $(PATH_OBJ)/wave_yacc.o
 
 ################################################################################
 # Lex
@@ -101,23 +103,23 @@ wave_yacc.o : wave_yacc.c | obj_dir
 wavec: wave_lex.o wave_yacc.o libhash.a libwave.a libwaveast.a | bin_dir
 	$(CC) -o $(PATH_BIN)/$@ $(PATH_OBJ)/wave_lex.o $(PATH_OBJ)/wave_yacc.o $(FLAGS_CC_LINK)
 
-wave_preprocessor : wave_preprocessor.o preproc_utils.o libhash.a | bin_dir
+wave_preprocessor: wave_preprocessor.o preproc_utils.o libhash.a | bin_dir
 	$(CC) $(FLAGS_CC) -o $(PATH_BIN)/$@ $(PATH_OBJ)/wave_preprocessor.o \
 		$(PATH_OBJ)/preproc_utils.o $(FLAGS_CC_LINK)
 
-wave_lex.o : wave_lex.c wave_yacc.o
-	$(CC) $(FLAGS_CC) -c $(PATH_SRC_LEX)/wave_lex.c -o $(PATH_OBJ)/$@
+wave_lex.o: wave_lex.c wave_yacc.o
+	$(CC) $(FLAGS_CC_LEX_YACC) -c $(PATH_SRC_LEX)/wave_lex.c -o $(PATH_OBJ)/$@
 
-wave_lex.c : wave_lex.l
+wave_lex.c: wave_lex.l
 	$(LEX) -o $(PATH_SRC_LEX)/$@ $<
 
-wave_preprocessor.c : wave_preprocessor.l
+wave_preprocessor.c: wave_preprocessor.l
 	$(LEX) -o $(PATH_SRC_LEX)/$@ $<
 
-wave_preprocessor.o : wave_preprocessor.c | obj
-	$(CC) $(FLAGS_CC) -c $(PATH_SRC_LEX)/$< -o $(PATH_OBJ)/$@
+wave_preprocessor.o: wave_preprocessor.c | obj
+	$(CC) $(FLAGS_CC_LEX_YACC) -c $(PATH_SRC_LEX)/$< -o $(PATH_OBJ)/$@
 
-preproc_utils.o : preproc_utils.c preproc_utils.h | obj
+preproc_utils.o: preproc_utils.c preproc_utils.h | obj
 	$(CC) $(FLAGS_CC) -c $< -o $(PATH_OBJ)/$@
 
 ################################################################################
