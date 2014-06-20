@@ -28,7 +28,7 @@ PATH_WAVE_COMPILER_INCLUDE = $(PATH_WAVE_COMPILER)/include
 ################################################################################
 FLAGS_CC_INCLUDE = -I$(PATH_YACC_INCLUDE) -I$(PATH_INCLUDE) -I$(PATH_HASH_INCLUDE) -I$(PATH_WAVE_COMPILER_INCLUDE)
 FLAGS_CC_LIB = -L$(PATH_HASH_LIB) -L$(PATH_WAVE_COMPILER_LIB)
-FLAGS_CC_LINK = $(FLAGS_CC_LIB) -lhash -lfl -ly -lm
+FLAGS_CC_LINK = $(FLAGS_CC_LIB) -lhash -lfl -ly -lm -lwave -lwaveast
 FLAGS_CC_DEBUG = -g
 FLAGS_CC_WARNING = -Wall -Wextra -Wfloat-equal -Wdouble-promotion \
 	-Wswitch-default -Winit-self -Wshadow -Wbad-function-cast -Wcast-qual \
@@ -50,8 +50,8 @@ vpath *.a $(PATH_HASH_LIB) $(PATH_WAVE_COMPILER_LIB)
 all: wave_preprocessor wavec
 
 ## Final binaries.
-wavec: wave_lex.o wave_yacc libhash.a libwavecompiler.a
-	$(CC) -o $@ $(PATH_OBJ)/wave_lex.o $(PATH_YACC_OBJ)/wave_yacc.o $(FLAGS_CC_LINK) -lwavecompiler
+wavec: wave_lex.o wave_yacc libhash.a libwave.a
+	$(CC) -o $@ $(PATH_OBJ)/wave_lex.o $(PATH_YACC_OBJ)/wave_yacc.o $(FLAGS_CC_LINK)
 
 wave_preprocessor : wave_preprocessor.o preproc_utils.o libhash.a
 	$(CC) $(FLAGS_CC) -o $@ $(PATH_OBJ)/wave_preprocessor.o \
@@ -61,7 +61,7 @@ wave_preprocessor : wave_preprocessor.o preproc_utils.o libhash.a
 libhash.a :
 	(cd $(PATH_HASH_SRC); make)
 
-libwavecompiler.a:
+libwave.a:
 	(cd $(PATH_WAVE_COMPILER); make)
 
 wave_lex.o : wave_lex.c wave_yacc

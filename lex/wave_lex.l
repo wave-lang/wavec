@@ -1,11 +1,11 @@
 %top{
-#include "wave_types.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "wave/common/wave_types.h"
+#include "wave/ast/wave_phrase.h"
+#include "wave/generation/wave_code_generation.h"
 #include "wave_yacc.h"
-#include "wave_phrase.h"
-#include "wave_code_generation.h"
 }
 %{
 /*
