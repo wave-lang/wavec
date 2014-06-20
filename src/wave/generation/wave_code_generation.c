@@ -96,8 +96,7 @@ static void wave_code_generation_collection_rep_par(FILE* output_file, const wav
 /**
  * \brief Generate C source code giving an integer atom.
  * \param output_file The file where the C code will be written.
- * \param atom The float value.
- * \param info The collection info to get the variable name and index.
+ * \param collection The collection containing the value.
  * \pre output_file and collection must not be NULL.
  * \relatesalso wave_atom
  * \relatesalso wave_collection_info
@@ -107,8 +106,7 @@ static void _wave_code_generation_fprint_int(FILE* output_file, const wave_colle
 /**
  * \brief Generate C source code giving an float atom.
  * \param output_file The file where the C code will be written.
- * \param atom The float value.
- * \param info The collection info to get the variable name and index.
+ * \param collection The collection containing the value.
  * \pre output_file and collection must not be NULL.
  * \relatesalso wave_atom
  * \relatesalso wave_collection_info
@@ -118,8 +116,7 @@ static void _wave_code_generation_fprint_float(FILE* output_file, const wave_col
 /**
  * \brief Generate C source code giving an bool atom.
  * \param output_file The file where the C code will be written.
- * \param atom The float value.
- * \param info The collection info to get the variable name and index.
+ * \param collection The collection containing the value.
  * \pre output_file and collection must not be NULL.
  * \relatesalso wave_atom
  * \relatesalso wave_collection_info
@@ -129,8 +126,7 @@ static void _wave_code_generation_fprint_bool(FILE* output_file, const wave_coll
 /**
  * \brief Generate C source code giving an char atom.
  * \param output_file The file where the C code will be written.
- * \param atom The float value.
- * \param info The collection info to get the variable name and index.
+ * \param collection The collection containing the value.
  * \pre output_file and collection must not be NULL.
  * \relatesalso wave_atom
  * \relatesalso wave_collection_info
@@ -140,8 +136,7 @@ static void _wave_code_generation_fprint_char(FILE* output_file, const wave_coll
 /**
  * \brief Generate C source code giving an string atom.
  * \param output_file The file where the C code will be written.
- * \param atom The float value.
- * \param info The collection info to get the variable name and index.
+ * \param collection The collection containing the value.
  * \pre output_file and collection must not be NULL.
  * \relatesalso wave_atom
  * \relatesalso wave_collection_info
@@ -151,8 +146,7 @@ static void _wave_code_generation_fprint_string(FILE* output_file, const wave_co
 /**
  * \brief Generate C source code giving an operator atom.
  * \param output_file The file where the C code will be written.
- * \param atom The float value.
- * \param info The collection info to get the variable name and index.
+ * \param collection The collection containing the value.
  * \pre output_file and collection must not be NULL.
  * \relatesalso wave_atom
  * \relatesalso wave_collection_info
@@ -162,14 +156,16 @@ static void _wave_code_generation_fprint_operator(FILE* output_file, const wave_
 /**
  * \brief Generate C source code giving an path atom.
  * \param output_file The file where the C code will be written.
- * \param atom The float value.
- * \param info The collection info to get the variable name and index.
+ * \param collection The collection containing the value.
  * \pre output_file and collection must not be NULL.
  * \relatesalso wave_atom
  * \relatesalso wave_collection_info
  */
 static void _wave_code_generation_fprint_path(FILE* output_file, const wave_collection* collection);
 
+/**
+ * \brief An array for the code generation switch.
+ */
 static void (* const _wave_code_generation_collection_generation []) (FILE*, const wave_collection*)=
 {
     [WAVE_COLLECTION_ATOM]          = wave_code_generation_atom,
@@ -181,6 +177,10 @@ static void (* const _wave_code_generation_collection_generation []) (FILE*, con
     [WAVE_COLLECTION_CYCLIC_PAR]    = wave_code_generation_collection_cyclic_par,
     [WAVE_COLLECTION_UNKNOWN]       = NULL,
 };
+
+/**
+ * \brief An array for the atome print switch.
+ */
 static void (* _wave_code_generation_atom []) (FILE*, const wave_collection* collection) =
 {
     [WAVE_ATOM_LITERAL_INT]     = _wave_code_generation_fprint_int,
