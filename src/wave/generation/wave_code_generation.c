@@ -294,15 +294,22 @@ static void _wave_code_generation_fprint_int(FILE* output_file, const wave_colle
     wave_atom_fprint(output_file, wave_collection_get_atom( collection ));
     fprintf(output_file, ";\n");
 }
+
 static void _wave_code_generation_fprint_float(FILE* output_file, const wave_collection* collection){
+    (void) output_file; (void) collection;
 }
 static void _wave_code_generation_fprint_bool(FILE* output_file, const wave_collection* collection){
+    (void) output_file; (void) collection;
 }
 static void _wave_code_generation_fprint_char(FILE* output_file, const wave_collection* collection){
+    (void) output_file; (void) collection;
 }
 static void _wave_code_generation_fprint_string(FILE* output_file, const wave_collection* collection){
+    (void) output_file; (void) collection;
 }
 static void _wave_code_generation_fprint_operator(FILE* output_file, const wave_collection* collection){
+    (void) output_file; (void) collection;
 }
 static void _wave_code_generation_fprint_path(FILE* output_file, const wave_collection* collection){
+    (void) output_file; (void) collection;
 }

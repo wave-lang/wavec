@@ -218,7 +218,7 @@ wave_coordinate * wave_collection_get_length (const wave_collection * c)
     return wave_collection_info_get_length (info);
 }
 
-wave_collection * wave_collection_get_last (const wave_collection * c)
+wave_collection * wave_collection_get_last (wave_collection * c)
 {
     wave_collection * last = c;
     while (wave_collection_has_next (last))
