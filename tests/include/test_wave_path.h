@@ -33,7 +33,7 @@
 #include <stdbool.h>
 #include <CUnit/CUnit.h>
 
-#include "wave_path.h"
+#include "wave/ast/wave_path.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Suite related functions.

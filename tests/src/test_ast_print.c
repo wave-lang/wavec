@@ -32,9 +32,9 @@
 #include <string.h>
 #include <sysexits.h>
 
-#include "wave_path.h"
-#include "wave_atom.h"
-#include "wave_collection.h"
+#include "wave/ast/wave_path.h"
+#include "wave/ast/wave_atom.h"
+#include "wave/ast/wave_collection.h"
 
 /**
  * \brief Path number.

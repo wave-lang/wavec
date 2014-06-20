@@ -33,7 +33,7 @@
 #include <stdbool.h>
 #include <CUnit/CUnit.h>
 
-#include "wave_collection.h"
+#include "wave/ast/wave_collection.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Suite related functions.
