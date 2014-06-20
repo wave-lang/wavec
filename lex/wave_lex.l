@@ -133,17 +133,18 @@ int main(int argc, char ** argv)
     }
     wave_phrase_init (&p);
     if(yyparse() == 1){
-        //wave_phrase_free(&p);
+        wave_phrase_free(p._next_phrase);
         return EXIT_FAILURE;
     }
     wave_phrase_print(&p);
-    //wave_phrase_free(&p);
     wave_collection_compute_indexes(p._next_phrase->_collection);
     wave_collection_compute_length_and_coords(p._next_phrase->_collection);
     wave_code_generation_generate(stdout, p._next_phrase);
+    wave_phrase_free(p._next_phrase);
     fclose(yyin);
     if(argc == 2)
         fclose(yyout);
+    yylex_destroy();
     return EXIT_SUCCESS;
 }
 
