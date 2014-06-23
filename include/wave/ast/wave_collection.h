@@ -451,11 +451,12 @@ bool wave_collection_path_is_valid (wave_collection * c, const wave_path * p);
  * \brief Access a collection following path.
  * \param c Collection.
  * \param p Path.
+ * \param path_size A pointer to an int where to store the path length. Can be \c NULL if you don't need it.
  * \return The seeked collection, if valid.
  * \retval NULL if the path is not valid.
  * \relatesalso wave_collection
  */
-wave_collection * wave_collection_access (wave_collection * c, const wave_path * p);
+wave_collection * wave_collection_access (wave_collection * c, const wave_path * p, int * path_size);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Printing.
