@@ -85,8 +85,19 @@ typedef union wave_atom_content
  * \note The setter functions automatically set the atom's type appropriately.
  * \warning Atoms not obtained using wave_atom_alloc() must be initialized
  * using wave_atom_init() !
+ * \warning The setters functions do not clean the atom prior modification !
  *
- * # Description
+ * ## Atom creation and destruction
+ * ### Dynamic allocation
+ * An atom can be dynamically created using wave_atom_alloc().
+ * Atoms created this way must be freed using wave_atom_free().
+ *
+ * ### Static allocation
+ * Statically created atoms must be initialized using wave_atom_init() and
+ * cleaned using wave_atom_clean().
+ *
+ * ## Atom type
+ * ### Possible types
  * An atom can hold:
  * - a constant integer value (#WAVE_ATOM_LITERAL_INT)
  * - a constant float value (#WAVE_ATOM_LITERAL_FLOAT)
@@ -96,12 +107,11 @@ typedef union wave_atom_content
  * - an operator (#WAVE_ATOM_OPERATOR)
  * - a path (#WAVE_ATOM_PATH)
  *
- * An atom can be dynamically created using wave_atom_alloc().
- * Atoms created this way must be freed using wave_atom_free().
+ * An atom that does not yet (or does not anymore) hold a value is of type
+ * #WAVE_ATOM_UNKNOWN. Sane users should not attempt to get the content of such
+ * atoms.
  *
- * Statically created atoms must be initialized using wave_atom_init().
- *
- * # Atom type
+ * ### Getting an atom's type
  * In order to determine the type of an atom, one must use wave_atom_get_type().
  * Once the type is known, one can use one of the following functions to get
  * the atom's content:
@@ -113,10 +123,7 @@ typedef union wave_atom_content
  * - wave_atom_get_path()
  * - wave_atom_get_operator()
  *
- * An atom that does not yet (or does not anymore) hold a value is of type
- * #WAVE_ATOM_UNKNOWN. Sane users should not attempt to get the content of such
- * atoms.
- *
+ * ## Atom modification
  * Atoms can be modified using one of the following functions:
  * - wave_atom_set_int()
  * - wave_atom_set_float()
@@ -128,6 +135,14 @@ typedef union wave_atom_content
  *
  * Please note that these functions automatically set the atom's type
  * appropriately.
+ *
+ * Do not forget that these functions do not clean the atom's content.
+ * If the atom already holds a value, it should first be cleaned using
+ * wave_atom_clean() before using one of these setters.
+ *
+ * ## Atom display
+ * It is possible to print an atom to a stream using wave_atom_fprint() or to
+ * the standard output using wave_atom_print().
  */
 typedef struct wave_atom
 {
@@ -347,6 +362,8 @@ wave_path * wave_atom_get_path (const wave_atom * atom);
  * \param i Int value.
  * \relatesalso wave_atom
  * \warning \c atom must be not \c NULL.
+ * \warning If the atom already holds a value, it might be necessary to use
+ * wave_atom_clean() first.
  * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_INT
  */
 void wave_atom_set_int (wave_atom * atom, wave_int i);
@@ -357,6 +374,8 @@ void wave_atom_set_int (wave_atom * atom, wave_int i);
  * \param f Float value.
  * \relatesalso wave_atom
  * \warning \c atom must be not \c NULL.
+ * \warning If the atom already holds a value, it might be necessary to use
+ * wave_atom_clean() first.
  * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_FLOAT
  */
 void wave_atom_set_float (wave_atom * atom, wave_float f);
@@ -367,6 +386,8 @@ void wave_atom_set_float (wave_atom * atom, wave_float f);
  * \param b Bool value.
  * \relatesalso wave_atom
  * \warning \c atom must be not \c NULL.
+ * \warning If the atom already holds a value, it might be necessary to use
+ * wave_atom_clean() first.
  * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_BOOL
  */
 void wave_atom_set_bool (wave_atom * atom, wave_bool b);
@@ -377,6 +398,8 @@ void wave_atom_set_bool (wave_atom * atom, wave_bool b);
  * \param c Char value.
  * \relatesalso wave_atom
  * \warning \c atom must be not \c NULL.
+ * \warning If the atom already holds a value, it might be necessary to use
+ * wave_atom_clean() first.
  * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_CHAR
  */
 void wave_atom_set_char (wave_atom * atom, wave_char c);
@@ -387,6 +410,8 @@ void wave_atom_set_char (wave_atom * atom, wave_char c);
  * \param string String value.
  * \relatesalso wave_atom
  * \warning \c atom must be not \c NULL.
+ * \warning If the atom already holds a value, it might be necessary to use
+ * wave_atom_clean() first.
  * \post wave_atom_get_type() == #WAVE_ATOM_LITERAL_STRING
  */
 void wave_atom_set_string (wave_atom * atom, const_wave_string string);
@@ -397,6 +422,8 @@ void wave_atom_set_string (wave_atom * atom, const_wave_string string);
  * \param path Path.
  * \relatesalso wave_atom
  * \warning \c atom must be not \c NULL.
+ * \warning If the atom already holds a value, it might be necessary to use
+ * wave_atom_clean() first.
  * \post wave_atom_get_type() == #WAVE_ATOM_PATH
  */
 void wave_atom_set_path (wave_atom * atom, wave_path * path);
@@ -407,6 +434,8 @@ void wave_atom_set_path (wave_atom * atom, wave_path * path);
  * \param op Operator.
  * \relatesalso wave_atom
  * \warning \c atom must be not \c NULL.
+ * \warning If the atom already holds a value, it might be necessary to use
+ * wave_atom_clean() first.
  * \post wave_atom_get_type() == #WAVE_ATOM_OPERATOR
  */
 void wave_atom_set_operator (wave_atom * atom, wave_operator op);
