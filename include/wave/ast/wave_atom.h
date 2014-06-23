@@ -45,6 +45,9 @@
 /**
  * \brief Atom type.
  * \sa wave_atom
+ *
+ * Wave atoms can hold several types of values. This enumeration is used to
+ * determine the type of the value.
  */
 typedef enum wave_atom_type
 {
@@ -61,6 +64,9 @@ typedef enum wave_atom_type
 /**
  * \brief Atom content.
  * \sa wave_atom
+ *
+ * Wave atoms can hold several types of values. However, it can only hold one
+ * value at a time, hence this union.
  */
 typedef union wave_atom_content
 {
@@ -75,17 +81,53 @@ typedef union wave_atom_content
 
 /**
  * \brief Atom.
- *
- * An atom can hold:
- * - a constant integer value
- * - a constant float value
- * - a constant boolean value
- * - a constant character value
- * - a constant string value
- * - an operator
- * - a path
  * \sa wave_atom_type, wave_atom_content
- * \warning Atoms not obtained using wave_atom_alloc() must be initialized using wave_atom_init() !
+ * \note The setter functions automatically set the atom's type appropriately.
+ * \warning Atoms not obtained using wave_atom_alloc() must be initialized
+ * using wave_atom_init() !
+ *
+ * # Description
+ * An atom can hold:
+ * - a constant integer value (#WAVE_ATOM_LITERAL_INT)
+ * - a constant float value (#WAVE_ATOM_LITERAL_FLOAT)
+ * - a constant boolean value (#WAVE_ATOM_LITERAL_BOOL)
+ * - a constant character value (#WAVE_ATOM_LITERAL_CHAR)
+ * - a constant string value (#WAVE_ATOM_LITERAL_STRING)
+ * - an operator (#WAVE_ATOM_OPERATOR)
+ * - a path (#WAVE_ATOM_PATH)
+ *
+ * An atom can be dynamically created using wave_atom_alloc().
+ * Atoms created this way must be freed using wave_atom_free().
+ *
+ * Statically created atoms must be initialized using wave_atom_init().
+ *
+ * # Atom type
+ * In order to determine the type of an atom, one must use wave_atom_get_type().
+ * Once the type is known, one can use one of the following functions to get
+ * the atom's content:
+ * - wave_atom_get_int()
+ * - wave_atom_get_float()
+ * - wave_atom_get_char()
+ * - wave_atom_get_bool()
+ * - wave_atom_get_string()
+ * - wave_atom_get_path()
+ * - wave_atom_get_operator()
+ *
+ * An atom that does not yet (or does not anymore) hold a value is of type
+ * #WAVE_ATOM_UNKNOWN. Sane users should not attempt to get the content of such
+ * atoms.
+ *
+ * Atoms can be modified using one of the following functions:
+ * - wave_atom_set_int()
+ * - wave_atom_set_float()
+ * - wave_atom_set_char()
+ * - wave_atom_set_bool()
+ * - wave_atom_set_string()
+ * - wave_atom_set_path()
+ * - wave_atom_set_operator()
+ *
+ * Please note that these functions automatically set the atom's type
+ * appropriately.
  */
 typedef struct wave_atom
 {
