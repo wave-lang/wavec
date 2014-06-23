@@ -52,8 +52,8 @@ FLAGS_CC = $(FLAGS_CC_INCLUDE) $(FLAGS_CC_WARNINGS) $(FLAGS_CC_DEBUG) \
 	$(FLAGS_CC_MISC)
 FLAGS_CC_LEX_YACC = -W $(FLAGS_CC_INCLUDE) $(FLAGS_CC_DEBUG) $(FLAGS_CC_MISC)
 FLAGS_CC_LIB = -L$(PATH_LIB) -L$(PATH_LIB_HASH)
-FLAGS_CC_LINK = $(FLAGS_CC_LIB) -lhash -lfl -ly -lm -lwave -lwaveast
-FLAGS_CC_UNIT_TESTS = -lcunit -lm -lwavetests $(FLAGS_CC_LINK)
+FLAGS_CC_LINK = $(FLAGS_CC_LIB) -lhash -lfl -ly -lm -lwaveast -lwave
+FLAGS_CC_UNIT_TESTS = -lwavetests $(FLAGS_CC_LINK) -lcunit
 
 ################################################################################
 # Files
@@ -126,13 +126,13 @@ preproc_utils.o: preproc_utils.c preproc_utils.h | obj
 # Compiling
 ################################################################################
 
-main: main.o libwave.a libwaveast.a | bin_dir
+main: main.o libhash.a libwave.a libwaveast.a | bin_dir
 	$(CC) -o $(PATH_BIN)/$@ $(PATH_OBJ)/main.o $(FLAGS_CC_LINK)
 
-unit_tests: unit_tests.o libwave.a libwaveast.a libwavetests.a | bin_dir
+unit_tests: unit_tests.o libhash.a libwave.a libwaveast.a libwavetests.a | bin_dir
 	$(CC) -o $(PATH_BIN)/$@ $(PATH_OBJ)/unit_tests.o $(FLAGS_CC_UNIT_TESTS)
 
-print_tests: test_ast_print.o libwave.a libwaveast.a | bin_dir
+print_tests: test_ast_print.o libhash.a libwave.a libwaveast.a | bin_dir
 	$(CC) -o $(PATH_BIN)/$@ $(PATH_OBJ)/test_ast_print.o $(FLAGS_CC_LINK)
 
 %.o: %.c | obj_dir
