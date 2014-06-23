@@ -56,7 +56,7 @@ static inline char _wave_atom_content_get_char (const wave_atom_content * atom)
     return atom->_char;
 }
 
-static inline char * _wave_atom_content_get_string (const wave_atom_content * atom)
+static inline const_wave_string _wave_atom_content_get_string (const wave_atom_content * atom)
 {
     return atom->_string;
 }
@@ -94,10 +94,9 @@ static inline wave_atom_content _wave_atom_content_from_char (wave_char c)
     return (wave_atom_content) { ._char = c };
 }
 
-static inline wave_atom_content _wave_atom_content_from_string (const wave_char * string)
+static inline wave_atom_content _wave_atom_content_from_string (const_wave_string string)
 {
-    wave_char * content_string = malloc ((strlen (string) + 1) * sizeof * content_string);
-    strcpy (content_string, string);
+    wave_string content_string = wave_string_duplicate (string);
     return (wave_atom_content) { ._string = content_string };
 }
 
@@ -129,14 +128,19 @@ static inline void _wave_atom_content_fprint_bool (FILE * stream, const wave_ato
     fprintf (stream, "%s", c->_bool ? "true" : "false");
 }
 
+/* Symbols used in printing functions for characterss, strings and operators. */
+static const char _char_delimiter = '\'';
+static const char _string_delimiter = '\"';
+static const char _path_symbol = '@';
+
 static inline void _wave_atom_content_fprint_char (FILE * stream, const wave_atom_content * c)
 {
-    fprintf (stream, "\'%c\'", c->_char);
+    fprintf (stream, "%c%c%c", _char_delimiter, c->_char, _char_delimiter);
 }
 
 static inline void _wave_atom_content_fprint_string (FILE * stream, const wave_atom_content * c)
 {
-    fprintf (stream, "\"%s\"", c->_string);
+    fprintf (stream, "%c%s%c", _string_delimiter, c->_string, _string_delimiter);
 }
 
 static inline void _wave_atom_content_fprint_operator (FILE * stream, const wave_atom_content * c)
@@ -146,7 +150,7 @@ static inline void _wave_atom_content_fprint_operator (FILE * stream, const wave
 
 static inline void _wave_atom_content_fprint_path (FILE * stream, const wave_atom_content * c)
 {
-    fprintf (stream, "@");
+    fprintf (stream, "%c", _path_symbol);
     wave_path_fprint (stream, c->_path);
 }
 
@@ -173,11 +177,6 @@ static inline void _wave_atom_content_fprint (FILE * stream, const wave_atom_con
 // Static utilities (wave_atom).
 ////////////////////////////////////////////////////////////////////////////////
 
-static inline wave_atom _wave_atom_build (wave_atom_type atom_type, wave_atom_content content)
-{
-    return (wave_atom) { ._type = atom_type, ._content = content };
-}
-
 static inline void _wave_atom_set_type (wave_atom * const atom, wave_atom_type atom_type)
 {
     atom->_type = atom_type;
@@ -200,6 +199,16 @@ static inline const wave_atom_content * _wave_atom_get_content (const wave_atom 
 void wave_atom_init (wave_atom * const atom)
 {
     atom->_type = WAVE_ATOM_UNKNOWN;
+    atom->_content._string = NULL;
+}
+
+void wave_atom_clean (wave_atom * const atom)
+{
+    wave_atom_type atom_type = wave_atom_get_type (atom);
+    if (atom_type == WAVE_ATOM_LITERAL_STRING)
+        free (atom->_content._string);
+    else if (atom_type == WAVE_ATOM_PATH)
+        wave_path_free (atom->_content._path);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -216,75 +225,68 @@ void * wave_atom_alloc (void)
     return atom;
 }
 
-void * wave_atom_free (wave_atom * atom)
+void * wave_atom_free (wave_atom * const atom)
 {
     if (atom != NULL)
     {
-        wave_atom_type atom_type = wave_atom_get_type (atom);
-        if (atom_type == WAVE_ATOM_LITERAL_STRING)
-            free (atom->_content._string);
-        else if (atom_type == WAVE_ATOM_PATH)
-            wave_path_free (atom->_content._path);
+        wave_atom_clean (atom);
         free (atom);
-        atom = NULL;
     }
     return NULL;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Builders.
+// Atom type information.
 ////////////////////////////////////////////////////////////////////////////////
 
-wave_atom wave_atom_from_int (wave_int i)
+wave_atom_type wave_atom_get_type (const wave_atom * const atom)
 {
-    wave_atom_content content = _wave_atom_content_from_int (i);
-    return _wave_atom_build (WAVE_ATOM_LITERAL_INT, content);
+    return atom->_type;
 }
 
-wave_atom wave_atom_from_float (wave_float f)
+bool wave_atom_is_int (const wave_atom * const atom)
 {
-    wave_atom_content content = _wave_atom_content_from_float (f);
-    return _wave_atom_build (WAVE_ATOM_LITERAL_FLOAT, content);
+    return wave_atom_get_type (atom) == WAVE_ATOM_LITERAL_INT;
 }
 
-wave_atom wave_atom_from_char (wave_char c)
+bool wave_atom_is_float (const wave_atom * const atom)
 {
-    wave_atom_content content = _wave_atom_content_from_char (c);
-    return _wave_atom_build (WAVE_ATOM_LITERAL_CHAR, content);
+    return wave_atom_get_type (atom) == WAVE_ATOM_LITERAL_FLOAT;
 }
 
-wave_atom wave_atom_from_bool (wave_bool b)
+bool wave_atom_is_char (const wave_atom * const atom)
 {
-    wave_atom_content content = _wave_atom_content_from_bool (b);
-    return _wave_atom_build (WAVE_ATOM_LITERAL_BOOL, content);
+    return wave_atom_get_type (atom) == WAVE_ATOM_LITERAL_CHAR;
 }
 
-wave_atom wave_atom_from_string (const wave_char * string)
+bool wave_atom_is_bool (const wave_atom * const atom)
 {
-    wave_atom_content content = _wave_atom_content_from_string (string);
-    return _wave_atom_build (WAVE_ATOM_LITERAL_STRING, content);
+    return wave_atom_get_type (atom) == WAVE_ATOM_LITERAL_BOOL;
 }
 
-wave_atom wave_atom_from_path (wave_path * path)
+bool wave_atom_is_string (const wave_atom * const atom)
 {
-    wave_atom_content content = _wave_atom_content_from_path (path);
-    return _wave_atom_build (WAVE_ATOM_PATH, content);
+    return wave_atom_get_type (atom) == WAVE_ATOM_LITERAL_STRING;
 }
 
-wave_atom wave_atom_from_operator (wave_operator op)
+bool wave_atom_is_path (const wave_atom * const atom)
 {
-    wave_atom_content content = _wave_atom_content_from_operator (op);
-    return _wave_atom_build (WAVE_ATOM_OPERATOR, content);
+    return wave_atom_get_type (atom) == WAVE_ATOM_PATH;
+}
+
+bool wave_atom_is_operator (const wave_atom * const atom)
+{
+    return wave_atom_get_type (atom) == WAVE_ATOM_OPERATOR;
+}
+
+bool wave_atom_is_unknown (const wave_atom * const atom)
+{
+    return wave_atom_get_type (atom) == WAVE_ATOM_UNKNOWN;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////
-
-wave_atom_type wave_atom_get_type (const wave_atom * atom)
-{
-    return atom->_type;
-}
 
 wave_int wave_atom_get_int (const wave_atom * const atom)
 {
@@ -310,7 +312,7 @@ wave_bool wave_atom_get_bool (const wave_atom * const atom)
     return _wave_atom_content_get_bool (content);
 }
 
-wave_char * wave_atom_get_string (const wave_atom * const atom)
+const_wave_string wave_atom_get_string (const wave_atom * const atom)
 {
     const wave_atom_content * const content = _wave_atom_get_content (atom);
     return _wave_atom_content_get_string (content);
@@ -368,7 +370,7 @@ void wave_atom_set_char (wave_atom * const atom, wave_char c)
     _wave_atom_set_content (atom, _wave_atom_content_from_char (c));
 }
 
-void wave_atom_set_string (wave_atom * const atom, wave_char * string)
+void wave_atom_set_string (wave_atom * const atom, const_wave_string string)
 {
     _wave_atom_set_type (atom, WAVE_ATOM_LITERAL_STRING);
     _wave_atom_set_content (atom, _wave_atom_content_from_string (string));

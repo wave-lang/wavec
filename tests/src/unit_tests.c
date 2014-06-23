@@ -41,6 +41,8 @@
  */
 int main (int argc, char ** argv)
 {
+    (void) argc; (void) argv;
+    
     CU_ErrorCode error = CU_initialize_registry ();
 
     if (error != CUE_SUCCESS)
