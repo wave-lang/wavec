@@ -69,13 +69,6 @@ static CU_TestInfo test_wave_atom_info [] =
 {
     { "Test wave_atom_alloc",           test_wave_atom_alloc            },
     { "Test wave_atom_free",            test_wave_atom_free             },
-    { "Test wave_atom_from_int",        test_wave_atom_from_int         },
-    { "Test wave_atom_from_float",      test_wave_atom_from_float       },
-    { "Test wave_atom_from_char",       test_wave_atom_from_char        },
-    { "Test wave_atom_from_bool",       test_wave_atom_from_bool        },
-    { "Test wave_atom_from_string",     test_wave_atom_from_string      },
-    { "Test wave_atom_from_path",       test_wave_atom_from_path        },
-    { "Test wave_atom_from_operator",   test_wave_atom_from_operator    },
     { "Test wave_atom_get_type",        test_wave_atom_get_type         },
     { "Test wave_atom_get_int",         test_wave_atom_get_int          },
     { "Test wave_atom_get_float",       test_wave_atom_get_float        },

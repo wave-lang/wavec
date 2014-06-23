@@ -29,6 +29,32 @@
  */
 #include "wave/ast/wave_coordinate.h"
 
+void wave_coordinate_init (wave_coordinate * c)
+{
+    c->_type = WAVE_COORD_UNKNOWN;
+    c->_content._binary._left = NULL;
+    c->_content._binary._right = NULL;
+}
+
+static inline void _wave_coordinate_free_binary (wave_coordinate * const c)
+{
+    wave_coordinate_free (c->_content._binary._left);
+    wave_coordinate_free (c->_content._binary._right);
+}
+
+static inline void _wave_coordinate_free_var (wave_coordinate * const c)
+{
+    wave_int_list_free (c->_content._var);
+}
+
+void wave_coordinate_clean (wave_coordinate * const c)
+{
+    if (c->_type == WAVE_COORD_PLUS || c->_type == WAVE_COORD_TIMES)
+        _wave_coordinate_free_binary (c);
+    else if (c->_type == WAVE_COORD_VAR)
+        _wave_coordinate_free_var (c);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,46 +63,40 @@ void * wave_coordinate_alloc (void)
 {
     wave_coordinate * c = malloc (sizeof * c);
     if (c != NULL)
-        * c = (wave_coordinate)
-        {
-            ._type = WAVE_COORD_UNKNOWN,
-            ._content._binary._left = NULL,
-            ._content._binary._right = NULL,
-        };
+        wave_coordinate_init (c);
 
     return c;
 }
 
-void wave_coordinate_free (wave_coordinate * c)
+void wave_coordinate_free (wave_coordinate * const c)
 {
     if (c != NULL)
     {
-        if (c->_type == WAVE_COORD_PLUS || c->_type == WAVE_COORD_TIMES)
-        {
-            wave_coordinate_free (c->_content._binary._left);
-            wave_coordinate_free (c->_content._binary._right);
-        }
-        else if (c->_type == WAVE_COORD_VAR)
-        {
-            wave_int_list_free (c->_content._var);
-        }
+        wave_coordinate_clean (c);
         free (c);
     }
 }
 
-void * wave_coordinate_copy (const wave_coordinate * c)
+static inline void _wave_coordinate_copy_binary (wave_coordinate * const destination, const wave_coordinate * const source)
+{
+    destination->_content._binary._left = wave_coordinate_copy (source->_content._binary._left);
+    destination->_content._binary._right = wave_coordinate_copy (source->_content._binary._right);
+
+}
+
+static inline void _wave_coordinate_copy_var (wave_coordinate * destination, const wave_coordinate * const source)
+{
+    destination->_content._var = wave_int_list_copy (source->_content._var);
+}
+
+void * wave_coordinate_copy (const wave_coordinate * const c)
 {
     wave_coordinate * copy = wave_coordinate_alloc ();
     * copy = * c;
     if (c->_type == WAVE_COORD_PLUS || c->_type == WAVE_COORD_TIMES)
-    {
-        copy->_content._binary._left = wave_coordinate_copy (c->_content._binary._left);
-        copy->_content._binary._right = wave_coordinate_copy (c->_content._binary._right);
-    }
+        _wave_coordinate_copy_binary (copy, c);
     else if (c->_type == WAVE_COORD_VAR)
-    {
-        copy->_content._var = wave_int_list_copy (c->_content._var);
-    }
+        _wave_coordinate_copy_var (copy, c);
 
     return copy;
 }
@@ -84,27 +104,27 @@ void * wave_coordinate_copy (const wave_coordinate * c)
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////
 
-wave_coordinate_type wave_coordinate_get_type (const wave_coordinate * c)
+wave_coordinate_type wave_coordinate_get_type (const wave_coordinate * const c)
 {
     return c->_type;
 }
 
-wave_int_list * wave_coordinate_get_list (const wave_coordinate * c)
+wave_int_list * wave_coordinate_get_list (const wave_coordinate * const c)
 {
     return c->_content._var;
 }
 
-int wave_coordinate_get_constant (const wave_coordinate * c)
+int wave_coordinate_get_constant (const wave_coordinate * const c)
 {
     return c->_content._constant;
 }
 
-wave_coordinate * wave_coordinate_get_left (const wave_coordinate * c)
+wave_coordinate * wave_coordinate_get_left (const wave_coordinate * const c)
 {
     return c->_content._binary._left;
 }
 
-wave_coordinate * wave_coordinate_get_right (const wave_coordinate * c)
+wave_coordinate * wave_coordinate_get_right (const wave_coordinate * const c)
 {
     return c->_content._binary._right;
 }
@@ -113,24 +133,24 @@ wave_coordinate * wave_coordinate_get_right (const wave_coordinate * c)
 // Setters.
 ////////////////////////////////////////////////////////////////////////////////
 
-static inline void _wave_coordinate_set_type (wave_coordinate * c, wave_coordinate_type t)
+static inline void _wave_coordinate_set_type (wave_coordinate * const c, wave_coordinate_type t)
 {
     c->_type = t;
 }
 
-void wave_coordinate_set_constant (wave_coordinate * c, int constant)
+void wave_coordinate_set_constant (wave_coordinate * const c, int constant)
 {
     _wave_coordinate_set_type (c, WAVE_COORD_CONSTANT);
     c->_content._constant = constant;
 }
 
-void wave_coordinate_set_list (wave_coordinate * c, wave_int_list * list)
+void wave_coordinate_set_list (wave_coordinate * const c, wave_int_list * const list)
 {
     _wave_coordinate_set_type (c, WAVE_COORD_VAR);
     c->_content._var = list;
 }
 
-void wave_coordinate_set_plus_left (wave_coordinate * c, wave_coordinate * left)
+void wave_coordinate_set_plus_left (wave_coordinate * const c, wave_coordinate * const left)
 {
     _wave_coordinate_set_type (c, WAVE_COORD_PLUS);
     c->_content._binary._left = left;
@@ -150,20 +170,58 @@ void wave_coordinate_set_times_left (wave_coordinate * c, wave_coordinate * left
 
 void wave_coordinate_set_times_right (wave_coordinate * c, wave_coordinate * right)
 {
-    _wave_coordinate_set_type (c, WAVE_COORD_TIMES);
+        _wave_coordinate_set_type (c, WAVE_COORD_TIMES);
     c->_content._binary._right = right;
+}
+
+static inline bool _both_are_constants (const wave_coordinate * left, const wave_coordinate * right)
+{
+    wave_coordinate_type t_left = wave_coordinate_get_type (left);
+    wave_coordinate_type t_right = wave_coordinate_get_type (right);
+
+    return t_left == WAVE_COORD_CONSTANT && t_right == WAVE_COORD_CONSTANT;
+}
+
+/* Should be called only for t == WAVE_COORD_PLUS or t == WAVE_COORD_TIMES ! */
+static inline int _compute_constant (wave_coordinate * left, wave_coordinate * right, wave_coordinate_type t)
+{
+    int left_value = wave_coordinate_get_constant (left);
+    int right_value = wave_coordinate_get_constant (right);
+
+    return t == WAVE_COORD_PLUS ? left_value + right_value : left_value * right_value;
+}
+
+static inline void _compute_set_and_free (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right, wave_coordinate_type t)
+{
+    int constant = _compute_constant (left, right, t);
+    wave_coordinate_set_constant (c, constant);
+    wave_coordinate_free (left);
+    wave_coordinate_free (right);
+}
+
+static inline void _set_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right, wave_coordinate_type t)
+{
+    _wave_coordinate_set_type (c, t);
+    c->_content._binary._left = left;
+    c->_content._binary._right = right;
+}
+
+static inline void _wave_coordinate_set_binary (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right, wave_coordinate_type t)
+{
+    if (_both_are_constants (left, right))
+        _compute_set_and_free (c, left, right, t);
+    else
+        _set_left_and_right (c, left, right, t);
 }
 
 void wave_coordinate_set_plus_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right)
 {
-    wave_coordinate_set_plus_left (c, left);
-    wave_coordinate_set_plus_right (c, right);
+    _wave_coordinate_set_binary (c, left, right, WAVE_COORD_PLUS);
 }
 
 void wave_coordinate_set_times_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right)
 {
-    wave_coordinate_set_times_left (c, left);
-    wave_coordinate_set_times_right (c, right);
+    _wave_coordinate_set_binary (c, left, right, WAVE_COORD_TIMES);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -183,19 +241,24 @@ void _wave_coordinate_var_fprint (FILE * stream, const wave_coordinate * c)
         fprintf (stream, "%d", e->_content);
 }
 
+static const char _plus_symbol = '+';
+static const char _times_symbol = '*';
+static const char _opening_parenthesis ='(';
+static const char _closing_parenthesis =')';
+
 void _wave_coordinate_times_fprint (FILE * stream, const wave_coordinate * c)
 {
-    fprintf (stream, "(");
+    fprintf (stream, "%c", _opening_parenthesis);
     wave_coordinate_fprint (stream, wave_coordinate_get_left (c));
-    fprintf (stream, ") * (");
+    fprintf (stream, "%c %c %c", _opening_parenthesis, _times_symbol, _closing_parenthesis);
     wave_coordinate_fprint (stream, wave_coordinate_get_right (c));
-    fprintf (stream, ")");
+    fprintf (stream, "%c", _closing_parenthesis);
 }
 
 void _wave_coordinate_plus_fprint (FILE * stream, const wave_coordinate * c)
 {
     wave_coordinate_fprint (stream, wave_coordinate_get_left (c));
-    fprintf (stream, " + ");
+    fprintf (stream, " %c ", _plus_symbol);
     wave_coordinate_fprint (stream, wave_coordinate_get_right (c));
 }
 
