@@ -146,12 +146,25 @@ wave_atom * wave_collection_get_atom (const wave_collection * const c)
 
 wave_collection * wave_collection_get_list (const wave_collection * const c)
 {
-    return c->_inner._list;
+    wave_collection_type collection_type = wave_collection_get_type(c);
+    if(collection_type == WAVE_COLLECTION_REP_SEQ || collection_type == WAVE_COLLECTION_REP_PAR)
+        return wave_collection_get_repetition_list(c);
+    if(
+        collection_type == WAVE_COLLECTION_SEQ || collection_type == WAVE_COLLECTION_PAR ||
+        collection_type == WAVE_COLLECTION_CYCLIC_SEQ || collection_type == WAVE_COLLECTION_CYCLIC_PAR
+        )
+        return wave_collection_get_normal_list(c);
+    return NULL;
 }
 
 wave_collection_repetition_type wave_collection_get_repetition_type (const wave_collection * const c)
 {
     return c->_inner._repetition._type;
+}
+
+wave_collection * wave_collection_get_normal_list (const wave_collection * const c)
+{
+    return c->_inner._list;
 }
 
 wave_collection * wave_collection_get_repetition_list (const wave_collection * const c)
@@ -340,15 +353,9 @@ void wave_collection_compute_indexes (wave_collection * c)
         current_index++;
 
         wave_collection_type t = wave_collection_get_type (current);
-        if (t == WAVE_COLLECTION_PAR || t == WAVE_COLLECTION_SEQ
-            || t == WAVE_COLLECTION_CYCLIC_SEQ || t == WAVE_COLLECTION_CYCLIC_PAR)
+        if (t != WAVE_COLLECTION_ATOM && t!= WAVE_COLLECTION_UNKNOWN)
         {
             wave_collection * list = wave_collection_get_list (current);
-            wave_collection_compute_indexes (list);
-        }
-        else if (t == WAVE_COLLECTION_REP_SEQ || t == WAVE_COLLECTION_REP_PAR)
-        {
-            wave_collection * list = wave_collection_get_repetition_list (current);
             wave_collection_compute_indexes (list);
         }
     }
@@ -433,11 +440,8 @@ static inline void _wave_collection_compute_current (wave_collection * c)
     wave_collection_type t = wave_collection_get_type (c);
     wave_collection * list = NULL;
 
-    if (t == WAVE_COLLECTION_SEQ || t == WAVE_COLLECTION_PAR
-        || t == WAVE_COLLECTION_CYCLIC_SEQ || t == WAVE_COLLECTION_CYCLIC_PAR)
+    if (t != WAVE_COLLECTION_ATOM && t!= WAVE_COLLECTION_UNKNOWN)
         list = wave_collection_get_list (c);
-    else if (t == WAVE_COLLECTION_REP_SEQ || t == WAVE_COLLECTION_REP_PAR)
-        list = wave_collection_get_repetition_list (c);
 
     if (list != NULL)
         wave_collection_compute_length_and_coords (list);
@@ -465,13 +469,15 @@ static inline wave_collection * _access_collection_repeat_number (wave_collectio
     return m;
 }
 
-static inline wave_collection * _access_collection_repeat_infinite (wave_collection * c, const wave_path * p)
+static inline wave_collection * _access_collection_repeat_infinite (wave_collection * c, const wave_path * p, int * move_size)
 {
     wave_collection * m = c;
     wave_collection * next = m;
+    * move_size = 0;
 
     while (next != NULL)
     {
+        *move_size += 1;
         m = next;
         next = wave_collection_access (m, p->_complex_move._repeat._path);
     }
@@ -479,10 +485,11 @@ static inline wave_collection * _access_collection_repeat_infinite (wave_collect
     return m;
 }
 
-static wave_collection * _access_collection (wave_collection * c, const wave_path * p)
+static wave_collection * _access_collection (wave_collection * c, const wave_path * p, int * move_size)
 {
     wave_collection * access = NULL;
     wave_move_type m = wave_path_get_move (p);
+    * move_size = 1;
     if (m == WAVE_MOVE_UP)
         access = wave_collection_get_parent (c);
     else if (m == WAVE_MOVE_DOWN)
@@ -493,10 +500,12 @@ static wave_collection * _access_collection (wave_collection * c, const wave_pat
         access = wave_collection_get_next (c);
     else if (m == WAVE_MOVE_REP)
     {
-        if (wave_path_get_repeat_type (p) == WAVE_PATH_REPEAT_CONSTANT)
+        if (wave_path_get_repeat_type (p) == WAVE_PATH_REPEAT_CONSTANT){
+            * move_size = wave_collection_get_repetition_times(c);
             access = _access_collection_repeat_number (c, p);
+        }
         else
-            access = _access_collection_repeat_infinite (c, p);
+            access = _access_collection_repeat_infinite (c, p, move_size);
     }
 
     return access;
@@ -511,12 +520,15 @@ wave_collection * wave_collection_access (wave_collection * c, const wave_path *
 {
     const wave_path * current_move = p;
     wave_collection * current_collection = c;
+    int move_size;
 
     while (current_move != NULL && current_collection != NULL)
     {
-        current_collection = _access_collection (current_collection, current_move);
+        current_collection = _access_collection (current_collection, current_move, &move_size);
         current_move = wave_path_get_next (p);
     }
+
+    printf("Size of the move : %d\n", move_size);
 
     return current_collection;
 }

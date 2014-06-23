@@ -190,9 +190,20 @@ wave_atom * wave_collection_get_atom (const wave_collection * c);
  * \param c Collection.
  * \return Collection.
  * \relatesalso wave_collection
+ * \note This function looks at the type of the collection and get the appropriate list.
+ * \retval NULL If the type of the collection is neither a repetition or cyclic collection.
  * \warning \c c must be not \c NULL.
  */
 wave_collection * wave_collection_get_list (const wave_collection * c);
+
+/**
+ * \brief Get a collection's list.
+ * \param c Collection.
+ * \return Collection.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
+wave_collection * wave_collection_get_normal_list (const wave_collection * const c);
 
 /**
  * \brief Get a collection's repetition list.
