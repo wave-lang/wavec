@@ -190,9 +190,20 @@ wave_atom * wave_collection_get_atom (const wave_collection * c);
  * \param c Collection.
  * \return Collection.
  * \relatesalso wave_collection
+ * \note This function looks at the type of the collection and get the appropriate list.
+ * \retval NULL If the type of the collection is neither a repetition or cyclic collection.
  * \warning \c c must be not \c NULL.
  */
 wave_collection * wave_collection_get_list (const wave_collection * c);
+
+/**
+ * \brief Get a collection's list.
+ * \param c Collection.
+ * \return Collection.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
+wave_collection * wave_collection_get_normal_list (const wave_collection * const c);
 
 /**
  * \brief Get a collection's repetition list.
@@ -440,11 +451,12 @@ bool wave_collection_path_is_valid (wave_collection * c, const wave_path * p);
  * \brief Access a collection following path.
  * \param c Collection.
  * \param p Path.
+ * \param path_size A pointer to an int where to store the path length. Can be \c NULL if you don't need it.
  * \return The seeked collection, if valid.
  * \retval NULL if the path is not valid.
  * \relatesalso wave_collection
  */
-wave_collection * wave_collection_access (wave_collection * c, const wave_path * p);
+wave_collection * wave_collection_access (wave_collection * c, const wave_path * p, int * path_size);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Printing.
