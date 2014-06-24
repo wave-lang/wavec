@@ -52,14 +52,14 @@
  */
 typedef enum wave_atom_type
 {
-    WAVE_ATOM_LITERAL_INT = 0,  /**<- The atom is a constant integer. */
-    WAVE_ATOM_LITERAL_FLOAT,    /**<- The atom is a constant float. */
-    WAVE_ATOM_LITERAL_BOOL,     /**<- The atom is a constant boolean. */
-    WAVE_ATOM_LITERAL_CHAR,     /**<- The atom is a constant character. */
-    WAVE_ATOM_LITERAL_STRING,   /**<- The atom is a constant string. */
-    WAVE_ATOM_OPERATOR,         /**<- The atom is an operator. */
-    WAVE_ATOM_PATH,             /**<- The atom is a path. */
-    WAVE_ATOM_UNKNOWN,          /**<- Unknown. */
+    WAVE_ATOM_LITERAL_INT = 0,  /**< The atom is a constant integer. */
+    WAVE_ATOM_LITERAL_FLOAT,    /**< The atom is a constant float. */
+    WAVE_ATOM_LITERAL_BOOL,     /**< The atom is a constant boolean. */
+    WAVE_ATOM_LITERAL_CHAR,     /**< The atom is a constant character. */
+    WAVE_ATOM_LITERAL_STRING,   /**< The atom is a constant string. */
+    WAVE_ATOM_OPERATOR,         /**< The atom is an operator. */
+    WAVE_ATOM_PATH,             /**< The atom is a path. */
+    WAVE_ATOM_UNKNOWN,          /**< Unknown. */
 } wave_atom_type;
 
 /**
@@ -71,13 +71,13 @@ typedef enum wave_atom_type
  */
 typedef union wave_atom_content
 {
-    wave_int _int;                  /**<- Integer. */
-    wave_float _float;              /**<- Float. */
-    wave_bool _bool;                /**<- Boolean. */
-    wave_char _char;                /**<- Character. */
-    wave_char * _string;            /**<- String. */
-    wave_operator _operator;        /**<- Operator of the atom. */
-    wave_path * _path;              /**<- Path of the atom. */
+    wave_int _int;                  /**< Integer. */
+    wave_float _float;              /**< Float. */
+    wave_bool _bool;                /**< Boolean. */
+    wave_char _char;                /**< Character. */
+    wave_char * _string;            /**< String. */
+    wave_operator _operator;        /**< Operator of the atom. */
+    wave_path * _path;              /**< Path of the atom. */
 } wave_atom_content;
 
 /**
@@ -89,13 +89,8 @@ typedef union wave_atom_content
  * \warning The setters functions do not clean the atom prior modification !
  *
  * # Atom creation and destruction
- * ## Dynamic allocation
  * An atom can be dynamically created using wave_atom_alloc().
  * Atoms created this way must be freed using wave_atom_free().
- *
- * ## Static allocation
- * Statically created atoms must be initialized using wave_atom_init() and
- * cleaned using wave_atom_clean().
  *
  * # Atom type
  * ## Possible types
