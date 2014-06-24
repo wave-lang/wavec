@@ -234,12 +234,12 @@ void wave_coordinate_set_times (wave_coordinate * c, wave_coordinate * left, wav
 // Printing.
 ////////////////////////////////////////////////////////////////////////////////
 
-void _wave_coordinate_constant_fprint (FILE * stream, const wave_coordinate * c)
+static inline void _wave_coordinate_constant_fprint (FILE * stream, const wave_coordinate * c)
 {
     fprintf (stream, "%d", wave_coordinate_get_constant (c));
 }
 
-void _wave_coordinate_var_fprint (FILE * stream, const wave_coordinate * c)
+static inline void _wave_coordinate_var_fprint (FILE * stream, const wave_coordinate * c)
 {
     fprintf (stream, "var");
     wave_int_list * list = wave_coordinate_get_list (c);
@@ -252,7 +252,7 @@ static const char _times_symbol = '*';
 static const char _opening_parenthesis ='(';
 static const char _closing_parenthesis =')';
 
-void _wave_coordinate_times_fprint (FILE * stream, const wave_coordinate * c)
+static inline void _wave_coordinate_times_fprint (FILE * stream, const wave_coordinate * c)
 {
     fprintf (stream, "%c", _opening_parenthesis);
     wave_coordinate_fprint (stream, wave_coordinate_get_left (c));
@@ -261,7 +261,7 @@ void _wave_coordinate_times_fprint (FILE * stream, const wave_coordinate * c)
     fprintf (stream, "%c", _closing_parenthesis);
 }
 
-void _wave_coordinate_plus_fprint (FILE * stream, const wave_coordinate * c)
+static inline void _wave_coordinate_plus_fprint (FILE * stream, const wave_coordinate * c)
 {
     wave_coordinate_fprint (stream, wave_coordinate_get_left (c));
     fprintf (stream, " %c ", _plus_symbol);
