@@ -41,6 +41,11 @@
 
 /**
  * \brief Wave int list element.
+ * wave_int_list_elements are used internally to store elements for
+ * wave_int_list.
+ *
+ * It holds a content and is linked to its predecessor and its successor in
+ * the list.
  */
 typedef struct wave_int_list_element
 {
