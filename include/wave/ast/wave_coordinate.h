@@ -180,40 +180,14 @@ void wave_coordinate_set_constant (wave_coordinate * c, int constant);
 void wave_coordinate_set_list (wave_coordinate * c, wave_int_list * list);
 
 /**
- * \brief Set a coordinate's left.
+ * \brief Set a coordinate's left and right.
  * \param c Coordinate.
  * \param left Left.
- * \relatesalso wave_coordinate
- * \warning \c c must be not \c NULL.
- */
-void wave_coordinate_set_plus_left (wave_coordinate * c, wave_coordinate * left);
-
-/**
- * \brief Set a coordinate's right.
- * \param c Coordinate.
  * \param right Right.
  * \relatesalso wave_coordinate
  * \warning \c c must be not \c NULL.
  */
-void wave_coordinate_set_plus_right (wave_coordinate * c, wave_coordinate * right);
-
-/**
- * \brief Set a coordinate's left.
- * \param c Coordinate.
- * \param left Left.
- * \relatesalso wave_coordinate
- * \warning \c c must be not \c NULL.
- */
-void wave_coordinate_set_times_left (wave_coordinate * c, wave_coordinate * left);
-
-/**
- * \brief Set a coordinate's right.
- * \param c Coordinate.
- * \param right Right.
- * \relatesalso wave_coordinate
- * \warning \c c must be not \c NULL.
- */
-void wave_coordinate_set_times_right (wave_coordinate * c, wave_coordinate * right);
+void wave_coordinate_set_plus (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right);
 
 /**
  * \brief Set a coordinate's left and right.
@@ -223,17 +197,7 @@ void wave_coordinate_set_times_right (wave_coordinate * c, wave_coordinate * rig
  * \relatesalso wave_coordinate
  * \warning \c c must be not \c NULL.
  */
-void wave_coordinate_set_plus_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right);
-
-/**
- * \brief Set a coordinate's left and right.
- * \param c Coordinate.
- * \param left Left.
- * \param right Right.
- * \relatesalso wave_coordinate
- * \warning \c c must be not \c NULL.
- */
-void wave_coordinate_set_times_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right);
+void wave_coordinate_set_times (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Printing.

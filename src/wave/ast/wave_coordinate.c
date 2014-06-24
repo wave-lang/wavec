@@ -150,30 +150,6 @@ void wave_coordinate_set_list (wave_coordinate * const c, wave_int_list * const 
     c->_content._var = list;
 }
 
-void wave_coordinate_set_plus_left (wave_coordinate * const c, wave_coordinate * const left)
-{
-    _wave_coordinate_set_type (c, WAVE_COORD_PLUS);
-    c->_content._binary._left = left;
-}
-
-void wave_coordinate_set_plus_right (wave_coordinate * c, wave_coordinate * right)
-{
-    _wave_coordinate_set_type (c, WAVE_COORD_PLUS);
-    c->_content._binary._right = right;
-}
-
-void wave_coordinate_set_times_left (wave_coordinate * c, wave_coordinate * left)
-{
-    _wave_coordinate_set_type (c, WAVE_COORD_TIMES);
-    c->_content._binary._left = left;
-}
-
-void wave_coordinate_set_times_right (wave_coordinate * c, wave_coordinate * right)
-{
-        _wave_coordinate_set_type (c, WAVE_COORD_TIMES);
-    c->_content._binary._right = right;
-}
-
 static inline bool _both_are_constants (const wave_coordinate * left, const wave_coordinate * right)
 {
     wave_coordinate_type t_left = wave_coordinate_get_type (left);
@@ -214,12 +190,12 @@ static inline void _wave_coordinate_set_binary (wave_coordinate * c, wave_coordi
         _set_left_and_right (c, left, right, t);
 }
 
-void wave_coordinate_set_plus_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right)
+void wave_coordinate_set_plus (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right)
 {
     _wave_coordinate_set_binary (c, left, right, WAVE_COORD_PLUS);
 }
 
-void wave_coordinate_set_times_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right)
+void wave_coordinate_set_times (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right)
 {
     _wave_coordinate_set_binary (c, left, right, WAVE_COORD_TIMES);
 }

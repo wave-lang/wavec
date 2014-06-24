@@ -199,7 +199,7 @@ static inline wave_coordinate * wave_coordinate_get_collection_total_length(cons
     wave_collection* last_one = wave_collection_get_last (wave_collection_get_list (c));
     wave_coordinate* collection_coordinate = wave_coordinate_copy(wave_collection_get_coordinate (last_one));
     wave_coordinate* local_length = wave_coordinate_copy(wave_collection_get_length(last_one));
-    wave_coordinate_set_plus_left_and_right(coord, collection_coordinate, local_length);
+    wave_coordinate_set_plus (coord, collection_coordinate, local_length);
 
     return coord;
 }
