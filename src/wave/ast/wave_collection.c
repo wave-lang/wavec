@@ -380,7 +380,7 @@ static inline wave_coordinate * _wave_collection_sum_list_lengths (wave_collecti
     {
         wave_coordinate * new_sum = wave_coordinate_alloc ();
         wave_coordinate * right = wave_coordinate_copy (wave_collection_get_length (current));
-        wave_coordinate_set_plus_left_and_right (new_sum, sum, right);
+        wave_coordinate_set_plus (new_sum, sum, right);
         sum = new_sum;
     }
     return sum;
@@ -414,7 +414,7 @@ static inline void  _wave_collection_set_length (wave_collection * c)
             wave_collection_access(c, path, &path_length);
             wave_coordinate_set_constant (repetition, path_length);
         }
-        wave_coordinate_set_times_left_and_right (length, repetition, length_sum);
+        wave_coordinate_set_times (length, repetition, length_sum);
     }
     wave_collection_info_set_length (info, length);
 }
@@ -427,7 +427,7 @@ static inline void _wave_collection_set_coords (wave_collection * c)
         wave_collection * previous = wave_collection_get_previous (c);
         wave_coordinate * previous_coord = wave_coordinate_copy (wave_collection_get_coordinate (previous));
         wave_coordinate * previous_length = wave_coordinate_copy (wave_collection_get_length (previous));
-        wave_coordinate_set_plus_left_and_right (coord, previous_coord, previous_length);
+        wave_coordinate_set_plus (coord, previous_coord, previous_length);
     }
     else
     {
