@@ -109,7 +109,7 @@ void wave_coordinate_free (wave_coordinate * c);
 void * wave_coordinate_copy (const wave_coordinate * c);
 
 ////////////////////////////////////////////////////////////////////////////////
-// Getters.
+// Coordinate type information.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -120,6 +120,60 @@ void * wave_coordinate_copy (const wave_coordinate * c);
  * \warning \c c must be not \c NULL.
  */
 wave_coordinate_type wave_coordinate_get_type (const wave_coordinate * c);
+
+/**
+ * \brief Determine whether a wave_coordinate is a constant.
+ * \param c Coordinate.
+ * \retval true if the coordinate is a constant.
+ * \retval false otherwise.
+ * \relatesalso wave_coordinate
+ * \warning \c c must be not \c NULL.
+ */
+bool wave_coordinate_is_constant (const wave_coordinate * c);
+
+/**
+ * \brief Determine whether a wave_coordinate is a var.
+ * \param c Coordinate.
+ * \retval true if the coordinate is a var.
+ * \retval false otherwise.
+ * \relatesalso wave_coordinate
+ * \warning \c c must be not \c NULL.
+ */
+bool wave_coordinate_is_var (const wave_coordinate * c);
+
+/**
+ * \brief Determine whether a wave_coordinate is a “plus” (or sum).
+ * \param c Coordinate.
+ * \retval true if the coordinate is a “plus”.
+ * \retval false otherwise.
+ * \relatesalso wave_coordinate
+ * \warning \c c must be not \c NULL.
+ */
+bool wave_coordinate_is_plus (const wave_coordinate * c);
+
+/**
+ * \brief Determine whether a wave_coordinate is a “times” (or product).
+ * \param c Coordinate.
+ * \retval true if the coordinate is a “times”.
+ * \retval false otherwise.
+ * \relatesalso wave_coordinate
+ * \warning \c c must be not \c NULL.
+ */
+bool wave_coordinate_is_times (const wave_coordinate * c);
+
+/**
+ * \brief Determine whether a wave_coordinate is unknown.
+ * \param c Coordinate.
+ * \retval true if the coordinate is unknown.
+ * \retval false otherwise.
+ * \relatesalso wave_coordinate
+ * \warning \c c must be not \c NULL.
+ */
+bool wave_coordinate_is_unknown (const wave_coordinate * c);
+
+////////////////////////////////////////////////////////////////////////////////
+// Getters.
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Get a wave_coordinate list.
@@ -180,40 +234,14 @@ void wave_coordinate_set_constant (wave_coordinate * c, int constant);
 void wave_coordinate_set_list (wave_coordinate * c, wave_int_list * list);
 
 /**
- * \brief Set a coordinate's left.
+ * \brief Set a coordinate's left and right.
  * \param c Coordinate.
  * \param left Left.
- * \relatesalso wave_coordinate
- * \warning \c c must be not \c NULL.
- */
-void wave_coordinate_set_plus_left (wave_coordinate * c, wave_coordinate * left);
-
-/**
- * \brief Set a coordinate's right.
- * \param c Coordinate.
  * \param right Right.
  * \relatesalso wave_coordinate
  * \warning \c c must be not \c NULL.
  */
-void wave_coordinate_set_plus_right (wave_coordinate * c, wave_coordinate * right);
-
-/**
- * \brief Set a coordinate's left.
- * \param c Coordinate.
- * \param left Left.
- * \relatesalso wave_coordinate
- * \warning \c c must be not \c NULL.
- */
-void wave_coordinate_set_times_left (wave_coordinate * c, wave_coordinate * left);
-
-/**
- * \brief Set a coordinate's right.
- * \param c Coordinate.
- * \param right Right.
- * \relatesalso wave_coordinate
- * \warning \c c must be not \c NULL.
- */
-void wave_coordinate_set_times_right (wave_coordinate * c, wave_coordinate * right);
+void wave_coordinate_set_plus (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right);
 
 /**
  * \brief Set a coordinate's left and right.
@@ -223,17 +251,7 @@ void wave_coordinate_set_times_right (wave_coordinate * c, wave_coordinate * rig
  * \relatesalso wave_coordinate
  * \warning \c c must be not \c NULL.
  */
-void wave_coordinate_set_plus_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right);
-
-/**
- * \brief Set a coordinate's left and right.
- * \param c Coordinate.
- * \param left Left.
- * \param right Right.
- * \relatesalso wave_coordinate
- * \warning \c c must be not \c NULL.
- */
-void wave_coordinate_set_times_left_and_right (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right);
+void wave_coordinate_set_times (wave_coordinate * c, wave_coordinate * left, wave_coordinate * right);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Printing.
