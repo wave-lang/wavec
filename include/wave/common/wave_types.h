@@ -53,6 +53,21 @@
  * - ::WAVE_BOOL_FALSE
  *
  * The values ::WAVE_BOOL_TRUE and ::WAVE_BOOL_FALSE are equivalent, respectively, to the values \c true and \c false of stdbool.h.
+ *
+ * # Operations
+ * Several operations are defined for wave_bool:
+ *
+ * Wave notation        | Function
+ * ---------------------|-----------------------
+ * and                  | wave_bool_and()
+ * or                   | wave_bool_or()
+ * not                  | wave_bool_not()
+ *
+ * # Conversion
+ *
+ * Source type      | Function
+ * -----------------|----------------------------
+ * char *           | wave_bool_from_string()
  */
 /**
  * \brief Wave boolean.
@@ -64,6 +79,58 @@ typedef bool wave_bool;
  * \brief Wave integer.
  *
  * wave_int is the integer type of Wave.
+ *
+ * # Operations
+ * Several operations are defined for wave_int:
+ *
+ * ## Unary operations
+ *
+ * Wave notation        | Function
+ * ---------------------|-----------------------
+ * ~+                   | wave_int_unary_plus()
+ * ~-                   | wave_int_unary_minus()
+ * ++                   | wave_int_increment()
+ * --                   | wave_int_decrement()
+ * sqrt                 | wave_int_sqrt()
+ * sin                  | wave_int_sin()
+ * cos                  | wave_int_cos()
+ * log                  | wave_int_log()
+ * exp                  | wave_int_exp()
+ * ceil                 | wave_int_ceil()
+ * floor                | wave_int_floor()
+ *
+ *
+ * ## Binary operations
+ *
+ * Wave notation        | Function
+ * ---------------------|-----------------------
+ * +                    | wave_int_binary_plus()
+ * -                    | wave_int_binary_minus()
+ * min                  | wave_int_binary_min()
+ * max                  | wave_int_binary_max()
+ * *                    | wave_int_times()
+ * /                    | wave_int_divide()
+ * mod                  | wave_int_mod()
+ * =                    | wave_int_equals()
+ * <>                   | wave_int_differs()
+ * <=                   | wave_int_lesser_or_equals()
+ * >=                   | wave_int_greater_or_equals()
+ * \>                   | wave_int_greater()
+ * <                    | wave_int_lesser()
+ *
+ * # Conversion
+ * A few conversion functions are available:
+ *
+ * Source type      | Function
+ * -----------------|----------------------------
+ * wave_char        | wave_char_code()
+ * wave_float       | wave_int_from_wave_float()
+ * char *           | wave_int_from_string()
+ *
+ * # Limits
+ * The maximum and minimum values a wave_int can hold are:
+ * - #WAVE_INT_MIN
+ * - #WAVE_INT_MAX
  */
 /**
  * \brief Wave integer.
@@ -75,6 +142,52 @@ typedef int wave_int;
  * \brief Wave float.
  *
  * wave_float is the floating point type of Wave.
+ *
+ * # Operations
+ * Several operations are defined for wave_int:
+ *
+ * ## Unary operations
+ *
+ * Wave notation        | Function
+ * ---------------------|-----------------------
+ * ~+                   | wave_float_unary_plus()
+ * ~-                   | wave_float_unary_minus()
+ * ++                   | wave_float_increment()
+ * --                   | wave_float_decrement()
+ * sqrt                 | wave_float_sqrt()
+ * sin                  | wave_float_sin()
+ * cos                  | wave_float_cos()
+ * log                  | wave_float_log()
+ * exp                  | wave_float_exp()
+ * ceil                 | wave_float_ceil()
+ * floor                | wave_float_floor()
+ *
+ *
+ * ## Binary operations
+ *
+ * Wave notation        | Function
+ * ---------------------|-----------------------
+ * +                    | wave_float_binary_plus()
+ * -                    | wave_float_binary_minus()
+ * min                  | wave_float_binary_min()
+ * max                  | wave_float_binary_max()
+ * *                    | wave_float_times()
+ * /                    | wave_float_divide()
+ * mod                  | wave_float_mod()
+ * =                    | wave_float_equals()
+ * <>                   | wave_float_differs()
+ * <=                   | wave_float_lesser_or_equals()
+ * >=                   | wave_float_greater_or_equals()
+ * \>                   | wave_float_greater()
+ * <                    | wave_float_lesser()
+ *
+ * # Conversion
+ * A few conversion functions are available:
+ *
+ * Source type      | Function
+ * -----------------|----------------------------
+ * wave_int         | wave_float_from_wave_int()
+ * char *           | wave_float_from_string()
  */
 /**
  * \brief Wave float.
@@ -86,6 +199,35 @@ typedef double wave_float;
  * \brief Wave character.
  *
  * wave_char is the character type of Wave.
+ *
+ * # Operations
+ * Several operations are defined for wave_int:
+ *
+ * Wave notation        | Function
+ * ---------------------|-----------------------
+ * +                    | wave_char_binary_plus()
+ * min                  | wave_char_binary_min()
+ * max                  | wave_char_binary_max()
+ * =                    | wave_char_equals()
+ * <>                   | wave_char_differs()
+ * <=                   | wave_char_lesser_or_equals()
+ * >=                   | wave_char_greater_or_equals()
+ * \>                   | wave_char_greater()
+ * <                    | wave_char_lesser()
+ *
+ * # Conversion
+ * A few conversion functions are available:
+ *
+ * Source type      | Function
+ * -----------------|----------------------------
+ * wave_int         | wave_char_from_wave_int()
+ *
+ * # Limits
+ *
+ * #WAVE_CHAR_BIT corresponds to the number of bits in a wave_char.
+ * The maximum and minimum values a wave_char can hold are:
+ * - #WAVE_CHAR_MIN
+ * - #WAVE_CHAR_MAX
  */
 /**
  * \brief Wave character.
@@ -95,12 +237,41 @@ typedef char wave_char;
 /**
  * \class wave_string
  * \brief Wave string.
- * \sa wave_char
+ * \sa wave_char, const_wave_string
  *
  * wave_string is the string type of Wave. const_wave_string is the \c const
  * variant of wave_string.
  *
  * Internally, wave_string and const_wave_string are composed of several wave_char characters.
+ *
+ * # Operations
+ * Several operations are defined for wave_int:
+ *
+ * Wave notation        | Function
+ * ---------------------|-----------------------
+ * +                    | wave_string_binary_plus()
+ * min                  | wave_string_binary_min()
+ * max                  | wave_string_binary_max()
+ * =                    | wave_string_equals()
+ * <>                   | wave_string_differs()
+ * <=                   | wave_string_lesser_or_equals()
+ * >=                   | wave_string_greater_or_equals()
+ * \>                   | wave_string_greater()
+ * <                    | wave_string_lesser()
+ *
+ * # string.h like functions
+ * Several functions are defined to mimic the string.h behaviour:
+ *
+ * string.h function    | wave_string function
+ * ---------------------|---------------------
+ * strcat               | wave_string_cat()
+ * strcmp               | wave_string_compare()
+ * strcpy               | wave_string_copy()
+ * strlen               | wave_string_length()
+ * strchr               | wave_string_first_character()
+ * strrchr              | wave_string_last_character()
+ * strstr               | wave_string_sub_string()
+ * strdup               | wave_string_duplicate()
  */
 /**
  * \brief Wave string.
@@ -111,6 +282,7 @@ typedef wave_char * wave_string;
 /**
  * \brief Const wave_string.
  * \sa wave_string
+ * const_wave_string are the const version of wave_string.
  */
 typedef const wave_char * const_wave_string;
 
