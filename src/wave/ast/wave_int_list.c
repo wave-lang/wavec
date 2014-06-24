@@ -2,6 +2,7 @@
  * \file wave_int_list.c
  * \brief Wave int list.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
+ * \author SCHMITT Maxime
  * \date 2014
  * \copyright MIT License
  */

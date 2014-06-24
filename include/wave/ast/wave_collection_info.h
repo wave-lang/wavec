@@ -2,6 +2,7 @@
  * \file wave_collection_info.h
  * \brief Wave collection info.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
+ * \author SCHMITT Maxime
  * \date 2014
  * \copyright MIT License
  */

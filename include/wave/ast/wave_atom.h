@@ -2,6 +2,7 @@
  * \file wave_atom.h
  * \brief Wave atom.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
+ * \author SCHMITT Maxime
  * \date 2014
  * \copyright MIT License
  */
