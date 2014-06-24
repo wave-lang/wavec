@@ -239,16 +239,12 @@ static void wave_code_generation_collection_par(FILE* output_file, const wave_co
 }
 
 static void wave_code_generation_collection_rep_seq(FILE* output_file, const wave_collection* collection){
-    fprintf(output_file, "#pragma omp parallel\n{\n");
-    fprintf(output_file, "#pragma omp for\n{\n");
     fprintf(output_file, "for(int __wave__parallel__iterator__ = 0;");
     fprintf(output_file, "__wave__parallel__iterator__ < ");
     ///////////// HERE PATH SIZE //////////////////
     fprintf(output_file, " ++__wave__parallel__iterator__)\n{\n");
     wave_code_generation_alloc_collection_tab(output_file, collection);
     wave_code_generation_collection(output_file, wave_collection_get_list(collection) );
-    fprintf(output_file, "}\n");
-    fprintf(output_file, "}\n");
     fprintf(output_file, "}\n");
 }
 

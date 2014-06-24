@@ -476,7 +476,7 @@ static inline wave_collection * _access_collection_repeat_infinite (wave_collect
     wave_collection * m = c;
     wave_collection * next = m;
     if( path_size != NULL )
-        * path_size = 0;
+        * path_size = -1;
 
     while (next != NULL)
     {
@@ -494,7 +494,7 @@ static wave_collection * _access_collection (wave_collection * c, const wave_pat
     wave_collection * access = NULL;
     wave_move_type m = wave_path_get_move (p);
     if( path_size != NULL )
-        * path_size = 1;
+        * path_size = 1;        // Case where the path is a single move
     if (m == WAVE_MOVE_UP)
         access = wave_collection_get_parent (c);
     else if (m == WAVE_MOVE_DOWN)
@@ -507,11 +507,23 @@ static wave_collection * _access_collection (wave_collection * c, const wave_pat
     {
         if (wave_path_get_repeat_type (p) == WAVE_PATH_REPEAT_CONSTANT){
             access = _access_collection_repeat_number (c, p);
-            if( path_size != NULL )
-                * path_size = wave_path_get_repeat_number(p);
+
+            if(access == NULL){                  // The path is not correct !!!!
+                fprintf(stderr, "Error : wrong path.\nFor the sake of mankind the path below will not be followed.\nPath : ");
+                wave_path_fprint(stderr, p);
+                fprintf(stderr, "\n");
+                exit(1);
+            }
+            else{
+                if( path_size != NULL )
+                    * path_size = wave_path_get_repeat_number(p);
+            }
         }
-        else
+        else{
             access = _access_collection_repeat_infinite (c, p, path_size);
+            if(path_size != NULL){
+            }
+        }
     }
 
     if( path_size != NULL )
