@@ -100,14 +100,44 @@ void * wave_coordinate_copy (const wave_coordinate * const c)
 
     return copy;
 }
+
 ////////////////////////////////////////////////////////////////////////////////
-// Getters.
+// Coordinate type information
 ////////////////////////////////////////////////////////////////////////////////
 
 wave_coordinate_type wave_coordinate_get_type (const wave_coordinate * const c)
 {
     return c->_type;
 }
+
+bool wave_coordinate_is_constant (const wave_coordinate * const c)
+{
+    return wave_coordinate_get_type (c) == WAVE_COORD_CONSTANT;
+}
+
+bool wave_coordinate_is_var (const wave_coordinate * const c)
+{
+    return wave_coordinate_get_type (c) == WAVE_COORD_VAR;
+}
+
+bool wave_coordinate_is_plus (const wave_coordinate * const c)
+{
+    return wave_coordinate_get_type (c) == WAVE_COORD_PLUS;
+}
+
+bool wave_coordinate_is_times (const wave_coordinate * const c)
+{
+    return wave_coordinate_get_type (c) == WAVE_COORD_TIMES;
+}
+
+bool wave_coordinate_is_unknown (const wave_coordinate * const c)
+{
+    return wave_coordinate_get_type (c) == WAVE_COORD_UNKNOWN;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Getters.
+////////////////////////////////////////////////////////////////////////////////
 
 wave_int_list * wave_coordinate_get_list (const wave_coordinate * const c)
 {

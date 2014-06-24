@@ -109,7 +109,7 @@ void wave_coordinate_free (wave_coordinate * c);
 void * wave_coordinate_copy (const wave_coordinate * c);
 
 ////////////////////////////////////////////////////////////////////////////////
-// Getters.
+// Coordinate type information.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -120,6 +120,60 @@ void * wave_coordinate_copy (const wave_coordinate * c);
  * \warning \c c must be not \c NULL.
  */
 wave_coordinate_type wave_coordinate_get_type (const wave_coordinate * c);
+
+/**
+ * \brief Determine whether a wave_coordinate is a constant.
+ * \param c Coordinate.
+ * \retval true if the coordinate is a constant.
+ * \retval false otherwise.
+ * \relatesalso wave_coordinate
+ * \warning \c c must be not \c NULL.
+ */
+bool wave_coordinate_is_constant (const wave_coordinate * c);
+
+/**
+ * \brief Determine whether a wave_coordinate is a var.
+ * \param c Coordinate.
+ * \retval true if the coordinate is a var.
+ * \retval false otherwise.
+ * \relatesalso wave_coordinate
+ * \warning \c c must be not \c NULL.
+ */
+bool wave_coordinate_is_var (const wave_coordinate * c);
+
+/**
+ * \brief Determine whether a wave_coordinate is a “plus” (or sum).
+ * \param c Coordinate.
+ * \retval true if the coordinate is a “plus”.
+ * \retval false otherwise.
+ * \relatesalso wave_coordinate
+ * \warning \c c must be not \c NULL.
+ */
+bool wave_coordinate_is_plus (const wave_coordinate * c);
+
+/**
+ * \brief Determine whether a wave_coordinate is a “times” (or product).
+ * \param c Coordinate.
+ * \retval true if the coordinate is a “times”.
+ * \retval false otherwise.
+ * \relatesalso wave_coordinate
+ * \warning \c c must be not \c NULL.
+ */
+bool wave_coordinate_is_times (const wave_coordinate * c);
+
+/**
+ * \brief Determine whether a wave_coordinate is unknown.
+ * \param c Coordinate.
+ * \retval true if the coordinate is unknown.
+ * \retval false otherwise.
+ * \relatesalso wave_coordinate
+ * \warning \c c must be not \c NULL.
+ */
+bool wave_coordinate_is_unknown (const wave_coordinate * c);
+
+////////////////////////////////////////////////////////////////////////////////
+// Getters.
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Get a wave_coordinate list.
