@@ -1,5 +1,5 @@
 /**
- * \file prepoc_utils.h
+ * \file preproc_utils.h
  * \brief Preproc utils.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
  * \author SCHMITT Maxime
@@ -130,7 +130,7 @@ void preproc_add_to_current_expression(const char* str);
 /**
  * \brief Test if the identifier already exists.
  * \param identifier A null terminated string which represents the identifier.
- * \param associated A pointer to a char* which will contain the value associated with the identifier if it exists.
+ * \param associated_value A pointer to a char* which will contain the value associated with the identifier if it exists.
  * \retval 0 On success and *associated_value is set to point to the value associated in the data structure.
  * \retval 1 On identifier not found.
  */

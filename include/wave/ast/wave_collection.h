@@ -287,12 +287,40 @@ wave_collection * wave_collection_get_down (const wave_collection * c);
  */
 wave_collection_info * wave_collection_get_info (const wave_collection * c);
 
+/**
+ * \brief Get the collection's index.
+ * \param c Collection.
+ * \return Index.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
 int wave_collection_get_index (const wave_collection * c);
 
+/**
+ * \brief Get the collection's coordinate.
+ * \param c Collection
+ * \return Coordinate.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
 wave_coordinate * wave_collection_get_coordinate (const wave_collection * c);
 
+/**
+ * \brief Get the collection's length.
+ * \param c Collection
+ * \return Length.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
 wave_coordinate * wave_collection_get_length (const wave_collection * c);
 
+/**
+ * \brief Get the collection's last successor.
+ * \param c Collection
+ * \return Last successor.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
 wave_collection * wave_collection_get_last (wave_collection * c);
 
 ////////////////////////////////////////////////////////////////////////////////

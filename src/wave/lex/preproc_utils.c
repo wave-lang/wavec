@@ -1,5 +1,5 @@
 /**
- * \file prepoc_utils.c
+ * \file preproc_utils.c
  * \brief Preproc utils.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
  * \author SCHMITT Maxime
