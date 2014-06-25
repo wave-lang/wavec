@@ -47,7 +47,7 @@ FLAGS_CC_DEBUG = -g
 FLAGS_CC_WARNINGS = -pedantic -Wall -Wextra -Wfloat-equal -Wdouble-promotion \
 	-Wswitch-default -Winit-self -Wshadow -Wbad-function-cast -Wcast-qual \
 	-Wcast-align -Wconversion -Wlogical-op -Wstrict-prototypes -Wnested-externs
-FLAGS_CC_MISC = -std=c99 -O0
+FLAGS_CC_MISC = -std=gnu99 -O0
 FLAGS_CC = $(FLAGS_CC_INCLUDE) $(FLAGS_CC_WARNINGS) $(FLAGS_CC_DEBUG) \
 	$(FLAGS_CC_MISC)
 FLAGS_CC_LEX_YACC = -W $(FLAGS_CC_INCLUDE) $(FLAGS_CC_DEBUG) $(FLAGS_CC_MISC)
@@ -153,6 +153,7 @@ main.o: main.c wave_path.h wave_atom.h wave_collection.h wave_compiler_version.h
 
 # Wave common
 wave_types.o: wave_types.c wave_types.h
+wave_headers.o: wave_headers.c wave_headers.h
 
 # Tests
 test_ast_print.o: test_ast_print.c
@@ -162,8 +163,9 @@ test_wave_collection.o: test_wave_collection.c test_wave_collection.h wave_colle
 unit_tests.o: unit_tests.c wave_test_suites.h
 
 # Wave common lib
-libwave.a: wave_types.o | lib_dir
-	ar crvs $(PATH_LIB)/libwave.a $(PATH_OBJ)/wave_types.o
+libwave.a: wave_types.o wave_headers.o | lib_dir
+	ar crvs $(PATH_LIB)/libwave.a $(PATH_OBJ)/wave_types.o \
+		$(PATH_OBJ)/wave_headers.o
 
 # Compiler lib
 libwaveast.a: wave_operator.o wave_path.o wave_atom.o \

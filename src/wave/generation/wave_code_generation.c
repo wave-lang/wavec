@@ -228,15 +228,19 @@ static void wave_code_generation_collection_seq(FILE* output_file, const wave_co
     wave_code_generation_collection(output_file, wave_collection_get_list(collection) );
 }
 
+static inline void _fprintf_closing_curly (FILE * stream, unsigned int number)
+{
+    for (unsigned int i = 0; i < number; i++)
+        fprintf(stream, "}\n");
+}
+
 static void wave_code_generation_collection_par(FILE* output_file, const wave_collection* collection){
     fprintf(output_file, "#pragma omp parallel\n{\n");
     fprintf(output_file, "#pragma omp sections\n{\n");
     wave_code_generation_alloc_collection_tab(output_file, collection);
     fprintf(output_file, "#pragma omp section\n{\n");
     wave_code_generation_collection(output_file, wave_collection_get_list(collection) );
-    fprintf(output_file, "}\n");
-    fprintf(output_file, "}\n");
-    fprintf(output_file, "}\n");
+    _fprintf_closing_curly (output_file, 3);
 }
 
 static void wave_code_generation_collection_rep_seq(FILE* output_file, const wave_collection* collection){
@@ -246,7 +250,7 @@ static void wave_code_generation_collection_rep_seq(FILE* output_file, const wav
     fprintf(output_file, " ++__wave__parallel__iterator__)\n{\n");
     wave_code_generation_alloc_collection_tab(output_file, collection);
     wave_code_generation_collection(output_file, wave_collection_get_list(collection) );
-    fprintf(output_file, "}\n");
+    _fprintf_closing_curly (output_file, 1);
 }
 
 static void wave_code_generation_collection_rep_par(FILE* output_file, const wave_collection* collection){
@@ -260,18 +264,14 @@ static void wave_code_generation_collection_rep_par(FILE* output_file, const wav
     wave_code_generation_alloc_collection_tab(output_file, collection);
     fprintf(output_file, "#pragma omp section\n{\n");
     wave_code_generation_collection(output_file, wave_collection_get_list(collection) );
-    fprintf(output_file, "}\n");
-    fprintf(output_file, "}\n");
-    fprintf(output_file, "}\n");
-    fprintf(output_file, "}\n");
-    fprintf(output_file, "}\n");
+    _fprintf_closing_curly (output_file, 5);
 }
 
 static void wave_code_generation_collection_cyclic_seq(FILE* output_file, const wave_collection* collection){
     fprintf(output_file, "for(;;)\n{\n");
     wave_code_generation_alloc_collection_tab(output_file, collection);
     wave_code_generation_collection(output_file, wave_collection_get_list(collection) );
-    fprintf(output_file, "}\n");
+    _fprintf_closing_curly (output_file, 1);
 }
 
 static void wave_code_generation_collection_cyclic_par(FILE* output_file, const wave_collection* collection){
@@ -281,10 +281,7 @@ static void wave_code_generation_collection_cyclic_par(FILE* output_file, const 
     wave_code_generation_alloc_collection_tab(output_file, collection);
     fprintf(output_file, "#pragma omp section\n{\n");
     wave_code_generation_collection(output_file, wave_collection_get_list(collection) );
-    fprintf(output_file, "}\n");
-    fprintf(output_file, "}\n");
-    fprintf(output_file, "}\n");
-    fprintf(output_file, "}\n");
+    _fprintf_closing_curly (output_file, 4);
 }
 
 static void wave_code_generation_atom(FILE* output_file, const wave_collection* collection){
