@@ -45,7 +45,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \defgroup wave_types_group Wave types
+ * \defgroup wave_types_group Wave Types
  * # List of wave types
  * - wave_int
  * - wave_char

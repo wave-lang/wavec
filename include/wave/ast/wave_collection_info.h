@@ -38,12 +38,18 @@
 #include "wave/ast/wave_int_list.h"
 #include "wave/ast/wave_coordinate.h"
 
+/**
+ * \defgroup wave_collection_info_group Wave Collection Info
+ * \ingroup wave_collection_group
+ */
+
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Wave collection info.
+ * \ingroup wave_collection_info_group
  */
 typedef struct wave_collection_info
 {

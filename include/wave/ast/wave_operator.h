@@ -36,6 +36,7 @@
 
 /**
  * \brief Wave operators.
+ * \ingroup wave_ast_group
  */
 typedef enum wave_operator
 {

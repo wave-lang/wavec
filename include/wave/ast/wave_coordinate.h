@@ -36,12 +36,19 @@
 
 #include "wave/ast/wave_int_list.h"
 
+
+/**
+ * \defgroup wave_coordinate_group Wave Coordinate
+ * \ingroup wave_collection_info_group
+ */
+
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Wave coordinate type.
+ * \ingroup wave_coordinate_group
  */
 typedef enum wave_coordinate_type
 {
@@ -54,7 +61,7 @@ typedef enum wave_coordinate_type
 
 /**
  * \brief Wave coordinate.
- * \sa wave_int_list
+ * \ingroup wave_coordinate_group
  * \warning The setters functions assume the coordinate is clean, if necessary,
  * it is up to the user to properly clean the coordinate before using a setter
  * function.
@@ -157,6 +164,8 @@ typedef enum wave_coordinate_type
  * # Coordinate display
  * It is possible to print a coordinate to a stream using wave_coordinate_fprint()
  * or directly to standard output using wave_coordinate_print().
+ *
+ * \sa wave_int_list
  */
 typedef struct wave_coordinate
 {

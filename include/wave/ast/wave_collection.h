@@ -38,12 +38,18 @@
 #include "wave/ast/wave_atom.h"
 #include "wave/ast/wave_collection_info.h"
 
+/**
+ * \defgroup wave_collection_group Wave Collection
+ * \ingroup wave_ast_group
+ */
+
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Collection types.
+ * \ingroup wave_collection_group
  */
 typedef enum wave_collection_type
 {
@@ -59,6 +65,7 @@ typedef enum wave_collection_type
 
 /**
  * \brief Wave collection repetition types.
+ * \ingroup wave_collection_group
  */
 typedef enum wave_collection_repetition_type
 {
@@ -70,6 +77,7 @@ typedef enum wave_collection_repetition_type
 /**
  * \brief Collection.
  * \warning Collections not obtained with wave_collection_alloc() must be initialized using wave_collection_init() !
+ * \ingroup wave_collection_group
  */
 typedef struct wave_collection
 {

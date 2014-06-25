@@ -39,16 +39,23 @@
 #include "wave/ast/wave_path.h"
 #include "wave/ast/wave_operator.h"
 
+/**
+ * \defgroup wave_atom_group Wave Atom
+ * \ingroup wave_ast_group
+ */
+
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Atom type.
- * \sa wave_atom
+ * \ingroup wave_atom_group
  *
  * Wave atoms can hold several types of values. This enumeration is used to
  * determine the type of the value.
+ *
+ * \sa wave_atom
  */
 typedef enum wave_atom_type
 {
@@ -64,10 +71,12 @@ typedef enum wave_atom_type
 
 /**
  * \brief Atom content.
- * \sa wave_atom
+ * \ingroup wave_atom_group
  *
  * Wave atoms can hold several types of values. However, it can only hold one
  * value at a time, hence this union.
+ *
+ * \sa wave_atom
  */
 typedef union wave_atom_content
 {
@@ -82,11 +91,11 @@ typedef union wave_atom_content
 
 /**
  * \brief Atom.
- * \sa wave_atom_type, wave_atom_content
  * \note The setter functions automatically set the atom's type appropriately.
  * \warning Atoms not obtained using wave_atom_alloc() must be initialized
  * using wave_atom_init() !
  * \warning The setters functions do not clean the atom prior modification !
+ * \ingroup wave_atom_group
  *
  * # Atom creation and destruction
  * An atom can be dynamically created using wave_atom_alloc().
@@ -162,6 +171,8 @@ typedef union wave_atom_content
  * # Atom display
  * It is possible to print an atom to a stream using wave_atom_fprint() or to
  * the standard output using wave_atom_print().
+ *
+ * \sa wave_atom_type, wave_atom_content
  */
 typedef struct wave_atom
 {

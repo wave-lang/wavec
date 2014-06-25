@@ -35,12 +35,18 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+/**
+ * \defgroup wave_path_group Wave Path
+ * \ingroup wave_ast_group
+ */
+
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Move type.
+ * \ingroup wave_path_group
  */
 typedef enum wave_move_type
 {
@@ -56,6 +62,7 @@ typedef enum wave_move_type
 
 /**
  * \brief Repeat type.
+ * \ingroup wave_path_group
  */
 typedef enum wave_path_repeat_type
 {
@@ -66,7 +73,7 @@ typedef enum wave_path_repeat_type
 /**
  * \brief Wave path.
  * \warning Paths not obtained using wave_path_alloc() must be initialized using wave_path_init() !
- * \sa wave_path_repeat_type, wave_move_type
+ * \ingroup wave_path_group
  *
  * Wave paths are used to represent paths.
  *
@@ -147,6 +154,8 @@ typedef enum wave_path_repeat_type
  * (respectively a predecessor) using wave_path_has_next() (respectively
  * wave_path_has_previous()) before calling wave_path_get_next() (respectively
  * wave_path_get_previous()).
+ *
+ * \sa wave_path_repeat_type, wave_move_type
  */
 typedef struct wave_path
 {

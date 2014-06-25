@@ -35,12 +35,18 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+/**
+ * \defgroup wave_int_list_group Wave Int List
+ * \ingroup wave_collection_info_group
+ */
+
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Wave int list element.
+ * \ingroup wave_int_list_group
  * wave_int_list_elements are used internally to store elements for
  * wave_int_list.
  *
@@ -56,6 +62,7 @@ typedef struct wave_int_list_element
 
 /**
  * \brief Wave int list
+ * \ingroup wave_int_list_group
  *
  * # Wave int list creation and destruction
  * A wave_int_list can be dynamically created using wave_int_list_alloc(). Such
