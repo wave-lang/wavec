@@ -32,6 +32,7 @@
 #define __WAVE_CODE_GENERATION_H
 
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "wave/ast/wave_phrase.h"
 #include "wave/generation/wave_headers.h"
@@ -44,7 +45,48 @@
  * \relatesalso wave_collection
  * \note  Collections in phrases must have already been indexed.
  */
-void wave_code_generation_collection(FILE* output_file, const wave_collection* collection);
+void wave_code_generation_collection(FILE* code_file, FILE * alloc_file, const wave_collection* collection);
+
+static inline void file_cat (FILE * destination, FILE * source)
+{
+    bool end = false;
+    char buffer[2048];
+
+    while (! end)
+    {
+        int count = 0;
+        fscanf (source, "%2047c%n", buffer, & count);
+        end = count == 0;
+
+        if (! end)
+        {
+            buffer[count] = '\0';
+            fprintf (destination, "%s", buffer);
+        }
+    }
+}
+
+static inline void _current_phrase (FILE * output, wave_phrase * p, unsigned int phrase_count)
+{
+    fprintf (output, "void phrase_%d (void)\n{\n", phrase_count);
+    FILE * code_file = tmpfile ();
+    FILE * alloc_file = tmpfile ();
+
+    wave_collection* collection = wave_phrase_get_collection(p);
+    wave_collection_compute_indexes(collection);
+    wave_collection_compute_length_and_coords(collection);
+    wave_code_generation_collection(code_file, alloc_file, collection);
+
+    fseek (alloc_file, 0, SEEK_SET);
+    fseek (code_file, 0, SEEK_SET);
+
+    file_cat (output, alloc_file);
+    file_cat (output, code_file);
+
+    fclose (code_file);
+    fclose (alloc_file);
+    fprintf (output, "}\n");
+}
 
 /**
  * \brief Generate C source code giving a wave AST.
@@ -54,14 +96,16 @@ void wave_code_generation_collection(FILE* output_file, const wave_collection* c
  * \relatesalso wave_phrase
  * \note  Collections in phrases must have already been indexed.
  */
-static inline void wave_code_generation_generate(FILE* output_file, const wave_phrase* phrases){
+static inline void wave_code_generation_generate(FILE* output_file, wave_phrase* phrases){
     wave_code_generation_fprintf_headers (output_file);
-    fprintf (output_file, "int main(void)\n{\n");
+    unsigned int count = 0;
     do{
-        const wave_collection* collection = wave_phrase_get_collection(phrases);
-        wave_code_generation_collection(output_file, collection);
+        _current_phrase (output_file, phrases, count++);
     }
     while( wave_phrase_has_next(phrases) && ( phrases = wave_phrase_get_next(phrases) ) );
+    fprintf (output_file, "int main(void)\n{\n");
+    for (unsigned int i = 0; i < count; ++i)
+        fprintf (output_file, "phrase_%d ();\n", i);
     fprintf (output_file, "return 0;\n}\n");
 }
 

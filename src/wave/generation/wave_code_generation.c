@@ -33,141 +33,141 @@
 
 /**
  * \brief Generate C source code giving an atom.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
  * \param collection The atom to translate into C code.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection
  */
-static void wave_code_generation_atom(FILE* output_file, const wave_collection* collection);
+static void wave_code_generation_atom(FILE* code_file, FILE * alloc_file, const wave_collection* collection);
 
 /**
  * \brief Generate C source code giving a sequential collection.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
  * \param collection The sequential collection to translate into C code.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection
  */
-static void wave_code_generation_collection_seq(FILE* output_file, const wave_collection* collection);
+static void wave_code_generation_collection_seq(FILE* code_file, FILE * alloc_file, const wave_collection* collection);
 
 /**
  * \brief Generate C source code giving a collection.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
  * \param collection The parallel collection to translate into C code.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection
  */
-static void wave_code_generation_collection_par(FILE* output_file, const wave_collection* collection);
+static void wave_code_generation_collection_par(FILE* code_file, FILE * alloc_file, const wave_collection* collection);
 
 /**
  * \brief Generate C source code giving a sequential cyclic collection.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
  * \param collection The cyclic collection to translate into C code.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection
  */
-static void wave_code_generation_collection_cyclic_seq(FILE* output_file, const wave_collection* collection);
+static void wave_code_generation_collection_cyclic_seq(FILE* code_file, FILE * alloc_file, const wave_collection* collection);
 
 /**
  * \brief Generate C source code giving a parallel cyclic collection.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
  * \param collection The cyclic collection to translate into C code.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection
  */
-static void wave_code_generation_collection_cyclic_par(FILE* output_file, const wave_collection* collection);
+static void wave_code_generation_collection_cyclic_par(FILE* code_file, FILE * alloc_file, const wave_collection* collection);
 
 /**
  * \brief Generate C source code giving a sequential repeated collection.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
  * \param collection The cyclic collection to translate into C code.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection
  */
-static void wave_code_generation_collection_rep_seq(FILE* output_file, const wave_collection* collection);
+static void wave_code_generation_collection_rep_seq(FILE* code_file, FILE * alloc_file, const wave_collection* collection);
 
 /**
  * \brief Generate C source code giving a parallel repeated collection.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
  * \param collection The cyclic collection to translate into C code.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection
  */
-static void wave_code_generation_collection_rep_par(FILE* output_file, const wave_collection* collection);
+static void wave_code_generation_collection_rep_par(FILE* code_file, FILE * alloc_file, const wave_collection* collection);
 
 /**
  * \brief Generate C source code giving an integer atom.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
  * \param collection The collection containing the value.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_atom
  * \relatesalso wave_collection_info
  */
-static void _wave_code_generation_fprint_int(FILE* output_file, const wave_collection* collection);
+static void _wave_code_generation_fprint_int(FILE* code_file, const wave_collection* collection);
 
 /**
  * \brief Generate C source code giving an float atom.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
  * \param collection The collection containing the value.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_atom
  * \relatesalso wave_collection_info
  */
-static void _wave_code_generation_fprint_float(FILE* output_file, const wave_collection* collection);
+static void _wave_code_generation_fprint_float(FILE* code_file, const wave_collection* collection);
 
 /**
  * \brief Generate C source code giving an bool atom.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
  * \param collection The collection containing the value.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_atom
  * \relatesalso wave_collection_info
  */
-static void _wave_code_generation_fprint_bool(FILE* output_file, const wave_collection* collection);
+static void _wave_code_generation_fprint_bool(FILE* code_file, const wave_collection* collection);
 
 /**
  * \brief Generate C source code giving an char atom.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
  * \param collection The collection containing the value.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_atom
  * \relatesalso wave_collection_info
  */
-static void _wave_code_generation_fprint_char(FILE* output_file, const wave_collection* collection);
+static void _wave_code_generation_fprint_char(FILE* code_file, const wave_collection* collection);
 
 /**
  * \brief Generate C source code giving an string atom.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
  * \param collection The collection containing the value.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_atom
  * \relatesalso wave_collection_info
  */
-static void _wave_code_generation_fprint_string(FILE* output_file, const wave_collection* collection);
+static void _wave_code_generation_fprint_string(FILE* code_file, const wave_collection* collection);
 
 /**
  * \brief Generate C source code giving an operator atom.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
  * \param collection The collection containing the value.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_atom
  * \relatesalso wave_collection_info
  */
-static void _wave_code_generation_fprint_operator(FILE* output_file, const wave_collection* collection);
+static void _wave_code_generation_fprint_operator(FILE* code_file, const wave_collection* collection);
 
 /**
  * \brief Generate C source code giving an path atom.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
  * \param collection The collection containing the value.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_atom
  * \relatesalso wave_collection_info
  */
-static void _wave_code_generation_fprint_path(FILE* output_file, const wave_collection* collection);
+static void _wave_code_generation_fprint_path(FILE* code_file, const wave_collection* collection);
 
 /**
  * \brief An array for the code generation switch.
  */
-static void (* const _wave_code_generation_collection_generation []) (FILE*, const wave_collection*)=
+static void (* const _wave_code_generation_collection_generation []) (FILE*, FILE *, const wave_collection*)=
 {
     [WAVE_COLLECTION_ATOM]          = wave_code_generation_atom,
     [WAVE_COLLECTION_REP_SEQ]       = wave_code_generation_collection_rep_seq,
@@ -205,27 +205,27 @@ static inline wave_coordinate * wave_coordinate_get_collection_total_length(cons
     return coord;
 }
 
-static inline void wave_code_generation_alloc_collection_tab(FILE* output_file, const wave_collection* collection){
-    fprintf(output_file, "wave_data wave_tab");
-    wave_collection_fprint_full_indexes(output_file, collection);
-    fprintf(output_file, "[");
+static inline void wave_code_generation_alloc_collection_tab(FILE* alloc_file, const wave_collection* collection){
+    fprintf(alloc_file, "wave_data wave_tab");
+    wave_collection_fprint_full_indexes(alloc_file, collection);
+    fprintf(alloc_file, "[");
     wave_coordinate* collection_coordinate = wave_coordinate_get_collection_total_length(collection);
-    wave_coordinate_fprint(output_file, collection_coordinate);
+    wave_coordinate_fprint(alloc_file, collection_coordinate);
     wave_coordinate_free(collection_coordinate);
-    fprintf(output_file, "];\n");
+    fprintf(alloc_file, "];\n");
 }
 
-void wave_code_generation_collection(FILE* output_file, const wave_collection* collection){
+void wave_code_generation_collection(FILE* code_file, FILE * alloc_file, const wave_collection* collection){
     do{
         wave_collection_type collection_type = wave_collection_get_type( collection );
-        _wave_code_generation_collection_generation[ collection_type ](output_file, collection);
+        _wave_code_generation_collection_generation[ collection_type ](code_file, alloc_file, collection);
     }
     while( wave_collection_has_next(collection) && (collection = wave_collection_get_next(collection)) );
 }
 
-static void wave_code_generation_collection_seq(FILE* output_file, const wave_collection* collection){
-    wave_code_generation_alloc_collection_tab(output_file, collection);
-    wave_code_generation_collection(output_file, wave_collection_get_list(collection) );
+static void wave_code_generation_collection_seq(FILE* code_file, FILE * alloc_file, const wave_collection* collection){
+    wave_code_generation_alloc_collection_tab(alloc_file, collection);
+    wave_code_generation_collection(code_file, alloc_file, wave_collection_get_list(collection) );
 }
 
 static inline void _fprintf_closing_curly (FILE * stream, unsigned int number)
@@ -234,103 +234,104 @@ static inline void _fprintf_closing_curly (FILE * stream, unsigned int number)
         fprintf(stream, "}\n");
 }
 
-static void wave_code_generation_collection_par(FILE* output_file, const wave_collection* collection){
-    fprintf(output_file, "#pragma omp parallel\n{\n");
-    fprintf(output_file, "#pragma omp sections\n{\n");
-    wave_code_generation_alloc_collection_tab(output_file, collection);
-    fprintf(output_file, "#pragma omp section\n{\n");
-    wave_code_generation_collection(output_file, wave_collection_get_list(collection) );
-    _fprintf_closing_curly (output_file, 3);
+static void wave_code_generation_collection_par(FILE* code_file, FILE * alloc_file, const wave_collection* collection){
+    fprintf(code_file, "#pragma omp parallel\n{\n");
+    fprintf(code_file, "#pragma omp sections\n{\n");
+    wave_code_generation_alloc_collection_tab(alloc_file, collection);
+    fprintf(code_file, "#pragma omp section\n{\n");
+    wave_code_generation_collection(code_file, alloc_file, wave_collection_get_list(collection) );
+    _fprintf_closing_curly (code_file, 3);
 }
 
-static void wave_code_generation_collection_rep_seq(FILE* output_file, const wave_collection* collection){
-    fprintf(output_file, "for(int __wave__parallel__iterator__ = 0;");
-    fprintf(output_file, "__wave__parallel__iterator__ < ");
+static void wave_code_generation_collection_rep_seq(FILE* code_file, FILE * alloc_file, const wave_collection* collection){
+    fprintf(code_file, "for(int __wave__parallel__iterator__ = 0;");
+    fprintf(code_file, "__wave__parallel__iterator__ < ");
     ///////////// HERE PATH SIZE //////////////////
-    fprintf(output_file, " ++__wave__parallel__iterator__)\n{\n");
-    wave_code_generation_alloc_collection_tab(output_file, collection);
-    wave_code_generation_collection(output_file, wave_collection_get_list(collection) );
-    _fprintf_closing_curly (output_file, 1);
+    fprintf(code_file, " ++__wave__parallel__iterator__)\n{\n");
+    wave_code_generation_alloc_collection_tab(alloc_file, collection);
+    wave_code_generation_collection(code_file, alloc_file, wave_collection_get_list(collection) );
+    _fprintf_closing_curly (code_file, 1);
 }
 
-static void wave_code_generation_collection_rep_par(FILE* output_file, const wave_collection* collection){
-    fprintf(output_file, "#pragma omp parallel\n{\n");
-    fprintf(output_file, "#pragma omp for\n{\n");
-    fprintf(output_file, "for(int __wave__parallel__iterator__ = 0;");
-    fprintf(output_file, "__wave__parallel__iterator__ < ");
+static void wave_code_generation_collection_rep_par(FILE* code_file, FILE * alloc_file, const wave_collection* collection){
+    fprintf(code_file, "#pragma omp parallel\n{\n");
+    fprintf(code_file, "#pragma omp for\n{\n");
+    fprintf(code_file, "for(int __wave__parallel__iterator__ = 0;");
+    fprintf(code_file, "__wave__parallel__iterator__ < ");
     ///////////// HERE PATH SIZE //////////////////
-    fprintf(output_file, " ++__wave__parallel__iterator__)\n{\n");
-    fprintf(output_file, "#pragma omp sections\n{\n");
-    wave_code_generation_alloc_collection_tab(output_file, collection);
-    fprintf(output_file, "#pragma omp section\n{\n");
-    wave_code_generation_collection(output_file, wave_collection_get_list(collection) );
-    _fprintf_closing_curly (output_file, 5);
+    fprintf(code_file, " ++__wave__parallel__iterator__)\n{\n");
+    fprintf(code_file, "#pragma omp sections\n{\n");
+    wave_code_generation_alloc_collection_tab(alloc_file, collection);
+    fprintf(code_file, "#pragma omp section\n{\n");
+    wave_code_generation_collection(code_file, alloc_file, wave_collection_get_list(collection) );
+    _fprintf_closing_curly (code_file, 5);
 }
 
-static void wave_code_generation_collection_cyclic_seq(FILE* output_file, const wave_collection* collection){
-    fprintf(output_file, "for(;;)\n{\n");
-    wave_code_generation_alloc_collection_tab(output_file, collection);
-    wave_code_generation_collection(output_file, wave_collection_get_list(collection) );
-    _fprintf_closing_curly (output_file, 1);
+static void wave_code_generation_collection_cyclic_seq(FILE* code_file, FILE * alloc_file, const wave_collection* collection){
+    fprintf(code_file, "for(;;)\n{\n");
+    wave_code_generation_alloc_collection_tab(alloc_file, collection);
+    wave_code_generation_collection(code_file, alloc_file, wave_collection_get_list(collection) );
+    _fprintf_closing_curly (code_file, 1);
 }
 
-static void wave_code_generation_collection_cyclic_par(FILE* output_file, const wave_collection* collection){
-    fprintf(output_file, "for(;;)\n{\n");
-    fprintf(output_file, "#pragma omp parallel\n{\n");
-    fprintf(output_file, "#pragma omp sections\n{\n");
-    wave_code_generation_alloc_collection_tab(output_file, collection);
-    fprintf(output_file, "#pragma omp section\n{\n");
-    wave_code_generation_collection(output_file, wave_collection_get_list(collection) );
-    _fprintf_closing_curly (output_file, 4);
+static void wave_code_generation_collection_cyclic_par(FILE* code_file, FILE * alloc_file, const wave_collection* collection){
+    fprintf(code_file, "for(;;)\n{\n");
+    fprintf(code_file, "#pragma omp parallel\n{\n");
+    fprintf(code_file, "#pragma omp sections\n{\n");
+    wave_code_generation_alloc_collection_tab(alloc_file, collection);
+    fprintf(code_file, "#pragma omp section\n{\n");
+    wave_code_generation_collection(code_file, alloc_file, wave_collection_get_list(collection) );
+    _fprintf_closing_curly (code_file, 4);
 }
 
-static void wave_code_generation_atom(FILE* output_file, const wave_collection* collection){
+static void wave_code_generation_atom(FILE* code_file, FILE * alloc_file, const wave_collection* collection){
+    (void) alloc_file;
     wave_atom* atom = wave_collection_get_atom(collection);
     wave_atom_type atom_type = wave_atom_get_type(atom);
-    _wave_code_generation_atom[ atom_type ](output_file, collection);
+    _wave_code_generation_atom[ atom_type ](code_file, collection);
 }
 
-static inline void _wave_generate_with_strings_inside_tm(FILE* const output_file, const wave_collection* const collection, const char* const struct_name, const char* const type_string){
-    fprintf(output_file, "wave_tab");
-    wave_collection_fprint_full_indexes(output_file, wave_collection_get_parent(collection));
+static inline void _wave_generate_with_strings_inside_tm(FILE* const code_file, const wave_collection* const collection, const char* const struct_name, const char* const type_string){
+    fprintf(code_file, "wave_tab");
+    wave_collection_fprint_full_indexes(code_file, wave_collection_get_parent(collection));
     wave_coordinate* collection_coordinate = wave_collection_info_get_coordinate( wave_collection_get_info( collection ) );
-    fprintf(output_file, "[");
-    wave_coordinate_fprint(output_file, collection_coordinate);
-    fprintf(output_file, "]%s = ", struct_name);
-    wave_atom_fprint(output_file, wave_collection_get_atom( collection ));
-    fprintf(output_file, ";\n");
-    fprintf(output_file, "wave_tab");
-    wave_collection_fprint_full_indexes(output_file, wave_collection_get_parent(collection));
+    fprintf(code_file, "[");
+    wave_coordinate_fprint(code_file, collection_coordinate);
+    fprintf(code_file, "]%s = ", struct_name);
+    wave_atom_fprint(code_file, wave_collection_get_atom( collection ));
+    fprintf(code_file, ";\n");
+    fprintf(code_file, "wave_tab");
+    wave_collection_fprint_full_indexes(code_file, wave_collection_get_parent(collection));
     collection_coordinate = wave_collection_info_get_coordinate( wave_collection_get_info( collection ) );
-    fprintf(output_file, "[");
-    wave_coordinate_fprint(output_file, collection_coordinate);
-    fprintf(output_file, "]._type = %s;\n", type_string);
+    fprintf(code_file, "[");
+    wave_coordinate_fprint(code_file, collection_coordinate);
+    fprintf(code_file, "]._type = %s;\n", type_string);
 }
 
-static void _wave_code_generation_fprint_int(FILE* output_file, const wave_collection* collection){
-    _wave_generate_with_strings_inside_tm(output_file, collection, "._content._int", "WAVE_DATA_INT");
+static void _wave_code_generation_fprint_int(FILE* code_file, const wave_collection* collection){
+    _wave_generate_with_strings_inside_tm(code_file, collection, "._content._int", "WAVE_DATA_INT");
 }
 
-static void _wave_code_generation_fprint_float(FILE* output_file, const wave_collection* collection){
-    _wave_generate_with_strings_inside_tm(output_file, collection, "._content._float", "WAVE_DATA_FLOAT");
+static void _wave_code_generation_fprint_float(FILE* code_file, const wave_collection* collection){
+    _wave_generate_with_strings_inside_tm(code_file, collection, "._content._float", "WAVE_DATA_FLOAT");
 }
 
-static void _wave_code_generation_fprint_bool(FILE* output_file, const wave_collection* collection){
-    _wave_generate_with_strings_inside_tm(output_file, collection, "._content._bool", "WAVE_DATA_BOOL");
+static void _wave_code_generation_fprint_bool(FILE* code_file, const wave_collection* collection){
+    _wave_generate_with_strings_inside_tm(code_file, collection, "._content._bool", "WAVE_DATA_BOOL");
 }
 
-static void _wave_code_generation_fprint_char(FILE* output_file, const wave_collection* collection){
-    _wave_generate_with_strings_inside_tm(output_file, collection, "._content._char", "WAVE_DATA_CHAR");
+static void _wave_code_generation_fprint_char(FILE* code_file, const wave_collection* collection){
+    _wave_generate_with_strings_inside_tm(code_file, collection, "._content._char", "WAVE_DATA_CHAR");
 }
 
-static void _wave_code_generation_fprint_string(FILE* output_file, const wave_collection* collection){
-    _wave_generate_with_strings_inside_tm(output_file, collection, "._content._string", "WAVE_DATA_STRING");
+static void _wave_code_generation_fprint_string(FILE* code_file, const wave_collection* collection){
+    _wave_generate_with_strings_inside_tm(code_file, collection, "._content._string", "WAVE_DATA_STRING");
 }
 
-static void _wave_code_generation_fprint_operator(FILE* output_file, const wave_collection* collection){
-    (void) output_file; (void) collection;
+static void _wave_code_generation_fprint_operator(FILE* code_file, const wave_collection* collection){
+    (void) code_file; (void) collection;
 }
 
-static void _wave_code_generation_fprint_path(FILE* output_file, const wave_collection* collection){
-    (void) output_file; (void) collection;
+static void _wave_code_generation_fprint_path(FILE* code_file, const wave_collection* collection){
+    (void) code_file; (void) collection;
 }
