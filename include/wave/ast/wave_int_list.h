@@ -2,6 +2,7 @@
  * \file wave_int_list.h
  * \brief Wave int list.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
+ * \author SCHMITT Maxime
  * \date 2014
  * \copyright MIT License
  */
@@ -34,12 +35,24 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+/**
+ * \defgroup wave_int_list_group Wave Int List
+ * \ingroup wave_collection_info_group
+ */
+
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * \ingroup wave_int_list_group
  * \brief Wave int list element.
+ *
+ * wave_int_list_elements are used internally to store elements for
+ * wave_int_list.
+ *
+ * It holds a content and is linked to its predecessor and its successor in
+ * the list.
  */
 typedef struct wave_int_list_element
 {
@@ -49,7 +62,27 @@ typedef struct wave_int_list_element
 } wave_int_list_element;
 
 /**
- * \brief Wave int list
+ * \ingroup wave_int_list_group
+ * \brief Wave int list.
+ *
+ * # Wave int list creation and destruction
+ * A wave_int_list can be dynamically created using wave_int_list_alloc(). Such
+ * lists must be freed using wave_int_list_free(). Lists can also be copied
+ * using wave_int_list_copy().
+ *
+ * # List properties
+ * One can test whether a list is empty using wave_int_list_is_empty(), and get
+ * the list's size using wave_int_list_size().
+ *
+ * # Element access
+ * One can get the \c Nth element of the list using wave_int_list_at(). It is
+ * also possible to get the first or last element while removing it from the
+ * list with wave_int_list_pop_front() and wave_int_list_pop_back().
+ *
+ * # Modification
+ * To insert an element into the list, one can use either
+ * wave_int_list_push_back(), wave_int_list_push_front() or
+ * wave_int_list_insert().
  */
 typedef struct wave_int_list
 {
@@ -70,6 +103,7 @@ void * wave_int_list_alloc (void);
 
 /**
  * \brief Free.
+ * \param list List.
  * \return wave_int_list
  * \relatesalso wave_int_list
  */
@@ -80,6 +114,7 @@ void wave_int_list_free (wave_int_list * list);
  * \param list List.
  * \return Copy.
  * \relatesalso wave_int_list
+ * \warning \c list must be not \c NULL.
  */
 wave_int_list * wave_int_list_copy (const wave_int_list * list);
 
@@ -93,6 +128,8 @@ wave_int_list * wave_int_list_copy (const wave_int_list * list);
  * \param i Index.
  * \return element.
  * \relatesalso wave_int_list
+ * \pre wave_int_list_size() > i.
+ * \warning \c list must be not \c NULL.
  */
 int wave_int_list_at (const wave_int_list * list, size_t i);
 
@@ -101,6 +138,7 @@ int wave_int_list_at (const wave_int_list * list, size_t i);
  * \param list List.
  * \return size.
  * \relatesalso wave_int_list
+ * \warning \c list must be not \c NULL.
  */
 size_t wave_int_list_size (const wave_int_list * list);
 
@@ -110,6 +148,7 @@ size_t wave_int_list_size (const wave_int_list * list);
  * \retval true if the list is empty.
  * \retval false otherwise.
  * \relatesalso wave_int_list
+ * \warning \c list must be not \c NULL.
  */
 bool wave_int_list_is_empty (const wave_int_list * list);
 
@@ -122,6 +161,7 @@ bool wave_int_list_is_empty (const wave_int_list * list);
  * \param list List
  * \return Back element.
  * \relatesalso wave_int_list
+ * \warning \c list must be not \c NULL.
  */
 int wave_int_list_pop_back (wave_int_list * list);
 
@@ -130,6 +170,7 @@ int wave_int_list_pop_back (wave_int_list * list);
  * \param list List
  * \return Front element.
  * \relatesalso wave_int_list
+ * \warning \c list must be not \c NULL.
  */
 int wave_int_list_pop_front (wave_int_list * list);
 
@@ -138,6 +179,7 @@ int wave_int_list_pop_front (wave_int_list * list);
  * \param list List.
  * \param element Element.
  * \relatesalso wave_int_list
+ * \warning \c list must be not \c NULL.
  */
 void wave_int_list_push_back (wave_int_list * list, int element);
 
@@ -146,6 +188,7 @@ void wave_int_list_push_back (wave_int_list * list, int element);
  * \param list List.
  * \param element Element.
  * \relatesalso wave_int_list
+ * \warning \c list must be not \c NULL.
  */
 void wave_int_list_push_front (wave_int_list * list, int element);
 
@@ -155,6 +198,7 @@ void wave_int_list_push_front (wave_int_list * list, int element);
  * \param i Index.
  * \param element Element.
  * \relatesalso wave_int_list
+ * \warning \c list must be not \c NULL.
  */
 void wave_int_list_insert (wave_int_list * list, size_t i, int element);
 

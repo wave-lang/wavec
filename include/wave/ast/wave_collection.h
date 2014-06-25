@@ -2,6 +2,7 @@
  * \file wave_collection.h
  * \brief Wave collection
  * \author RAZANAJATO RANAIVOARIVONY Harenome
+ * \author SCHMITT Maxime
  * \date 2014
  * \copyright MIT License
  */
@@ -37,61 +38,111 @@
 #include "wave/ast/wave_atom.h"
 #include "wave/ast/wave_collection_info.h"
 
+/**
+ * \defgroup wave_collection_group Wave Collection
+ * \ingroup wave_ast_group
+ */
+
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * \ingroup wave_collection_group
  * \brief Collection types.
  */
 typedef enum wave_collection_type
 {
-    WAVE_COLLECTION_ATOM = 0,       /**<- Atom. */
-    WAVE_COLLECTION_REP_SEQ,        /**<- Rep seq. */
-    WAVE_COLLECTION_REP_PAR,        /**<- Rep par. */
-    WAVE_COLLECTION_SEQ,            /**<- Seq. */
-    WAVE_COLLECTION_PAR,            /**<- Par. */
-    WAVE_COLLECTION_CYCLIC_SEQ,     /**<- Cyclic seq. */
-    WAVE_COLLECTION_CYCLIC_PAR,     /**<- Cyclic par. */
-    WAVE_COLLECTION_UNKNOWN,        /**<- Unknown. */
+    WAVE_COLLECTION_ATOM = 0,       /**< Atom. */
+    WAVE_COLLECTION_REP_SEQ,        /**< Rep seq. */
+    WAVE_COLLECTION_REP_PAR,        /**< Rep par. */
+    WAVE_COLLECTION_SEQ,            /**< Seq. */
+    WAVE_COLLECTION_PAR,            /**< Par. */
+    WAVE_COLLECTION_CYCLIC_SEQ,     /**< Cyclic seq. */
+    WAVE_COLLECTION_CYCLIC_PAR,     /**< Cyclic par. */
+    WAVE_COLLECTION_UNKNOWN,        /**< Unknown. */
 } wave_collection_type;
 
 /**
+ * \ingroup wave_collection_group
  * \brief Wave collection repetition types.
  */
 typedef enum wave_collection_repetition_type
 {
-    WAVE_COLLECTION_REPETITION_CONSTANT = 0,    /**<- Constant. */
-    WAVE_COLLECTION_REPETITION_PATH,            /**<- Path. */
-    WAVE_COLLECTION_REPETITION_UNKNOWN,         /**<- Unknown. */
+    WAVE_COLLECTION_REPETITION_CONSTANT = 0,    /**< Constant. */
+    WAVE_COLLECTION_REPETITION_PATH,            /**< Path. */
+    WAVE_COLLECTION_REPETITION_UNKNOWN,         /**< Unknown. */
 } wave_collection_repetition_type;
 
 /**
+ * \ingroup wave_collection_group
  * \brief Collection.
  * \warning Collections not obtained with wave_collection_alloc() must be initialized using wave_collection_init() !
+ *
+ * A wave_collection is used to represent nodes of the Wave AST. Note that
+ * wave_collection is not strictly speaking equivalent to “collections” of
+ * the Wave language: indeed, wave_collection can hold “collections” but can
+ * also hold atoms, repetitions, and cycles.
+ *
+ * # Creation and destruction
+ * A collection can be dynamically created with wave_collection_alloc() and
+ * freed using wave_collection_free().
+ *
+ * # Collection type
+ * A collection (a node of the AST) can hold:
+ *
+ * Collection content               | Corresponding collection type
+ * ---------------------------------|------------------------------
+ * an atom                          | #WAVE_COLLECTION_ATOM
+ * a sequential collection          | #WAVE_COLLECTION_SEQ
+ * a parallel collection            | #WAVE_COLLECTION_PAR
+ * a sequential repetition          | #WAVE_COLLECTION_REP_SEQ
+ * a parallel repetition            | #WAVE_COLLECTION_REP_PAR
+ * a cyclic sequential collection   | #WAVE_COLLECTION_CYCLIC_SEQ
+ * a cyclic parallel collection     | #WAVE_COLLECTION_CYCLIC_PAR
+ * nothing                          | #WAVE_COLLECTION_UNKNOWN
+ *
+ * ## Getting a collection's type
+ * In order to get a collection's type, one must use wave_collection_get_type().
+ *
+ * # Collection processing
+ * To process a collection, one must iterate over every node of the AST, and
+ * every sub-element encounterd.
+ *
+ * # Collection Info
+ * - wave_collection_compute_indexes()
+ * - wave_collection_compute_length_and_coords()
+ *
+ * # Links
+ * Internally, elements of a collection are stored as linked lists: each element
+ * of the collection is linked to its predecessor, if any, and its successor, if
+ * any. In a collection, sub-collections , cycles and repetitions are considered
+ * as single elements. Elements of a collection contained in another collection
+ * all are linked to their “parent” collection.
+ *
  */
 typedef struct wave_collection
 {
-    wave_collection_type _type;                     /**<- Type. */
+    wave_collection_type _type;                     /**< Type. */
     union
     {
-        wave_atom * _atom;                          /**<- Atom. */
-        struct wave_collection * _list;             /**<- Seq, Par, Cyclic { Seq, Par }. */
+        wave_atom * _atom;                          /**< Atom. */
+        struct wave_collection * _list;             /**< Seq, Par, Cyclic { Seq, Par }. */
         struct
         {
-            wave_collection_repetition_type _type;  /**<- Repetition type. */
-            struct wave_collection * _list;         /**<- List. */
+            wave_collection_repetition_type _type;  /**< Repetition type. */
+            struct wave_collection * _list;         /**< List. */
             union
             {
-                wave_path * _path;                  /**<- Repeated path. */
-                int _times;                         /**<- Repetition number. */
-            } _description;                         /**<- Reptition description. */
-        } _repetition;                              /**<- Repetition. */
-    } _inner;                                       /**<- Inner. */
-    struct wave_collection * _next_collection;      /**<- Next. */
-    struct wave_collection * _previous_collection;  /**<- Previous. */
-    struct wave_collection * _parent_collection;    /**<- Up. */
-    struct wave_collection_info * _info;            /**<- Info. */
+                wave_path * _path;                  /**< Repeated path. */
+                int _times;                         /**< Repetition number. */
+            } _description;                         /**< Reptition description. */
+        } _repetition;                              /**< Repetition. */
+    } _inner;                                       /**< Inner. */
+    struct wave_collection * _next_collection;      /**< Next. */
+    struct wave_collection * _previous_collection;  /**< Previous. */
+    struct wave_collection * _parent_collection;    /**< Up. */
+    struct wave_collection_info * _info;            /**< Info. */
 } wave_collection;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -286,12 +337,40 @@ wave_collection * wave_collection_get_down (const wave_collection * c);
  */
 wave_collection_info * wave_collection_get_info (const wave_collection * c);
 
+/**
+ * \brief Get the collection's index.
+ * \param c Collection.
+ * \return Index.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
 int wave_collection_get_index (const wave_collection * c);
 
+/**
+ * \brief Get the collection's coordinate.
+ * \param c Collection
+ * \return Coordinate.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
 wave_coordinate * wave_collection_get_coordinate (const wave_collection * c);
 
+/**
+ * \brief Get the collection's length.
+ * \param c Collection
+ * \return Length.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
 wave_coordinate * wave_collection_get_length (const wave_collection * c);
 
+/**
+ * \brief Get the collection's last successor.
+ * \param c Collection
+ * \return Last successor.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
 wave_collection * wave_collection_get_last (wave_collection * c);
 
 ////////////////////////////////////////////////////////////////////////////////

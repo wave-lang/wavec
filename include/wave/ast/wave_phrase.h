@@ -2,6 +2,7 @@
  * \file wave_phrase.h
  * \brief Wave phrase.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
+ * \author SCHMITT Maxime
  * \date 2014
  * \copyright MIT License
  */
@@ -35,6 +36,10 @@
 #include <stdbool.h>
 
 #include "wave/ast/wave_collection.h"
+
+/**
+ * \defgroup wave_ast_group Wave Abstract Syntax Tree
+ */
 
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.

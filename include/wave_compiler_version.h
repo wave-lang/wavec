@@ -2,6 +2,7 @@
  * \file wave_compiler_version.h
  * \brief Wave compiler version.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
+ * \author SCHMITT Maxime
  * \date 2014
  * \copyright MIT License
  */

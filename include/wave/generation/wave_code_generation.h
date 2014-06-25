@@ -1,6 +1,7 @@
 /**
  * \file wave_code_generation.h
  * \brief Wave code generation.
+ * \author RAZANAJATO RANAIVOARIVONY Harenome
  * \author SCHMITT Maxime
  * \date 2014
  * \copyright MIT License

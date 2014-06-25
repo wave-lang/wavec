@@ -2,6 +2,7 @@
  * \file wave_collection_info.h
  * \brief Wave collection info.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
+ * \author SCHMITT Maxime
  * \date 2014
  * \copyright MIT License
  */
@@ -37,12 +38,34 @@
 #include "wave/ast/wave_int_list.h"
 #include "wave/ast/wave_coordinate.h"
 
+/**
+ * \defgroup wave_collection_info_group Wave Collection Info
+ * \ingroup wave_collection_group
+ */
+
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * \ingroup wave_collection_info_group
  * \brief Wave collection info.
+ *
+ * Collection info are used to annotate the nodes of the AST.
+ *
+ * # Collection info creation and destruction
+ * A collection info can be dynamically created using wave_collection_info_alloc()
+ * and must be destroyed with wave_collection_info_free().
+ *
+ * # Content access
+ * - wave_collection_info_get_index()
+ * - wave_collection_info_get_coordinate()
+ * - wave_collection_info_get_length()
+ *
+ * # Content modification
+ * - wave_collection_info_set_index()
+ * - wave_collection_info_set_coordinate()
+ * - wave_collection_info_set_length()
  */
 typedef struct wave_collection_info
 {

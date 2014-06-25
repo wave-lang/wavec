@@ -2,6 +2,7 @@
  * \file wave_path.h
  * \brief Wave path.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
+ * \author SCHMITT Maxime
  * \date 2014
  * \copyright MIT License
  */
@@ -34,54 +35,143 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+/**
+ * \defgroup wave_path_group Wave Path
+ * \ingroup wave_ast_group
+ */
+
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Move type.
+ * \ingroup wave_path_group
  */
 typedef enum wave_move_type
 {
-    WAVE_MOVE_UP = 0,    /**<- Up. */
-    WAVE_MOVE_DOWN,      /**<- Down. */
-    WAVE_MOVE_PRE,       /**<- Predecesor. */
-    WAVE_MOVE_SUC,       /**<- Successor. */
-    WAVE_MOVE_REWIND,    /**<- Rewind. */
-    WAVE_MOVE_PART,      /**<- Part. */
-    WAVE_MOVE_REP,       /**<- Repeat. */
-    WAVE_MOVE_UNKNOWN,   /**<- Unknown. */
+    WAVE_MOVE_UP = 0,    /**< Up. */
+    WAVE_MOVE_DOWN,      /**< Down. */
+    WAVE_MOVE_PRE,       /**< Predecesor. */
+    WAVE_MOVE_SUC,       /**< Successor. */
+    WAVE_MOVE_REWIND,    /**< Rewind. */
+    WAVE_MOVE_PART,      /**< Part. */
+    WAVE_MOVE_REP,       /**< Repeat. */
+    WAVE_MOVE_UNKNOWN,   /**< Unknown. */
 } wave_move_type;
 
 /**
  * \brief Repeat type.
+ * \ingroup wave_path_group
  */
 typedef enum wave_path_repeat_type
 {
-    WAVE_PATH_REPEAT_CONSTANT = 0,  /**<- Constant. */
-    WAVE_PATH_REPEAT_INFINITE       /**<- Infinite. */
+    WAVE_PATH_REPEAT_CONSTANT = 0,  /**< Constant. */
+    WAVE_PATH_REPEAT_INFINITE       /**< Infinite. */
 } wave_path_repeat_type;
 
 /**
  * \brief Wave path.
  * \warning Paths not obtained using wave_path_alloc() must be initialized using wave_path_init() !
+ * \ingroup wave_path_group
+ *
+ * Wave paths are used to represent paths.
+ *
+ * Internally, paths are stored as trees: a wave_path is an element
+ * which is linked to its predecessor, if any, and its successor, if any. This
+ * element can either hold a “simple” move, or a path and additionnal
+ * information.
+ *
+ * # Path creation and destruction
+ * A path can be dynamically created using wave_path_alloc(). It must be free
+ * with wave_path_free().
+ *
+ * # Moves
+ * In order to know the move type of the current path element, one must use
+ * wave_path_get_move().
+ *
+ * Wave move type       | Move
+ * ---------------------|------------------
+ * #WAVE_MOVE_UP        | Upper collection
+ * #WAVE_MOVE_DOWN      | Down collection
+ * #WAVE_MOVE_PRE       | Predecessor
+ * #WAVE_MOVE_SUC       | Successor
+ * #WAVE_MOVE_REWIND    | Rewind
+ * #WAVE_MOVE_PART      | Part
+ * #WAVE_MOVE_REP       | Repetition
+ * #WAVE_MOVE_UNKNOWN   | Nothing
+ *
+ * ## Simple moves
+ * #WAVE_MOVE_UP, #WAVE_MOVE_DOWN, #WAVE_MOVE_PRE and #WAVE_MOVE_SUC are
+ * considered simple.
+ *
+ * ## Rewind
+ * Though a bit special, #WAVE_MOVE_REWIND is also considered as “simple”
+ * (meaning that, when encountering a #WAVE_MOVE_REWIND, no more should be done
+ * with the current path element).
+ *
+ * ## Part
+ * #WAVE_MOVE_PART denotes a path that should be saved for later use along a
+ * #WAVE_MOVE_REWIND. Since the path can contain several moves, it is stored
+ * inside the element and can be accessed with wave_path_get_part().
+ *
+ * ## repetitions
+ * #WAVE_MOVE_REP symbolizes paths that are repeated.
+ *
+ * ### repetition type
+ * There are two types of repetitions:
+ *
+ * Move repetition              | Meaning
+ * -----------------------------|--------------------------------------
+ * #WAVE_PATH_REPEAT_CONSTANT   | Repeat a finite number of times.
+ * #WAVE_PATH_REPEAT_INFINITE   | Repeat until nothing can be accessed
+ *
+ * To know the repetition type, one must use wave_path_get_repeat_type().
+ *
+ * For instance, the following path falls in the #WAVE_PATH_REPEAT_INFINITE
+ * category:
+ *
+ *      s *
+ *
+ * It means that when following the path, one should keep going to the successor
+ * of the current collection until there is no more successor.
+ *
+ * ### Repeated path.
+ * The path that shall be repeated can be accessed using
+ * wave_path_get_repeat_path();
+ *
+ * ### Constant repeat
+ * For #WAVE_PATH_REPEAT_CONSTANT repeated paths, one must get the number of
+ * times the path will be repeated using wave_path_get_repeat_number().
+ *
+ * # Path iteration
+ * Since paths are stored as trees, one must process the current path element,
+ * and then process all of its successors. The immediate successor can be
+ * obtained using wave_path_get_next().
+ * If needed, predecessors can be attained with wave_path_get_previous().
+ *
+ * It is highly recommended to first ascertain that an element has a successor
+ * (respectively a predecessor) using wave_path_has_next() (respectively
+ * wave_path_has_previous()) before calling wave_path_get_next() (respectively
+ * wave_path_get_previous()).
+ *
  * \sa wave_path_repeat_type, wave_move_type
  */
 typedef struct wave_path
 {
-    wave_move_type _move;                   /**<- Move. */
+    wave_move_type _move;                   /**< Move. */
     union
     {
-        struct wave_path * _part;           /**<- Part. */
+        struct wave_path * _part;           /**< Part. */
         struct
         {
-            wave_path_repeat_type _type;    /**<- Repeat type. */
-            int _number;                    /**<- Repeat number. */
-            struct wave_path * _path;       /**<- Path to repeat. */
-        } _repeat;                          /**<- Repeat. */
-    } _complex_move;                        /**<- Complex move. */
-    struct wave_path * _next_path;          /**<- Next move. */
-    struct wave_path * _previous_path;      /**<- Previous move. */
+            wave_path_repeat_type _type;    /**< Repeat type. */
+            int _number;                    /**< Repeat number. */
+            struct wave_path * _path;       /**< Path to repeat. */
+        } _repeat;                          /**< Repeat. */
+    } _complex_move;                        /**< Complex move. */
+    struct wave_path * _next_path;          /**< Next move. */
+    struct wave_path * _previous_path;      /**< Previous move. */
 } wave_path;
 
 ////////////////////////////////////////////////////////////////////////////////

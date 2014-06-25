@@ -2,6 +2,7 @@
  * \file wave_path.c
  * \brief Wave PATH.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
+ * \author SCHMITT Maxime
  * \date 2014
  * \copyright MIT License
  */

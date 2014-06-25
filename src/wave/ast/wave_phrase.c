@@ -2,6 +2,7 @@
  * \file wave_phrase.c
  * \brief Wave phrase.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
+ * \author SCHMITT Maxime
  * \date 2014
  * \copyright MIT License
  */

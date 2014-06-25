@@ -2,6 +2,7 @@
  * \file wave_operator.h
  * \brief Wave operators.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
+ * \author SCHMITT Maxime
  * \date 2014
  * \copyright MIT License
  */
@@ -35,6 +36,7 @@
 
 /**
  * \brief Wave operators.
+ * \ingroup wave_ast_group
  */
 typedef enum wave_operator
 {
