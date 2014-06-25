@@ -45,8 +45,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Wave int list element.
  * \ingroup wave_int_list_group
+ * \brief Wave int list element.
+ *
  * wave_int_list_elements are used internally to store elements for
  * wave_int_list.
  *
@@ -61,8 +62,8 @@ typedef struct wave_int_list_element
 } wave_int_list_element;
 
 /**
- * \brief Wave int list
  * \ingroup wave_int_list_group
+ * \brief Wave int list.
  *
  * # Wave int list creation and destruction
  * A wave_int_list can be dynamically created using wave_int_list_alloc(). Such

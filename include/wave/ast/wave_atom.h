@@ -70,8 +70,8 @@ typedef enum wave_atom_type
 } wave_atom_type;
 
 /**
- * \brief Atom content.
  * \ingroup wave_atom_group
+ * \brief Atom content.
  *
  * Wave atoms can hold several types of values. However, it can only hold one
  * value at a time, hence this union.
