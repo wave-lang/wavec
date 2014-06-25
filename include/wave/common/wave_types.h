@@ -45,7 +45,34 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * \defgroup wave_types_group Wave types
+ * # List of wave types
+ * - wave_int
+ * - wave_char
+ * - wave_float
+ * - wave_bool
+ * - wave_string
+ *
+ * For further information on a specific Wave type, please read its dedicated
+ * documentation.
+ *
+ * # Conversions
+ * Several functions are available for conversions between Wave types:
+ *
+ * Source type      | Destination type      | Function
+ * -----------------|-----------------------|-----------------------------
+ * char *           | wave_bool             | wave_bool_from_string()
+ * wave_char        | wave_int              | wave_char_code()
+ * wave_float       | wave_int              | wave_int_from_wave_float()
+ * char *           | wave_int              | wave_int_from_string()
+ * wave_int         | wave_float            | wave_float_from_wave_int()
+ * char *           | wave_float            | wave_float_from_string()
+ * wave_int         | wave_char             | wave_char_from_wave_int()
+ */
+
+/**
  * \class wave_bool
+ * \ingroup wave_types_group
  * \brief Wave boolean.
  *
  * wave_bool is the boolean type of Wave. It consists of two values:
@@ -76,6 +103,7 @@ typedef bool wave_bool;
 
 /**
  * \class wave_int
+ * \ingroup wave_types_group
  * \brief Wave integer.
  *
  * wave_int is the integer type of Wave.
@@ -86,7 +114,7 @@ typedef bool wave_bool;
  * ## Unary operations
  *
  * Wave notation        | Function
- * ---------------------|-----------------------
+ * ---------------------|-------------------------------
  * ~+                   | wave_int_unary_plus()
  * ~-                   | wave_int_unary_minus()
  * ++                   | wave_int_increment()
@@ -103,7 +131,7 @@ typedef bool wave_bool;
  * ## Binary operations
  *
  * Wave notation        | Function
- * ---------------------|-----------------------
+ * ---------------------|---------------------------------
  * +                    | wave_int_binary_plus()
  * -                    | wave_int_binary_minus()
  * min                  | wave_int_binary_min()
@@ -122,7 +150,7 @@ typedef bool wave_bool;
  * A few conversion functions are available:
  *
  * Source type      | Function
- * -----------------|----------------------------
+ * -----------------|-------------------------------
  * wave_char        | wave_char_code()
  * wave_float       | wave_int_from_wave_float()
  * char *           | wave_int_from_string()
@@ -139,6 +167,7 @@ typedef int wave_int;
 
 /**
  * \class wave_float
+ * \ingroup wave_types_group
  * \brief Wave float.
  *
  * wave_float is the floating point type of Wave.
@@ -149,7 +178,7 @@ typedef int wave_int;
  * ## Unary operations
  *
  * Wave notation        | Function
- * ---------------------|-----------------------
+ * ---------------------|------------------------------
  * ~+                   | wave_float_unary_plus()
  * ~-                   | wave_float_unary_minus()
  * ++                   | wave_float_increment()
@@ -166,7 +195,7 @@ typedef int wave_int;
  * ## Binary operations
  *
  * Wave notation        | Function
- * ---------------------|-----------------------
+ * ---------------------|---------------------------------
  * +                    | wave_float_binary_plus()
  * -                    | wave_float_binary_minus()
  * min                  | wave_float_binary_min()
@@ -185,7 +214,7 @@ typedef int wave_int;
  * A few conversion functions are available:
  *
  * Source type      | Function
- * -----------------|----------------------------
+ * -----------------|-------------------------------
  * wave_int         | wave_float_from_wave_int()
  * char *           | wave_float_from_string()
  */
@@ -196,6 +225,7 @@ typedef double wave_float;
 
 /**
  * \class wave_char
+ * \ingroup wave_types_group
  * \brief Wave character.
  *
  * wave_char is the character type of Wave.
@@ -204,7 +234,7 @@ typedef double wave_float;
  * Several operations are defined for wave_int:
  *
  * Wave notation        | Function
- * ---------------------|-----------------------
+ * ---------------------|--------------------------------
  * +                    | wave_char_binary_plus()
  * min                  | wave_char_binary_min()
  * max                  | wave_char_binary_max()
@@ -236,8 +266,9 @@ typedef char wave_char;
 
 /**
  * \class wave_string
+ * \ingroup wave_types_group
  * \brief Wave string.
- * \sa wave_char, const_wave_string
+ *
  *
  * wave_string is the string type of Wave. const_wave_string is the \c const
  * variant of wave_string.
@@ -248,7 +279,7 @@ typedef char wave_char;
  * Several operations are defined for wave_int:
  *
  * Wave notation        | Function
- * ---------------------|-----------------------
+ * ---------------------|----------------------------------
  * +                    | wave_string_binary_plus()
  * min                  | wave_string_binary_min()
  * max                  | wave_string_binary_max()
@@ -262,8 +293,8 @@ typedef char wave_char;
  * # string.h like functions
  * Several functions are defined to mimic the string.h behaviour:
  *
- * string.h function    | wave_string function
- * ---------------------|---------------------
+ * string.h function    | Wave string function
+ * ---------------------|----------------------------------
  * strcat               | wave_string_cat()
  * strcmp               | wave_string_compare()
  * strcpy               | wave_string_copy()
@@ -272,17 +303,23 @@ typedef char wave_char;
  * strrchr              | wave_string_last_character()
  * strstr               | wave_string_sub_string()
  * strdup               | wave_string_duplicate()
+ *
+ * \sa wave_char, const_wave_string
  */
 /**
  * \brief Wave string.
- * \sa const_wave_string
  */
 typedef wave_char * wave_string;
 
 /**
- * \brief Const wave_string.
+ * \class const_wave_string
+ * \ingroup wave_types_group
+ * \brief Const counterpart of wave_string.
+ *
  * \sa wave_string
- * const_wave_string are the const version of wave_string.
+ */
+/**
+ * \brief Const wave_string.
  */
 typedef const wave_char * const_wave_string;
 
