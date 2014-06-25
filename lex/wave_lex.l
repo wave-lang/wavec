@@ -137,8 +137,6 @@ int main(int argc, char ** argv)
         return EXIT_FAILURE;
     }
     wave_phrase_print(&p);
-    wave_collection_compute_indexes(p._next_phrase->_collection);
-    wave_collection_compute_length_and_coords(p._next_phrase->_collection);
     wave_code_generation_generate(yyout, p._next_phrase);
     wave_phrase_free(p._next_phrase);
     fclose(yyin);
