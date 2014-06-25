@@ -292,32 +292,47 @@ static void wave_code_generation_atom(FILE* output_file, const wave_collection* 
     _wave_code_generation_atom[ atom_type ](output_file, collection);
 }
 
-static void _wave_code_generation_fprint_int(FILE* output_file, const wave_collection* collection){
+static inline void _wave_generate_with_strings_inside_tm(FILE* const output_file, const wave_collection* const collection, const char* const struct_name, const char* const type_string){
     fprintf(output_file, "wave_tab");
     wave_collection_fprint_full_indexes(output_file, wave_collection_get_parent(collection));
     wave_coordinate* collection_coordinate = wave_collection_info_get_coordinate( wave_collection_get_info( collection ) );
     fprintf(output_file, "[");
     wave_coordinate_fprint(output_file, collection_coordinate);
-    fprintf(output_file, "] =");
+    fprintf(output_file, "]%s = ", struct_name);
     wave_atom_fprint(output_file, wave_collection_get_atom( collection ));
     fprintf(output_file, ";\n");
+    fprintf(output_file, "wave_tab");
+    wave_collection_fprint_full_indexes(output_file, wave_collection_get_parent(collection));
+    collection_coordinate = wave_collection_info_get_coordinate( wave_collection_get_info( collection ) );
+    fprintf(output_file, "[");
+    wave_coordinate_fprint(output_file, collection_coordinate);
+    fprintf(output_file, "]._type = %s;\n", type_string);
+}
+
+static void _wave_code_generation_fprint_int(FILE* output_file, const wave_collection* collection){
+    _wave_generate_with_strings_inside_tm(output_file, collection, "._content._int", "WAVE_DATA_INT");
 }
 
 static void _wave_code_generation_fprint_float(FILE* output_file, const wave_collection* collection){
-    (void) output_file; (void) collection;
+    _wave_generate_with_strings_inside_tm(output_file, collection, "._content._float", "WAVE_DATA_FLOAT");
 }
+
 static void _wave_code_generation_fprint_bool(FILE* output_file, const wave_collection* collection){
-    (void) output_file; (void) collection;
+    _wave_generate_with_strings_inside_tm(output_file, collection, "._content._bool", "WAVE_DATA_BOOL");
 }
+
 static void _wave_code_generation_fprint_char(FILE* output_file, const wave_collection* collection){
-    (void) output_file; (void) collection;
+    _wave_generate_with_strings_inside_tm(output_file, collection, "._content._char", "WAVE_DATA_CHAR");
 }
+
 static void _wave_code_generation_fprint_string(FILE* output_file, const wave_collection* collection){
-    (void) output_file; (void) collection;
+    _wave_generate_with_strings_inside_tm(output_file, collection, "._content._string", "WAVE_DATA_STRING");
 }
+
 static void _wave_code_generation_fprint_operator(FILE* output_file, const wave_collection* collection){
     (void) output_file; (void) collection;
 }
+
 static void _wave_code_generation_fprint_path(FILE* output_file, const wave_collection* collection){
     (void) output_file; (void) collection;
 }
