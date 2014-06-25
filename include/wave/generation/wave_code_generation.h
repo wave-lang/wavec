@@ -31,8 +31,10 @@
 #ifndef __WAVE_CODE_GENERATION_H
 #define __WAVE_CODE_GENERATION_H
 
-#include "wave/ast/wave_phrase.h"
 #include <stdio.h>
+
+#include "wave/ast/wave_phrase.h"
+#include "wave/generation/wave_headers.h"
 
 /**
  * \brief Generate C source code giving a collection.
@@ -53,7 +55,7 @@ void wave_code_generation_collection(FILE* output_file, const wave_collection* c
  * \note  Collections in phrases must have already been indexed.
  */
 static inline void wave_code_generation_generate(FILE* output_file, const wave_phrase* phrases){
-    fprintf(output_file, "#include \"wave/common/wave_struct_def.h\"\n");
+    wave_code_generation_fprintf_headers (output_file);
     fprintf (output_file, "int main(void)\n{\n");
     do{
         const wave_collection* collection = wave_phrase_get_collection(phrases);
