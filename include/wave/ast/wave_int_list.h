@@ -83,6 +83,11 @@ typedef struct wave_int_list_element
  * To insert an element into the list, one can use either
  * wave_int_list_push_back(), wave_int_list_push_front() or
  * wave_int_list_insert().
+ *
+ * # Printing
+ * Two functions are available for printing:
+ * - wave_int_list_fprint()
+ * - wave_int_list_print()
  */
 typedef struct wave_int_list
 {
@@ -201,5 +206,26 @@ void wave_int_list_push_front (wave_int_list * list, int element);
  * \warning \c list must be not \c NULL.
  */
 void wave_int_list_insert (wave_int_list * list, size_t i, int element);
+
+////////////////////////////////////////////////////////////////////////////////
+// Printing
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \brief Print a wave_int_list to a stream.
+ * \param stream Stream.
+ * \param list List.
+ * \relatesalso wave_int_list
+ * \warning \c list must be not \c NULL.
+ */
+void wave_int_list_fprint (FILE * stream, const wave_int_list * list);
+
+/**
+ * \brief Print a wave_int_list to stdout.
+ * \param list List.
+ * \warning \c list must be not \c NULL.
+ * \relatesalso wave_int_list
+ */
+void wave_int_list_print (const wave_int_list * list);
 
 #endif /* __WAVE_INT_LIST_H__ */
