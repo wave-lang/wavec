@@ -332,41 +332,234 @@ static void wave_code_generation_atom(FILE* code_file, FILE * alloc_file, const 
     _wave_code_generation_atom[ atom_type ](code_file, collection);
 }
 
-static inline void _wave_generate_with_strings_inside_tm(FILE* const code_file, const wave_collection* const collection, const char* const struct_name, const char* const type_string){
-    wave_coordinate* collection_coordinate = wave_collection_get_coordinate(collection);
-    wave_int_list* collection_index_list = wave_collection_get_full_indexes(collection);
+static const char * const _atom_type_strings[] =
+{
+    [WAVE_ATOM_LITERAL_INT] = "_int",
+    [WAVE_ATOM_LITERAL_FLOAT] = "_float",
+    [WAVE_ATOM_LITERAL_BOOL] = "_bool",
+    [WAVE_ATOM_LITERAL_CHAR] = "_char",
+    [WAVE_ATOM_LITERAL_STRING] = "_string",
+};
 
-    _wave_code_generation_fprint_tab_with_init(code_file, collection_index_list, collection_coordinate, "");
-    fprintf(code_file, "%s = ", struct_name);
+static const char * const _atom_type_data_strings[] =
+{
+    [WAVE_ATOM_LITERAL_INT] = "WAVE_DATA_INT",
+    [WAVE_ATOM_LITERAL_FLOAT] = "WAVE_DATA_FLOAT",
+    [WAVE_ATOM_LITERAL_BOOL] = "WAVE_DATA_BOOL",
+    [WAVE_ATOM_LITERAL_CHAR] = "WAVE_DATA_CHAR",
+    [WAVE_ATOM_LITERAL_STRING] = "WAVE_DATA_STRING",
+};
+
+
+static void _generate_content_assignement (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type t)
+{
+    _wave_code_generation_fprint_tab_with_init(code_file, list, c, "._content.");
+    fprintf (code_file, "%s", _atom_type_strings[t]);
+}
+
+static void _generate_type_assignement (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type t)
+{
+    _wave_code_generation_fprint_tab_with_init(code_file, list, c, "._type = ");
+    fprintf (code_file, "%s;\n", _atom_type_data_strings[t]);
+}
+
+static inline void _wave_generate_with_strings_inside_tm(FILE* const code_file, const wave_collection* const collection, wave_atom_type t){
+    wave_coordinate* collection_coordinate = wave_collection_get_coordinate(collection);
+    wave_int_list* collection_index_list = wave_collection_get_full_indexes(wave_collection_get_parent(collection));
+
+    _generate_content_assignement (code_file, collection_index_list, collection_coordinate, t);
+    fprintf(code_file, " = ");
     wave_atom_fprint(code_file, wave_collection_get_atom( collection ));
     fprintf(code_file, ";\n");
 
-    _wave_code_generation_fprint_tab_with_init(code_file, collection_index_list, collection_coordinate, "._type = ");
-    fprintf(code_file, "%s;\n", type_string);
+    _generate_type_assignement (code_file, collection_index_list , collection_coordinate, t);
+    wave_int_list_free (collection_index_list);
 }
 
 static void _wave_code_generation_fprint_int(FILE* code_file, const wave_collection* collection){
-    _wave_generate_with_strings_inside_tm(code_file, collection, "._content._int", "WAVE_DATA_INT");
+    _wave_generate_with_strings_inside_tm(code_file, collection, WAVE_ATOM_LITERAL_INT);
 }
 
 static void _wave_code_generation_fprint_float(FILE* code_file, const wave_collection* collection){
-    _wave_generate_with_strings_inside_tm(code_file, collection, "._content._float", "WAVE_DATA_FLOAT");
+    _wave_generate_with_strings_inside_tm(code_file, collection, WAVE_ATOM_LITERAL_FLOAT);
 }
 
 static void _wave_code_generation_fprint_bool(FILE* code_file, const wave_collection* collection){
-    _wave_generate_with_strings_inside_tm(code_file, collection, "._content._bool", "WAVE_DATA_BOOL");
+    _wave_generate_with_strings_inside_tm(code_file, collection, WAVE_ATOM_LITERAL_BOOL);
 }
 
 static void _wave_code_generation_fprint_char(FILE* code_file, const wave_collection* collection){
-    _wave_generate_with_strings_inside_tm(code_file, collection, "._content._char", "WAVE_DATA_CHAR");
+    _wave_generate_with_strings_inside_tm(code_file, collection, WAVE_ATOM_LITERAL_CHAR);
 }
 
 static void _wave_code_generation_fprint_string(FILE* code_file, const wave_collection* collection){
-    _wave_generate_with_strings_inside_tm(code_file, collection, "._content._string", "WAVE_DATA_STRING");
+    _wave_generate_with_strings_inside_tm(code_file, collection, WAVE_ATOM_LITERAL_CHAR);
 }
 
+static void _print_tab_minus (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, int shift)
+{
+    wave_coordinate * minus = wave_coordinate_alloc ();
+    wave_coordinate_set_constant  (minus, shift);
+    wave_coordinate * shifted = wave_coordinate_alloc ();
+    wave_coordinate * copy = wave_coordinate_copy (c);
+    wave_coordinate_set_plus (shifted, minus, copy);
+    _wave_code_generation_fprint_tab_with_init(code_file, list, shifted, "");
+    wave_coordinate_free (shifted);
+}
+
+static void _print_unary_int_float (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, const char * type_string, const char * op)
+{
+    _generate_type_assignement (code_file, list, c, t);
+    _generate_content_assignement (code_file, list, c, t);
+    fprintf (code_file, " = wave_%s_%s (", type_string, op);
+    _print_tab_minus (code_file, list, c, -1);
+    fprintf (code_file, "._content.%s", _atom_type_strings[t]);
+    fprintf (code_file, ");\n");
+}
+
+static void _unary_int_float (FILE * code_file, const wave_collection * collection, const char * op)
+{
+    wave_collection * previous = wave_collection_get_previous (collection);
+    wave_collection_type tc = wave_collection_get_type (previous);
+    if (tc == WAVE_COLLECTION_ATOM)
+    {
+        wave_atom * a = wave_collection_get_atom (previous);
+        wave_atom_type ta = wave_atom_get_type (a);
+        wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
+        wave_coordinate * c = wave_collection_get_coordinate (collection);
+        if (ta == WAVE_ATOM_LITERAL_INT)
+            _print_unary_int_float (code_file, indexes, c, ta, "int", op);
+        else if (ta == WAVE_ATOM_LITERAL_FLOAT)
+            _print_unary_int_float (code_file, indexes, c, ta, "float", op);
+        else
+        {
+            fprintf (stderr, "stderror\n");
+            exit (1);
+        }
+    }
+}
+
+static void _unary_float (FILE * code_file, const wave_collection * collection, const char * op)
+{
+    wave_collection * previous = wave_collection_get_previous (collection);
+    wave_collection_type tc = wave_collection_get_type (previous);
+    if (tc == WAVE_COLLECTION_ATOM)
+    {
+        wave_atom * a = wave_collection_get_atom (previous);
+        wave_atom_type ta = wave_atom_get_type (a);
+        wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
+        wave_coordinate * c = wave_collection_get_coordinate (collection);
+        if (ta == WAVE_ATOM_LITERAL_INT)
+            _print_unary_int_float (code_file, indexes, c, ta, "int", op);
+        else if (ta == WAVE_ATOM_LITERAL_FLOAT)
+            _print_unary_int_float (code_file, indexes, c, ta, "float", op);
+        else
+        {
+            fprintf (stderr, "stderror\n");
+            exit (1);
+        }
+    }
+}
+
+static void _unary_plus (FILE * code_file, const wave_collection * collection)
+{
+    _unary_int_float (code_file, collection, "unary_plus");
+}
+
+static void _unary_minus (FILE * code_file, const wave_collection * collection)
+{
+    _unary_int_float (code_file, collection, "unary_minus");
+}
+
+static void _unary_increment (FILE * code_file, const wave_collection * collection)
+{
+    _unary_int_float (code_file, collection, "increment");
+}
+
+static void _unary_decrement (FILE * code_file, const wave_collection * collection)
+{
+    _unary_int_float (code_file, collection, "decrement");
+}
+
+static void _unary_sqrt (FILE * code_file, const wave_collection * collection)
+{
+    _unary_int_float (code_file, collection, "sqrt");
+}
+
+static void _unary_sin (FILE * code_file, const wave_collection * collection)
+{
+    _unary_int_float (code_file, collection, "sin");
+}
+
+static void _unary_cos (FILE * code_file, const wave_collection * collection)
+{
+    _unary_int_float (code_file, collection, "cos");
+}
+
+static void _unary_log (FILE * code_file, const wave_collection * collection)
+{
+    _unary_int_float (code_file, collection, "log");
+}
+
+static void _unary_exp (FILE * code_file, const wave_collection * collection)
+{
+    _unary_int_float (code_file, collection, "exp");
+}
+
+static void _unary_ceil (FILE * code_file, const wave_collection * collection)
+{
+    _unary_int_float (code_file, collection, "ceil");
+}
+
+static void _unary_floor (FILE * code_file, const wave_collection * collection)
+{
+    _unary_int_float (code_file, collection, "floor");
+}
+
+static void (* const _operator_functions[]) (FILE *, const wave_collection *) =
+{
+    [WAVE_OP_UNARY_PLUS]                = _unary_plus,
+    [WAVE_OP_UNARY_MINUS]               = _unary_minus,
+    [WAVE_OP_UNARY_INCREMENT]           = _unary_increment,
+    [WAVE_OP_UNARY_DECREMENT]           = _unary_decrement,
+    [WAVE_OP_UNARY_SQRT]                = _unary_sqrt,
+    [WAVE_OP_UNARY_SIN]                 = _unary_sin,
+    [WAVE_OP_UNARY_COS]                 = _unary_cos,
+    [WAVE_OP_UNARY_NOT]                 = NULL,
+    [WAVE_OP_UNARY_LOG]                 = _unary_log,
+    [WAVE_OP_UNARY_EXP]                 = _unary_exp,
+    [WAVE_OP_UNARY_CEIL]                = _unary_ceil,
+    [WAVE_OP_UNARY_FLOOR]               = _unary_floor,
+    [WAVE_OP_BINARY_PLUS]               = NULL,
+    [WAVE_OP_BINARY_MINUS]              = NULL,
+    [WAVE_OP_BINARY_MIN]                = NULL,
+    [WAVE_OP_BINARY_MAX]                = NULL,
+    [WAVE_OP_BINARY_TIMES]              = NULL,
+    [WAVE_OP_BINARY_DIVIDE]             = NULL,
+    [WAVE_OP_BINARY_MOD]                = NULL,
+    [WAVE_OP_BINARY_EQUALS]             = NULL,
+    [WAVE_OP_BINARY_DIFFERS]            = NULL,
+    [WAVE_OP_BINARY_LESSER_OR_EQUALS]   = NULL,
+    [WAVE_OP_BINARY_GREATER_OR_EQUALS]  = NULL,
+    [WAVE_OP_BINARY_GREATER]            = NULL,
+    [WAVE_OP_BINARY_LESSER]             = NULL,
+    [WAVE_OP_BINARY_AND]                = NULL,
+    [WAVE_OP_BINARY_OR]                 = NULL,
+    [WAVE_OP_BINARY_GET]                = NULL,
+    [WAVE_OP_SPECIFIC_ATOM]             = NULL,
+    [WAVE_OP_SPECIFIC_STOP]             = NULL,
+    [WAVE_OP_SPECIFIC_CUT]              = NULL,
+    [WAVE_OP_SPECIFIC_READ]             = NULL,
+    [WAVE_OP_SPECIFIC_PRINT]            = NULL,
+    [WAVE_OP_UNKNOWN]                   = NULL,
+};
+
 static void _wave_code_generation_fprint_operator(FILE* code_file, const wave_collection* collection){
-    (void) code_file; (void) collection;
+    wave_atom * a = wave_collection_get_atom (collection);
+    wave_operator o = wave_atom_get_operator (a);
+    if (o >= 0 && o < WAVE_OP_UNKNOWN)
+        if (_operator_functions[o] != NULL)
+            _operator_functions[o] (code_file, collection);
 }
 
 static void _wave_code_generation_fprint_path(FILE* code_file, const wave_collection* collection){

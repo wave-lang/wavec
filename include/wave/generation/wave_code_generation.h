@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#include "wave/common/wave_types.h"
 #include "wave/ast/wave_phrase.h"
 #include "wave/generation/wave_headers.h"
 
