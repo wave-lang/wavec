@@ -31,7 +31,7 @@ static char* _temp_expression = NULL;
 extern int yylval;
 %}
 %top{
-#include "preproc_utils.h"
+#include "wave/lex/preproc_utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -61,7 +61,7 @@ Boolean     True|False
     fprintf(yyout, "%s", value);
 }
 <Naming><<EOF>>                                         {
-    printf(stderr, "Error : Encontered end of file while waiting for a declaration. \"Let\" encontered line %d\n", let_row);
+    fprintf(stderr, "Error : Encontered end of file while waiting for a declaration. \"Let\" encontered line %d\n", let_row);
 }
 <Naming>[a-zA-Z][a-zA-Z0-9\_]*                          {
     retval = preproc_check_identifier(yytext, &value);
@@ -87,7 +87,7 @@ Boolean     True|False
     BEGIN(MacroDefinition);
 }
 <Be><<EOF>>                                             {
-    printf(stderr, "Error : Encontered end of file while waiting for a declaration. \"Let\" encontered line %d\n", let_row);
+    fprintf(stderr, "Error : Encontered end of file while waiting for a declaration. \"Let\" encontered line %d\n", let_row);
 }
 <MacroDefinition>[a-zA-Z][a-zA-Z0-9_]*                            { /* Encontered macro into the macro */
     retval = preproc_add_id_definition_to_current_expression(yytext);

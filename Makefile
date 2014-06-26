@@ -59,9 +59,9 @@ FLAGS_CC_UNIT_TESTS = -lwavetests $(FLAGS_CC_LINK) -lcunit
 # Files
 ################################################################################
 vpath %.h $(PATH_INCLUDE) $(PATH_TESTS_INCLUDE) $(PATH_INCLUDE_AST) \
-	$(PATH_INCLUDE_COMMON) $(PATH_INCLUDE_GENERATION)
+	$(PATH_INCLUDE_COMMON) $(PATH_INCLUDE_GENERATION) $(PATH_INCLUDE_LEX)
 vpath %.c $(PATH_SRC) $(PATH_TESTS_SRC) $(PATH_SRC_AST) $(PATH_SRC_COMMON) \
-	$(PATH_SRC_GENERATION)
+	$(PATH_SRC_GENERATION) $(PATH_SRC_LEX)
 vpath %.o $(PATH_OBJ)
 vpath %.a $(PATH_LIB) $(PATH_LIB_HASH)
 vpath %.y $(PATH_YACC)
@@ -75,7 +75,7 @@ vpath wave_lex.c $(PATH_SRC_LEX)
 # Main
 ################################################################################
 
-all: wavec main
+all: wavec wave_preprocessor main
 
 ################################################################################
 # Hash
