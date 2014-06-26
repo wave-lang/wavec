@@ -59,14 +59,15 @@ FLAGS_CC_UNIT_TESTS = -lwavetests $(FLAGS_CC_LINK) -lcunit
 # Files
 ################################################################################
 vpath %.h $(PATH_INCLUDE) $(PATH_TESTS_INCLUDE) $(PATH_INCLUDE_AST) \
-	$(PATH_INCLUDE_COMMON) $(PATH_INCLUDE_GENERATION)
+	$(PATH_INCLUDE_COMMON) $(PATH_INCLUDE_GENERATION) $(PATH_INCLUDE_LEX)
 vpath %.c $(PATH_SRC) $(PATH_TESTS_SRC) $(PATH_SRC_AST) $(PATH_SRC_COMMON) \
-	$(PATH_SRC_GENERATION)
+	$(PATH_SRC_GENERATION) $(PATH_SRC_LEX)
 vpath %.o $(PATH_OBJ)
 vpath %.a $(PATH_LIB) $(PATH_LIB_HASH)
 vpath %.y $(PATH_YACC)
 vpath %.l $(PATH_LEX)
 vpath wavec $(PATH_BIN)
+vpath wavepp $(PATH_BIN)
 vpath main $(PATH_BIN)
 vpath wave_yacc.c $(PATH_SRC_YACC)
 vpath wave_lex.c $(PATH_SRC_LEX)
@@ -75,7 +76,7 @@ vpath wave_lex.c $(PATH_SRC_LEX)
 # Main
 ################################################################################
 
-all: wavec main
+all: wavec wavepp main
 
 ################################################################################
 # Hash
@@ -103,7 +104,7 @@ wave_yacc.o: wave_yacc.c | obj_dir
 wavec: wave_lex.o wave_yacc.o libhash.a libwave.a libwaveast.a | bin_dir
 	$(CC) -o $(PATH_BIN)/$@ $(PATH_OBJ)/wave_lex.o $(PATH_OBJ)/wave_yacc.o $(FLAGS_CC_LINK)
 
-wave_preprocessor: wave_preprocessor.o preproc_utils.o libhash.a | bin_dir
+wavepp: wave_preprocessor.o preproc_utils.o libhash.a | bin_dir
 	$(CC) $(FLAGS_CC) -o $(PATH_BIN)/$@ $(PATH_OBJ)/wave_preprocessor.o \
 		$(PATH_OBJ)/preproc_utils.o $(FLAGS_CC_LINK)
 
