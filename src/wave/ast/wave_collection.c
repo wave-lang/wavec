@@ -241,6 +241,37 @@ wave_collection * wave_collection_get_last (wave_collection * c)
     return last;
 }
 
+static inline wave_coordinate * _wave_collection_sum_list_lengths (wave_collection * c)
+{
+    wave_coordinate * sum = wave_coordinate_copy (wave_collection_get_length (c));
+    for (wave_collection * current = wave_collection_get_next (c); current != NULL; current = wave_collection_get_next (current))
+    {
+        wave_coordinate * new_sum = wave_coordinate_alloc ();
+        wave_coordinate * right = wave_coordinate_copy (wave_collection_get_length (current));
+        wave_coordinate_set_plus (new_sum, sum, right);
+        sum = new_sum;
+    }
+    return sum;
+}
+
+wave_coordinate * wave_collection_get_list_length (const wave_collection * c)
+{
+    wave_collection * list = wave_collection_get_list (c);
+    return _wave_collection_sum_list_lengths (list);
+}
+
+wave_int_list * wave_collection_get_full_indexes (const wave_collection * c)
+{
+    wave_int_list * list = wave_int_list_alloc ();
+    for (const wave_collection * current = c; current != NULL; current = wave_collection_get_parent (current))
+    {
+        wave_collection_info * info = wave_collection_get_info (current);
+        wave_int_list_push_front (list, wave_collection_info_get_index (info));
+    }
+
+    return list;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
 ////////////////////////////////////////////////////////////////////////////////
@@ -362,30 +393,6 @@ void wave_collection_compute_indexes (wave_collection * c)
     }
 }
 
-static inline wave_int_list * _wave_collection_indexes (const wave_collection * c)
-{
-    wave_int_list * list = wave_int_list_alloc ();
-    for (const wave_collection * current = c; current != NULL; current = wave_collection_get_parent (current))
-    {
-        wave_collection_info * info = wave_collection_get_info (current);
-        wave_int_list_push_front (list, wave_collection_info_get_index (info));
-    }
-
-    return list;
-}
-
-static inline wave_coordinate * _wave_collection_sum_list_lengths (wave_collection * c)
-{
-    wave_coordinate * sum = wave_coordinate_copy (wave_collection_get_length (c));
-    for (wave_collection * current = wave_collection_get_next (c); current != NULL; current = wave_collection_get_next (current))
-    {
-        wave_coordinate * new_sum = wave_coordinate_alloc ();
-        wave_coordinate * right = wave_coordinate_copy (wave_collection_get_length (current));
-        wave_coordinate_set_plus (new_sum, sum, right);
-        sum = new_sum;
-    }
-    return sum;
-}
 
 static inline void  _wave_collection_set_length (wave_collection * c)
 {
@@ -692,9 +699,7 @@ void wave_collection_print (const wave_collection * c)
 
 void wave_collection_fprint_full_indexes (FILE * stream, const wave_collection * c)
 {
-    wave_int_list * indexes = _wave_collection_indexes (c);
-    for (wave_int_list_element * e = indexes->_first; e != NULL; e = e->_next_element)
-        fprintf (stream, "%d", e->_content);
-
+    wave_int_list * indexes = wave_collection_get_full_indexes (c);
+    wave_int_list_fprint (stream, indexes);
     wave_int_list_free (indexes);
 }
