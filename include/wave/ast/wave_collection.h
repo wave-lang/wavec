@@ -373,6 +373,24 @@ wave_coordinate * wave_collection_get_length (const wave_collection * c);
  */
 wave_collection * wave_collection_get_last (wave_collection * c);
 
+/**
+ * \brief Get a collection's list length.
+ * \param c Collection.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ * \note It is up to the user to free the resulting wave_coordinate.
+ */
+wave_coordinate * wave_collection_get_list_length (const wave_collection * c);
+
+/**
+ * \brief Get collection's full indexes.
+ * \param c Collection.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ * \note It is up to the user to free the resulting wave_int_list.
+ */
+wave_int_list * wave_collection_get_full_indexes (const wave_collection * c);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
 ////////////////////////////////////////////////////////////////////////////////
