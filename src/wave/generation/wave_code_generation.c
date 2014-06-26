@@ -215,9 +215,50 @@ static inline void wave_code_generation_alloc_collection_tab(FILE* alloc_file, c
     fprintf(alloc_file, "];\n");
 }
 
+static void wave_code_generation_print_sub_info (FILE * code_file, const wave_collection * parent, const wave_collection * collection, const char * type_string)
+{
+    wave_coordinate* collection_coordinate = wave_collection_get_coordinate(collection);
+
+    fprintf (code_file, "wave_tab");
+    wave_collection_fprint_full_indexes(code_file, parent);
+    fprintf (code_file, "[");
+    wave_coordinate_fprint (code_file, collection_coordinate);
+    fprintf (code_file, "]._type = %s;\n", type_string);
+
+    fprintf (code_file, "wave_tab");
+    wave_collection_fprint_full_indexes(code_file, parent);
+    fprintf (code_file, "[");
+    wave_coordinate_fprint (code_file, collection_coordinate);
+    wave_collection * last = wave_collection_get_last (wave_collection_get_list (collection));
+    fprintf (code_file, "]._content._collection._size = ");
+    wave_coordinate * c = wave_coordinate_copy (wave_collection_get_coordinate (last));
+    wave_coordinate * l = wave_coordinate_copy (wave_collection_get_length (last));
+    wave_coordinate * sum = wave_coordinate_alloc ();
+    wave_coordinate_set_plus (sum, c, l);
+    wave_coordinate_fprint (code_file, sum);
+    fprintf (code_file, ";\n");
+    wave_coordinate_free (sum);
+
+    fprintf (code_file, "wave_tab");
+    wave_collection_fprint_full_indexes(code_file, parent);
+    fprintf (code_file, "[");
+    wave_coordinate_fprint (code_file, collection_coordinate);
+    fprintf (code_file, "]._content._collection._tab = wave_tab");
+    wave_collection_fprint_full_indexes (code_file, collection);
+    fprintf (code_file, ";\n");
+}
+
 void wave_code_generation_collection(FILE* code_file, FILE * alloc_file, const wave_collection* collection){
     do{
         wave_collection_type collection_type = wave_collection_get_type( collection );
+        if (wave_collection_has_parent (collection))
+        {
+            wave_collection * parent = wave_collection_get_parent (collection);
+            if (collection_type == WAVE_COLLECTION_SEQ)
+                wave_code_generation_print_sub_info (code_file, parent, collection, "WAVE_DATA_SEQ");
+            else if (collection_type == WAVE_COLLECTION_PAR)
+                wave_code_generation_print_sub_info (code_file, parent, collection, "WAVE_DATA_PAR");
+        }
         _wave_code_generation_collection_generation[ collection_type ](code_file, alloc_file, collection);
     }
     while( wave_collection_has_next(collection) && (collection = wave_collection_get_next(collection)) );

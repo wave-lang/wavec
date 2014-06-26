@@ -44,6 +44,8 @@ typedef enum wave_data_type{
     WAVE_DATA_CHAR,             /**< A character value */
     WAVE_DATA_STRING,           /**< A string value */
     WAVE_DATA_BOOL,             /**< A boolean value */
+    WAVE_DATA_SEQ,              /**< A sequential collection. */
+    WAVE_DATA_PAR,              /**< A parallel collection. */
     WAVE_DATA_UNKNOWN,          /**< Used when no type is set yet */
 } wave_data_type;
 
@@ -59,6 +61,11 @@ typedef struct wave_data{
         wave_char _char;            /**< To store a character value */
         wave_string _string;        /**< To store a string value */
         wave_bool _bool;            /**< To store a boolean value */
+        struct
+        {
+            struct wave_data * _tab;
+            size_t _size;
+        } _collection;
     } _content;                     /**< The union to store multiple data values */
 } wave_data;
 
