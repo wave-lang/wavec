@@ -28,7 +28,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "preproc_utils.h"
+#include "wave/lex/preproc_utils.h"
 
 /**
  * \brief The hash table used for data structure.
