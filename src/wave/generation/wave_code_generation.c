@@ -205,47 +205,46 @@ static inline wave_coordinate * wave_coordinate_get_collection_total_length(cons
     return coord;
 }
 
+static inline void _wave_code_generation_fprint_tab_with_init(FILE* file, const wave_int_list* list, const wave_coordinate * coord ,const char* struct_field){
+    fprintf(file, "wave_tab");
+    wave_int_list_fprint(list);
+    fprintf(file, "[");
+    wave_coordinate_fprint(file, coord);
+    fprintf(file, "]%s", struct_field);
+}
+
 static inline void wave_code_generation_alloc_collection_tab(FILE* alloc_file, const wave_collection* collection){
-    fprintf(alloc_file, "wave_data wave_tab");
-    wave_collection_fprint_full_indexes(alloc_file, collection);
-    fprintf(alloc_file, "[");
     wave_coordinate* collection_coordinate = wave_coordinate_get_collection_total_length(collection);
-    wave_coordinate_fprint(alloc_file, collection_coordinate);
+
+    fprintf(alloc_file, "wave_data ");
+    //_wave_code_generation_fprint_tab_with_init(alloc_file, collection, collection_coordinate, "");
+    fprintf(alloc_file, ";\n");
+
     wave_coordinate_free(collection_coordinate);
-    fprintf(alloc_file, "];\n");
 }
 
 static void wave_code_generation_print_sub_info (FILE * code_file, const wave_collection * parent, const wave_collection * collection, const char * type_string)
 {
     wave_coordinate* collection_coordinate = wave_collection_get_coordinate(collection);
+    wave_int_list* parent_index_list = wave_collection_get_full_indexes(parent);
+    wave_int_list* collection_index_list = wave_collection_get_full_indexes(collection);
+    wave_coordinate* collection_length = wave_coordinate_get_collection_total_length(collection);
 
-    fprintf (code_file, "wave_tab");
-    wave_collection_fprint_full_indexes(code_file, parent);
-    fprintf (code_file, "[");
-    wave_coordinate_fprint (code_file, collection_coordinate);
-    fprintf (code_file, "]._type = %s;\n", type_string);
+    _wave_code_generation_fprint_tab_with_init(code_file, parent_index_list, collection_coordinate, "._type = ");
+    fprintf (code_file, "%s;\n", type_string);
 
-    fprintf (code_file, "wave_tab");
-    wave_collection_fprint_full_indexes(code_file, parent);
-    fprintf (code_file, "[");
-    wave_coordinate_fprint (code_file, collection_coordinate);
-    wave_collection * last = wave_collection_get_last (wave_collection_get_list (collection));
-    fprintf (code_file, "]._content._collection._size = ");
-    wave_coordinate * c = wave_coordinate_copy (wave_collection_get_coordinate (last));
-    wave_coordinate * l = wave_coordinate_copy (wave_collection_get_length (last));
-    wave_coordinate * sum = wave_coordinate_alloc ();
-    wave_coordinate_set_plus (sum, c, l);
-    wave_coordinate_fprint (code_file, sum);
+    _wave_code_generation_fprint_tab_with_init(code_file, parent_index_list, collection_coordinate, "._content._collection._size = ");
+    fprintf(code_file, "= ");
+    wave_coordinate_fprint (code_file, collection_length);
     fprintf (code_file, ";\n");
-    wave_coordinate_free (sum);
 
-    fprintf (code_file, "wave_tab");
-    wave_collection_fprint_full_indexes(code_file, parent);
-    fprintf (code_file, "[");
-    wave_coordinate_fprint (code_file, collection_coordinate);
-    fprintf (code_file, "]._content._collection._tab = wave_tab");
-    wave_collection_fprint_full_indexes (code_file, collection);
+    _wave_code_generation_fprint_tab_with_init(code_file, parent_index_list, collection_coordinate, "._content._collection._tab = wave_tab");
+    wave_int_list_fprint(collection_index_list);
     fprintf (code_file, ";\n");
+
+    wave_int_list_free(parent_index_list);
+    wave_int_list_free(collection_index_list);
+    wave_coordinate_free(collection_length);
 }
 
 void wave_code_generation_collection(FILE* code_file, FILE * alloc_file, const wave_collection* collection){
@@ -375,12 +374,4 @@ static void _wave_code_generation_fprint_operator(FILE* code_file, const wave_co
 
 static void _wave_code_generation_fprint_path(FILE* code_file, const wave_collection* collection){
     (void) code_file; (void) collection;
-}
-
-static void wave_code_generation_fprint_tab_with_init(FILE* code_file, const wave_collection* collection, const wave_coordinate * coord ,const char* struct_field){
-    fprintf(code_file, "wave_tab");
-    wave_collection_fprint_full_indexes(code_file, collection);
-    fprintf(code_file, "[");
-    wave_coordinate_fprint(code_file, coord);
-    fprintf(code_file, "]%s = ", struct_field);
 }
