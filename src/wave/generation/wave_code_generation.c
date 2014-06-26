@@ -335,3 +335,11 @@ static void _wave_code_generation_fprint_operator(FILE* code_file, const wave_co
 static void _wave_code_generation_fprint_path(FILE* code_file, const wave_collection* collection){
     (void) code_file; (void) collection;
 }
+
+static void wave_code_generation_fprint_tab_with_init(FILE* code_file, const wave_collection* collection, const wave_coordinate * coord ,const char* struct_field){
+    fprintf(code_file, "wave_tab");
+    wave_collection_fprint_full_indexes(code_file, collection);
+    fprintf(code_file, "[");
+    wave_coordinate_fprint(code_file, coord);
+    fprintf(code_file, "]%s = ", struct_field);
+}
