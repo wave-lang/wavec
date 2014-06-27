@@ -181,6 +181,7 @@ int preproc_add_current_id_with_current_expression(void){
     _current_expression = NULL;
     free(_current_id);
     _current_id = NULL;
+    return 0;
 }
 /**
  * \brief Test if the id is a reserved name.
