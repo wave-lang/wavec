@@ -41,36 +41,138 @@ static void _print_tab_minus (FILE * code_file, const wave_int_list * list, cons
     wave_coordinate_free (shifted);
 }
 
-static void _print_unary_int_float (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, const char * type_string, const char * op)
+static inline void _print_operator_prelude (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, const char * type_string, const char * op)
 {
     wave_generate_type_assignement (code_file, list, c, t);
     wave_generate_content_assignement (code_file, list, c, t);
     fprintf (code_file, " = wave_%s_%s (", type_string, op);
-    _print_tab_minus (code_file, list, c, -1);
+}
+
+static inline void _print_arg (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, int shift)
+{
+    _print_tab_minus (code_file, list, c, shift);
     fprintf (code_file, "._content.%s", wave_generation_atom_type_string (t));
+}
+
+static void _print_unary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, const char * type_string, const char * op)
+{
+    _print_operator_prelude (code_file, list, c, t, type_string, op);
+    _print_arg (code_file, list, c, t, -1);
     fprintf (code_file, ");\n");
+}
+
+static void _print_binary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type destination, wave_atom_type left, wave_atom_type right, const char * type_string, const char * op)
+{
+    _print_operator_prelude (code_file, list, c, destination, type_string, op);
+    _print_arg (code_file, list, c, left, -2);
+    fprintf (code_file, ", ");
+    _print_arg (code_file, list, c, right, -1);
+    fprintf (code_file, ");\n");
+}
+
+static void _int_float_for_unary (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, const char * op)
+{
+    if (t == WAVE_ATOM_LITERAL_INT)
+        _print_unary (code_file, indexes, c, t, "int", op);
+    else if (t == WAVE_ATOM_LITERAL_FLOAT)
+        _print_unary (code_file, indexes, c, t, "float", op);
+    else
+    {
+        fprintf (stderr, "Error: trying to use an operator on non valid types.\n");
+        exit (1);
+    }
+}
+
+static void _bool (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, const char * op)
+{
+    if (t == WAVE_ATOM_LITERAL_BOOL)
+        _print_unary (code_file, indexes, c, t, "bool", op);
+    else
+    {
+        fprintf (stderr, "Error: trying to use a boolean operator on a non boolean value.\n");
+        exit (1);
+    }
+}
+
+static void _unary (FILE * code_file, const wave_collection * collection, const char * op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type, wave_int_list *, const char *))
+{
+    if (wave_collection_has_previous (collection))
+    {
+        wave_collection * previous = wave_collection_get_previous (collection);
+        wave_collection_type tc = wave_collection_get_type (previous);
+        if (tc == WAVE_COLLECTION_ATOM)
+        {
+            wave_atom * a = wave_collection_get_atom (previous);
+            wave_atom_type ta = wave_atom_get_type (a);
+            wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
+            wave_coordinate * c = wave_collection_get_coordinate (collection);
+            fun (code_file, c, ta, indexes, op);
+        }
+    }
+    else
+    {
+        fprintf (stderr, "Error: no operand supplied to the operator.\n");
+        exit (1);
+    }
+}
+
+static void _int_float_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, const char * op)
+{
+    if (left == right)
+    {
+        if (left == WAVE_ATOM_LITERAL_INT)
+            _print_binary (code_file, indexes, c, left, left, right, "int", op);
+        else if (left == WAVE_ATOM_LITERAL_FLOAT)
+            _print_binary (code_file, indexes, c, left, left, right, "float", op);
+        else
+        {
+            fprintf (stderr, "Error: trying to use an operator on non valid types.\n");
+            exit (1);
+        }
+    }
+    else
+    {
+        if (left == WAVE_ATOM_LITERAL_INT && right == WAVE_ATOM_LITERAL_FLOAT)
+            _print_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_FLOAT, left, right, "float", op);
+        else if (left == WAVE_ATOM_LITERAL_FLOAT && right == WAVE_ATOM_LITERAL_INT)
+            _print_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_FLOAT, left, right, "float", op);
+        else
+        {
+            fprintf (stderr, "Error: trying to use an operator on non valid types.\n");
+            exit (1);
+        }
+    }
+}
+
+static void _binary (FILE * code_file, const wave_collection * collection, const char * op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type,  wave_atom_type, wave_int_list *, const char *))
+{
+    if (wave_collection_has_previous (collection) && wave_collection_has_previous (wave_collection_get_previous (collection)))
+    {
+        wave_collection * right = wave_collection_get_previous (collection);
+        wave_collection * left = wave_collection_get_previous (right);
+        wave_collection_type tc_right = wave_collection_get_type (right);
+        wave_collection_type tc_left = wave_collection_get_type (left);
+        if (tc_right == WAVE_COLLECTION_ATOM && tc_left == WAVE_COLLECTION_ATOM)
+        {
+            wave_atom * a_right = wave_collection_get_atom (right);
+            wave_atom * a_left = wave_collection_get_atom (left);
+            wave_atom_type ta_right = wave_atom_get_type (a_right);
+            wave_atom_type ta_left = wave_atom_get_type (a_left);
+            wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
+            wave_coordinate * c = wave_collection_get_coordinate (collection);
+            fun (code_file, c, ta_left, ta_right, indexes, op);
+        }
+    }
+    else
+    {
+        fprintf (stderr, "Error: no operand supplied to the operator.\n");
+        exit (1);
+    }
 }
 
 static void _unary_int_float (FILE * code_file, const wave_collection * collection, const char * op)
 {
-    wave_collection * previous = wave_collection_get_previous (collection);
-    wave_collection_type tc = wave_collection_get_type (previous);
-    if (tc == WAVE_COLLECTION_ATOM)
-    {
-        wave_atom * a = wave_collection_get_atom (previous);
-        wave_atom_type ta = wave_atom_get_type (a);
-        wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
-        wave_coordinate * c = wave_collection_get_coordinate (collection);
-        if (ta == WAVE_ATOM_LITERAL_INT)
-            _print_unary_int_float (code_file, indexes, c, ta, "int", op);
-        else if (ta == WAVE_ATOM_LITERAL_FLOAT)
-            _print_unary_int_float (code_file, indexes, c, ta, "float", op);
-        else
-        {
-            fprintf (stderr, "stderror\n");
-            exit (1);
-        }
-    }
+    _unary (code_file, collection, op, _int_float_for_unary);
 }
 
 static void _unary_plus (FILE * code_file, const wave_collection * collection)
@@ -128,6 +230,11 @@ static void _unary_floor (FILE * code_file, const wave_collection * collection)
     _unary_int_float (code_file, collection, "floor");
 }
 
+static void _unary_not (FILE * code_file, const wave_collection * collection)
+{
+    _unary (code_file, collection, "not", _bool);
+}
+
 static void (* const _operator_functions[]) (FILE *, const wave_collection *) =
 {
     [WAVE_OP_UNARY_PLUS]                = _unary_plus,
@@ -137,7 +244,7 @@ static void (* const _operator_functions[]) (FILE *, const wave_collection *) =
     [WAVE_OP_UNARY_SQRT]                = _unary_sqrt,
     [WAVE_OP_UNARY_SIN]                 = _unary_sin,
     [WAVE_OP_UNARY_COS]                 = _unary_cos,
-    [WAVE_OP_UNARY_NOT]                 = NULL,
+    [WAVE_OP_UNARY_NOT]                 = _unary_not,
     [WAVE_OP_UNARY_LOG]                 = _unary_log,
     [WAVE_OP_UNARY_EXP]                 = _unary_exp,
     [WAVE_OP_UNARY_CEIL]                = _unary_ceil,
