@@ -37,6 +37,8 @@
 #include "wave/common/wave_types.h"
 #include "wave/ast/wave_phrase.h"
 #include "wave/generation/wave_headers.h"
+#include "wave/generation/wave_generation_common.h"
+#include "wave/generation/wave_generation_atom.h"
 
 /**
  * \brief Generate C source code giving a collection.
