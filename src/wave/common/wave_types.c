@@ -66,6 +66,53 @@ wave_bool wave_bool_not (wave_bool b)
     return ! b;
 }
 
+wave_bool wave_bool_equals (wave_bool a, wave_bool b)
+{
+    return a == b;
+}
+
+wave_bool wave_bool_differs (wave_bool a, wave_bool b)
+{
+    return a != b;
+}
+
+wave_bool wave_bool_lesser (wave_bool a, wave_bool b)
+{
+    wave_bool result = false;
+    if (a == true && b == false)
+        result = true;
+    return result;
+}
+
+wave_bool wave_bool_greater (wave_bool a, wave_bool b)
+{
+    return wave_bool_lesser (b, a);
+}
+
+wave_bool wave_bool_lesser_or_equals (wave_bool a, wave_bool b)
+{
+    wave_bool result = wave_bool_equals (a, b);
+    if (! result)
+        result = wave_bool_lesser (a, b);
+
+    return result;
+}
+
+wave_bool wave_bool_greater_or_equals (wave_bool a, wave_bool b)
+{
+    return wave_bool_lesser_or_equals (b, a);
+}
+
+wave_bool wave_bool_min (wave_bool a, wave_bool b)
+{
+    return wave_bool_lesser (a, b) ? a : b;
+}
+
+wave_bool wave_bool_max (wave_bool a, wave_bool b)
+{
+    return wave_bool_greater (a, b) ? a : b;
+}
+
 wave_bool wave_bool_from_string (const char * s)
 {
     char word[5] = { '\0' };

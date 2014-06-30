@@ -89,6 +89,12 @@
  * and                  | wave_bool_and()
  * or                   | wave_bool_or()
  * not                  | wave_bool_not()
+ * =                    | wave_bool_equals()
+ * !=                   | wave_bool_differs()
+ * <                    | wave_bool_lesser()
+ * >                    | wave_bool_greater()
+ * <=                   | wave_bool_lesser_or_equals()
+ * >=                   | wave_bool_greater_or_equals()
  *
  * # Conversion
  *
@@ -366,6 +372,90 @@ wave_bool wave_bool_or (wave_bool a, wave_bool b);
  * \relatesalso wave_bool
  */
 wave_bool wave_bool_not (wave_bool b);
+
+/**
+ * \brief \c equals operation for wave_bool.
+ * \param a First wave_bool.
+ * \param b Second wave_bool.
+ * \return a == b.
+ * \retval true True.
+ * \retval false False.
+ * \relatesalso wave_bool
+ */
+wave_bool wave_bool_equals (wave_bool a, wave_bool b);
+
+/**
+ * \brief \c differs operation for wave_bool.
+ * \param a First wave_bool.
+ * \param b Second wave_bool.
+ * \return a != b.
+ * \retval true True.
+ * \retval false False.
+ * \relatesalso wave_bool
+ */
+wave_bool wave_bool_differs (wave_bool a, wave_bool b);
+
+/**
+ * \brief \c lesser operation for wave_bool.
+ * \param a First wave_bool.
+ * \param b Second wave_bool.
+ * \return a < b.
+ * \retval true True.
+ * \retval false False.
+ * \relatesalso wave_bool
+ */
+wave_bool wave_bool_lesser (wave_bool a, wave_bool b);
+
+/**
+ * \brief \c greater operation for wave_bool.
+ * \param a First wave_bool.
+ * \param b Second wave_bool.
+ * \return a > b.
+ * \retval true True.
+ * \retval false False.
+ * \relatesalso wave_bool
+ */
+wave_bool wave_bool_greater (wave_bool a, wave_bool b);
+
+/**
+ * \brief \c lesser or equals operation for wave_bool.
+ * \param a First wave_bool.
+ * \param b Second wave_bool.
+ * \return a <= b.
+ * \retval true True.
+ * \retval false False.
+ * \relatesalso wave_bool
+ */
+wave_bool wave_bool_lesser_or_equals (wave_bool a, wave_bool b);
+
+/**
+ * \brief \c greater or equals operation for wave_bool.
+ * \param a First wave_bool.
+ * \param b Second wave_bool.
+ * \return a >= b.
+ * \retval true True.
+ * \retval false False.
+ * \relatesalso wave_bool
+ */
+wave_bool wave_bool_greater_or_equals (wave_bool a, wave_bool b);
+
+/**
+ * \brief \c min operation for wave_bool.
+ * \param a First wave_bool.
+ * \param b Second wave_bool.
+ * \return The minimum of \c a and \c b.
+ * \relatesalso wave_int
+ */
+wave_bool wave_bool_min (wave_bool a, wave_bool b);
+
+/**
+ * \brief \c max operation for wave_bool.
+ * \param a First wave_bool.
+ * \param b Second wave_bool.
+ * \return The minimum of \c a and \c b.
+ * \relatesalso wave_int
+ */
+wave_bool wave_bool_max (wave_bool a, wave_bool b);
 
 /**
  * \brief Convert a null terminated string to wave_bool.
