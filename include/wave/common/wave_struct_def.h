@@ -67,6 +67,7 @@ typedef struct wave_data{
             size_t _size;
         } _collection;
     } _content;                     /**< The union to store multiple data values */
+    struct wave_data * up;          /**< The upper wave_data */
 } wave_data;
 
 #endif // ( __WAVE8STRUCT_DEF_H__ )
