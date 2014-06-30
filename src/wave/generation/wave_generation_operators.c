@@ -30,6 +30,82 @@
  */
 #include "wave/generation/wave_generation_operators.h"
 
+static const char * const _operator_enum_strings[] =
+{
+    [WAVE_OP_UNARY_PLUS              ] = "WAVE_OP_UNARY_PLUS",
+    [WAVE_OP_UNARY_MINUS             ] = "WAVE_OP_UNARY_MINUS",
+    [WAVE_OP_UNARY_INCREMENT         ] = "WAVE_OP_UNARY_INCREMENT",
+    [WAVE_OP_UNARY_DECREMENT         ] = "WAVE_OP_UNARY_DECREMENT",
+    [WAVE_OP_UNARY_SQRT              ] = "WAVE_OP_UNARY_SQRT",
+    [WAVE_OP_UNARY_SIN               ] = "WAVE_OP_UNARY_SIN",
+    [WAVE_OP_UNARY_COS               ] = "WAVE_OP_UNARY_COS",
+    [WAVE_OP_UNARY_NOT               ] = "WAVE_OP_UNARY_NOT",
+    [WAVE_OP_UNARY_LOG               ] = "WAVE_OP_UNARY_LOG",
+    [WAVE_OP_UNARY_EXP               ] = "WAVE_OP_UNARY_EXP",
+    [WAVE_OP_UNARY_CEIL              ] = "WAVE_OP_UNARY_CEIL",
+    [WAVE_OP_UNARY_FLOOR             ] = "WAVE_OP_UNARY_FLOOR",
+    [WAVE_OP_BINARY_PLUS             ] = "WAVE_OP_BINARY_PLUS",
+    [WAVE_OP_BINARY_MINUS            ] = "WAVE_OP_BINARY_MINUS",
+    [WAVE_OP_BINARY_MIN              ] = "WAVE_OP_BINARY_MIN",
+    [WAVE_OP_BINARY_MAX              ] = "WAVE_OP_BINARY_MAX",
+    [WAVE_OP_BINARY_TIMES            ] = "WAVE_OP_BINARY_TIMES",
+    [WAVE_OP_BINARY_DIVIDE           ] = "WAVE_OP_BINARY_DIVIDE",
+    [WAVE_OP_BINARY_MOD              ] = "WAVE_OP_BINARY_MOD",
+    [WAVE_OP_BINARY_EQUALS           ] = "WAVE_OP_BINARY_EQUALS",
+    [WAVE_OP_BINARY_DIFFERS          ] = "WAVE_OP_BINARY_DIFFERS",
+    [WAVE_OP_BINARY_LESSER_OR_EQUALS ] = "WAVE_OP_BINARY_LESSER_OR_EQUALS",
+    [WAVE_OP_BINARY_GREATER_OR_EQUALS] = "WAVE_OP_BINARY_GREATER_OR_EQUALS",
+    [WAVE_OP_BINARY_GREATER          ] = "WAVE_OP_BINARY_GREATER",
+    [WAVE_OP_BINARY_LESSER           ] = "WAVE_OP_BINARY_LESSER",
+    [WAVE_OP_BINARY_AND              ] = "WAVE_OP_BINARY_AND",
+    [WAVE_OP_BINARY_OR               ] = "WAVE_OP_BINARY_OR",
+    [WAVE_OP_BINARY_GET              ] = "WAVE_OP_BINARY_GET",
+    [WAVE_OP_SPECIFIC_ATOM           ] = "WAVE_OP_SPECIFIC_ATOM",
+    [WAVE_OP_SPECIFIC_STOP           ] = "WAVE_OP_SPECIFIC_STOP",
+    [WAVE_OP_SPECIFIC_CUT            ] = "WAVE_OP_SPECIFIC_CUT",
+    [WAVE_OP_SPECIFIC_READ           ] = "WAVE_OP_SPECIFIC_READ",
+    [WAVE_OP_SPECIFIC_PRINT          ] = "WAVE_OP_SPECIFIC_PRINT",
+    [WAVE_OP_UNKNOWN                 ] = "WAVE_OP_UNKNOWN",
+};
+
+static const char * const _operator_functions_strings[] =
+{
+    [WAVE_OP_UNARY_PLUS              ] = "unary_plus",
+    [WAVE_OP_UNARY_MINUS             ] = "unary_minus",
+    [WAVE_OP_UNARY_INCREMENT         ] = "increment",
+    [WAVE_OP_UNARY_DECREMENT         ] = "decrement",
+    [WAVE_OP_UNARY_SQRT              ] = "sqrt",
+    [WAVE_OP_UNARY_SIN               ] = "sin",
+    [WAVE_OP_UNARY_COS               ] = "cos",
+    [WAVE_OP_UNARY_NOT               ] = "not",
+    [WAVE_OP_UNARY_LOG               ] = "log",
+    [WAVE_OP_UNARY_EXP               ] = "exp",
+    [WAVE_OP_UNARY_CEIL              ] = "ceil",
+    [WAVE_OP_UNARY_FLOOR             ] = "floor",
+    [WAVE_OP_BINARY_PLUS             ] = "binary_plus",
+    [WAVE_OP_BINARY_MINUS            ] = "binary_minus",
+    [WAVE_OP_BINARY_MIN              ] = "binary_min",
+    [WAVE_OP_BINARY_MAX              ] = "binary_max",
+    [WAVE_OP_BINARY_TIMES            ] = "binary_times",
+    [WAVE_OP_BINARY_DIVIDE           ] = "binary_divide",
+    [WAVE_OP_BINARY_MOD              ] = "binary_mod",
+    [WAVE_OP_BINARY_EQUALS           ] = "binary_equals",
+    [WAVE_OP_BINARY_DIFFERS          ] = "binary_differs",
+    [WAVE_OP_BINARY_LESSER_OR_EQUALS ] = "binary_lesser_or_equals",
+    [WAVE_OP_BINARY_GREATER_OR_EQUALS] = "binary_greater_or_equals",
+    [WAVE_OP_BINARY_GREATER          ] = "binary_greater",
+    [WAVE_OP_BINARY_LESSER           ] = "binary_lesser",
+    [WAVE_OP_BINARY_AND              ] = "binary_and",
+    [WAVE_OP_BINARY_OR               ] = "binary_or",
+    [WAVE_OP_BINARY_GET              ] = "binary_get",
+    [WAVE_OP_SPECIFIC_ATOM           ] = "specific_atom",
+    [WAVE_OP_SPECIFIC_STOP           ] = "specific_stop",
+    [WAVE_OP_SPECIFIC_CUT            ] = "specific_cut",
+    [WAVE_OP_SPECIFIC_READ           ] = "specific_read",
+    [WAVE_OP_SPECIFIC_PRINT          ] = "specific_print",
+    [WAVE_OP_UNKNOWN                 ] = "unknown",
+};
+
 static void _print_tab_minus (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, int shift)
 {
     wave_coordinate * minus = wave_coordinate_alloc ();
@@ -41,11 +117,11 @@ static void _print_tab_minus (FILE * code_file, const wave_int_list * list, cons
     wave_coordinate_free (shifted);
 }
 
-static inline void _print_operator_prelude (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, const char * type_string, const char * op)
+static inline void _print_operator_prelude (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, const char * type_string, wave_operator op)
 {
     wave_generate_type_assignement (code_file, list, c, t);
     wave_generate_content_assignement (code_file, list, c, t);
-    fprintf (code_file, " = wave_%s_%s (", type_string, op);
+    fprintf (code_file, " = wave_%s_%s (", type_string, _operator_functions_strings[op]);
 }
 
 static inline void _print_arg (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, int shift)
@@ -54,14 +130,14 @@ static inline void _print_arg (FILE * code_file, const wave_int_list * list, con
     fprintf (code_file, "._content.%s", wave_generation_atom_type_string (t));
 }
 
-static void _print_unary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, const char * type_string, const char * op)
+static void _print_unary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, const char * type_string, wave_operator op)
 {
     _print_operator_prelude (code_file, list, c, t, type_string, op);
     _print_arg (code_file, list, c, t, -1);
     fprintf (code_file, ");\n");
 }
 
-static void _print_binary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type destination, wave_atom_type left, wave_atom_type right, const char * type_string, const char * op)
+static void _print_binary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type destination, wave_atom_type left, wave_atom_type right, const char * type_string, wave_operator op)
 {
     _print_operator_prelude (code_file, list, c, destination, type_string, op);
     _print_arg (code_file, list, c, left, -2);
@@ -70,7 +146,7 @@ static void _print_binary (FILE * code_file, const wave_int_list * list, const w
     fprintf (code_file, ");\n");
 }
 
-static void _int_float_for_unary (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, const char * op)
+static void _int_float_for_unary (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, wave_operator op)
 {
     if (t == WAVE_ATOM_LITERAL_INT)
         _print_unary (code_file, indexes, c, t, "int", op);
@@ -83,7 +159,7 @@ static void _int_float_for_unary (FILE * code_file, const wave_coordinate * c, w
     }
 }
 
-static void _bool (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, const char * op)
+static void _bool (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, wave_operator op)
 {
     if (t == WAVE_ATOM_LITERAL_BOOL)
         _print_unary (code_file, indexes, c, t, "bool", op);
@@ -94,7 +170,7 @@ static void _bool (FILE * code_file, const wave_coordinate * c, wave_atom_type t
     }
 }
 
-static void _unary (FILE * code_file, const wave_collection * collection, const char * op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type, wave_int_list *, const char *))
+static void _unary (FILE * code_file, const wave_collection * collection, wave_operator op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type, wave_int_list *, wave_operator))
 {
     if (wave_collection_has_previous (collection))
     {
@@ -116,7 +192,7 @@ static void _unary (FILE * code_file, const wave_collection * collection, const 
     }
 }
 
-static void _int_float_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, const char * op)
+static void _int_float_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, wave_operator op)
 {
     if (left == right)
     {
@@ -144,7 +220,7 @@ static void _int_float_for_binary (FILE * code_file, const wave_coordinate * c, 
     }
 }
 
-static void _binary (FILE * code_file, const wave_collection * collection, const char * op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type,  wave_atom_type, wave_int_list *, const char *))
+static void _binary (FILE * code_file, const wave_collection * collection, wave_operator op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type,  wave_atom_type, wave_int_list *, wave_operator))
 {
     if (wave_collection_has_previous (collection) && wave_collection_has_previous (wave_collection_get_previous (collection)))
     {
@@ -170,92 +246,92 @@ static void _binary (FILE * code_file, const wave_collection * collection, const
     }
 }
 
-static void _unary_int_float (FILE * code_file, const wave_collection * collection, const char * op)
+static void _unary_int_float (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
     _unary (code_file, collection, op, _int_float_for_unary);
 }
 
-static void _unary_plus (FILE * code_file, const wave_collection * collection)
+static void _unary_plus (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
-    _unary_int_float (code_file, collection, "unary_plus");
+    _unary_int_float (code_file, collection, op);
 }
 
-static void _unary_minus (FILE * code_file, const wave_collection * collection)
+static void _unary_minus (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
-    _unary_int_float (code_file, collection, "unary_minus");
+    _unary_int_float (code_file, collection, op);
 }
 
-static void _unary_increment (FILE * code_file, const wave_collection * collection)
+static void _unary_increment (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
-    _unary_int_float (code_file, collection, "increment");
+    _unary_int_float (code_file, collection, op);
 }
 
-static void _unary_decrement (FILE * code_file, const wave_collection * collection)
+static void _unary_decrement (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
-    _unary_int_float (code_file, collection, "decrement");
+    _unary_int_float (code_file, collection, op);
 }
 
-static void _unary_sqrt (FILE * code_file, const wave_collection * collection)
+static void _unary_sqrt (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
-    _unary_int_float (code_file, collection, "sqrt");
+    _unary_int_float (code_file, collection, op);
 }
 
-static void _unary_sin (FILE * code_file, const wave_collection * collection)
+static void _unary_sin (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
-    _unary_int_float (code_file, collection, "sin");
+    _unary_int_float (code_file, collection, op);
 }
 
-static void _unary_cos (FILE * code_file, const wave_collection * collection)
+static void _unary_cos (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
-    _unary_int_float (code_file, collection, "cos");
+    _unary_int_float (code_file, collection, op);
 }
 
-static void _unary_log (FILE * code_file, const wave_collection * collection)
+static void _unary_log (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
-    _unary_int_float (code_file, collection, "log");
+    _unary_int_float (code_file, collection, op);
 }
 
-static void _unary_exp (FILE * code_file, const wave_collection * collection)
+static void _unary_exp (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
-    _unary_int_float (code_file, collection, "exp");
+    _unary_int_float (code_file, collection, op);
 }
 
-static void _unary_ceil (FILE * code_file, const wave_collection * collection)
+static void _unary_ceil (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
-    _unary_int_float (code_file, collection, "ceil");
+    _unary_int_float (code_file, collection, op);
 }
 
-static void _unary_floor (FILE * code_file, const wave_collection * collection)
+static void _unary_floor (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
-    _unary_int_float (code_file, collection, "floor");
+    _unary_int_float (code_file, collection, op);
 }
 
-static void _unary_not (FILE * code_file, const wave_collection * collection)
+static void _unary_not (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
-    _unary (code_file, collection, "not", _bool);
+    _unary (code_file, collection, op, _bool);
 }
 
-static void _binary_int_float (FILE * code_file, const wave_collection * collection, const char * op)
+static void _binary_int_float (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
     _binary (code_file, collection, op, _int_float_for_binary);
 }
 
-static void _binary_minus (FILE * code_file, const wave_collection * collection)
+static void _binary_minus (FILE * code_file, const wave_collection * collection, wave_operator o)
 {
-    _binary_int_float (code_file, collection, "binary_minus");
+    _binary_int_float (code_file, collection, o);
 }
 
-static void _binary_times (FILE * code_file, const wave_collection * collection)
+static void _binary_times (FILE * code_file, const wave_collection * collection, wave_operator o)
 {
-    _binary_int_float (code_file, collection, "times");
+    _binary_int_float (code_file, collection, o);
 }
 
-static void _binary_divide (FILE * code_file, const wave_collection * collection)
+static void _binary_divide (FILE * code_file, const wave_collection * collection, wave_operator o)
 {
-    _binary_int_float (code_file, collection, "divide");
+    _binary_int_float (code_file, collection, o);
 }
 
-static void (* const _operator_functions[]) (FILE *, const wave_collection *) =
+static void (* const _operator_functions[]) (FILE *, const wave_collection *, wave_operator) =
 {
     [WAVE_OP_UNARY_PLUS]                = _unary_plus,
     [WAVE_OP_UNARY_MINUS]               = _unary_minus,
@@ -299,5 +375,5 @@ void wave_code_generation_fprint_operator (FILE * code_file, const wave_collecti
     wave_operator o = wave_atom_get_operator (a);
     if (o >= 0 && o < WAVE_OP_UNKNOWN)
         if (_operator_functions[o] != NULL)
-            _operator_functions[o] (code_file, collection);
+            _operator_functions[o] (code_file, collection, o);
 }
