@@ -235,6 +235,26 @@ static void _unary_not (FILE * code_file, const wave_collection * collection)
     _unary (code_file, collection, "not", _bool);
 }
 
+static void _binary_int_float (FILE * code_file, const wave_collection * collection, const char * op)
+{
+    _binary (code_file, collection, op, _int_float_for_binary);
+}
+
+static void _binary_minus (FILE * code_file, const wave_collection * collection)
+{
+    _binary_int_float (code_file, collection, "binary_minus");
+}
+
+static void _binary_times (FILE * code_file, const wave_collection * collection)
+{
+    _binary_int_float (code_file, collection, "times");
+}
+
+static void _binary_divide (FILE * code_file, const wave_collection * collection)
+{
+    _binary_int_float (code_file, collection, "divide");
+}
+
 static void (* const _operator_functions[]) (FILE *, const wave_collection *) =
 {
     [WAVE_OP_UNARY_PLUS]                = _unary_plus,
@@ -250,11 +270,11 @@ static void (* const _operator_functions[]) (FILE *, const wave_collection *) =
     [WAVE_OP_UNARY_CEIL]                = _unary_ceil,
     [WAVE_OP_UNARY_FLOOR]               = _unary_floor,
     [WAVE_OP_BINARY_PLUS]               = NULL,
-    [WAVE_OP_BINARY_MINUS]              = NULL,
+    [WAVE_OP_BINARY_MINUS]              = _binary_minus,
     [WAVE_OP_BINARY_MIN]                = NULL,
     [WAVE_OP_BINARY_MAX]                = NULL,
-    [WAVE_OP_BINARY_TIMES]              = NULL,
-    [WAVE_OP_BINARY_DIVIDE]             = NULL,
+    [WAVE_OP_BINARY_TIMES]              = _binary_times,
+    [WAVE_OP_BINARY_DIVIDE]             = _binary_divide,
     [WAVE_OP_BINARY_MOD]                = NULL,
     [WAVE_OP_BINARY_EQUALS]             = NULL,
     [WAVE_OP_BINARY_DIFFERS]            = NULL,
