@@ -31,7 +31,10 @@
 #ifndef __WAVE_STRUCT_DEF_H__
 #define __WAVE_STRUCT_DEF_H__
 
+#include "sysexits.h"
+
 #include "wave/common/wave_types.h"
+#include "wave/common/wave_operator.h"
 
 /**
  * \class wave_data_type
@@ -69,5 +72,21 @@ typedef struct wave_data{
     } _content;                     /**< The union to store multiple data values */
     struct wave_data * up;          /**< The upper wave_data */
 } wave_data;
+
+wave_data_type wave_data_get_type (const wave_data * data);
+
+void wave_data_set_int (wave_data * data, wave_int i);
+
+void wave_data_set_float (wave_data * data, wave_float f);
+
+void wave_data_set_char (wave_data * data, wave_char c);
+
+void wave_data_set_bool (wave_data * data, wave_bool b);
+
+void wave_data_set_string (wave_data * data, wave_string s);
+
+void wave_data_unary (const wave_data * operand, wave_data * result, wave_operator op);
+
+void wave_data_binary (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op);
 
 #endif // ( __WAVE8STRUCT_DEF_H__ )

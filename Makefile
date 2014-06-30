@@ -162,6 +162,7 @@ wave_generation_atom.o: wave_generation_atom.c wave_generation_atom.h
 # Wave common
 wave_types.o: wave_types.c wave_types.h
 wave_operator.o: wave_operator.c wave_operator.h
+wave_struct_def.o: wave_struct_def.c wave_struct_def.h
 
 # Tests
 test_ast_print.o: test_ast_print.c
@@ -171,9 +172,9 @@ test_wave_collection.o: test_wave_collection.c test_wave_collection.h wave_colle
 unit_tests.o: unit_tests.c wave_test_suites.h
 
 # Wave common lib
-libwave.a: wave_types.o wave_operator.o | lib_dir
+libwave.a: wave_types.o wave_operator.o wave_struct_def.o | lib_dir
 	ar crvs $(PATH_LIB)/libwave.a $(PATH_OBJ)/wave_types.o \
-		$(PATH_OBJ)/wave_operator.o
+		$(PATH_OBJ)/wave_operator.o $(PATH_OBJ)/wave_struct_def.o
 
 # Compiler lib
 libwaveast.a: wave_operator.o wave_path.o wave_atom.o \

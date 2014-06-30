@@ -148,9 +148,7 @@ static void _print_binary (FILE * code_file, const wave_int_list * list, const w
 
 static void _int_float_for_unary (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, wave_operator op)
 {
-    if (t == WAVE_ATOM_LITERAL_INT)
-        _print_unary (code_file, indexes, c, t, op);
-    else if (t == WAVE_ATOM_LITERAL_FLOAT)
+    if (t == WAVE_ATOM_LITERAL_INT || t == WAVE_ATOM_LITERAL_FLOAT)
         _print_unary (code_file, indexes, c, t, op);
     else
     {
@@ -176,13 +174,22 @@ static void _unary (FILE * code_file, const wave_collection * collection, wave_o
     {
         wave_collection * previous = wave_collection_get_previous (collection);
         wave_collection_type tc = wave_collection_get_type (previous);
+        wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
+        wave_coordinate * c = wave_collection_get_coordinate (collection);
         if (tc == WAVE_COLLECTION_ATOM)
         {
             wave_atom * a = wave_collection_get_atom (previous);
             wave_atom_type ta = wave_atom_get_type (a);
-            wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
-            wave_coordinate * c = wave_collection_get_coordinate (collection);
-            fun (code_file, c, ta, indexes, op);
+            if (ta == WAVE_ATOM_OPERATOR || ta == WAVE_ATOM_PATH)
+            {
+                fprintf (code_file, "wave_data_unary (& ");
+                _print_tab_minus (code_file, indexes, c, -1);
+                fprintf (code_file, ", & ");
+                wave_code_generation_fprint_tab_with_init(code_file, indexes, c, "");
+                fprintf (code_file, ", %s);\n", _operator_enum_strings[op]);
+            }
+            else
+                fun (code_file, c, ta, indexes, op);
         }
     }
     else
