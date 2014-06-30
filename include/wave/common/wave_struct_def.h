@@ -46,8 +46,14 @@ typedef enum wave_data_type{
     WAVE_DATA_BOOL,             /**< A boolean value */
     WAVE_DATA_SEQ,              /**< A sequential collection. */
     WAVE_DATA_PAR,              /**< A parallel collection. */
+    WAVE_DATA_OPERATOR,         /**< An operator */
     WAVE_DATA_UNKNOWN,          /**< Used when no type is set yet */
 } wave_data_type;
+
+typedef enum wave_function_type{
+    FUNCTION_UNARY,
+    FUNCTION_BINARY,
+} wave_function_type;
 
 /**
  * \brief The data structure used for the storage of the wave data types.
@@ -66,7 +72,16 @@ typedef struct wave_data{
             struct wave_data * _tab;
             size_t _size;
         } _collection;
+        struct
+        {
+            union{
+                struct wave_data* (*fun_binary)(struct wave_data*, struct wave_data*);
+                struct wave_data* (*fun_unary)(struct wave_data*);
+            } _fun;
+            wave_function_type type;
+        } function;
     } _content;                     /**< The union to store multiple data values */
+    size_t index;
     struct wave_data * up;          /**< The upper wave_data */
 } wave_data;
 
