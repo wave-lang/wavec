@@ -117,29 +117,29 @@ static void _print_tab_minus (FILE * code_file, const wave_int_list * list, cons
     wave_coordinate_free (shifted);
 }
 
-static inline void _print_operator_prelude (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, const char * type_string, wave_operator op)
+static inline void _print_operator_prelude (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, wave_operator op)
 {
     wave_generate_type_assignement (code_file, list, c, t);
     wave_generate_content_assignement (code_file, list, c, t);
-    fprintf (code_file, " = wave_%s_%s (", type_string, _operator_functions_strings[op]);
+    fprintf (code_file, " = wave_%s_%s (", wave_generation_atom_type_string (t), _operator_functions_strings[op]);
 }
 
 static inline void _print_arg (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, int shift)
 {
     _print_tab_minus (code_file, list, c, shift);
-    fprintf (code_file, "._content.%s", wave_generation_atom_type_string (t));
+    fprintf (code_file, "._content._%s", wave_generation_atom_type_string (t));
 }
 
-static void _print_unary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, const char * type_string, wave_operator op)
+static void _print_unary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, wave_operator op)
 {
-    _print_operator_prelude (code_file, list, c, t, type_string, op);
+    _print_operator_prelude (code_file, list, c, t, op);
     _print_arg (code_file, list, c, t, -1);
     fprintf (code_file, ");\n");
 }
 
-static void _print_binary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type destination, wave_atom_type left, wave_atom_type right, const char * type_string, wave_operator op)
+static void _print_binary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type destination, wave_atom_type left, wave_atom_type right, wave_operator op)
 {
-    _print_operator_prelude (code_file, list, c, destination, type_string, op);
+    _print_operator_prelude (code_file, list, c, destination, op);
     _print_arg (code_file, list, c, left, -2);
     fprintf (code_file, ", ");
     _print_arg (code_file, list, c, right, -1);
@@ -149,9 +149,9 @@ static void _print_binary (FILE * code_file, const wave_int_list * list, const w
 static void _int_float_for_unary (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, wave_operator op)
 {
     if (t == WAVE_ATOM_LITERAL_INT)
-        _print_unary (code_file, indexes, c, t, "int", op);
+        _print_unary (code_file, indexes, c, t, op);
     else if (t == WAVE_ATOM_LITERAL_FLOAT)
-        _print_unary (code_file, indexes, c, t, "float", op);
+        _print_unary (code_file, indexes, c, t, op);
     else
     {
         fprintf (stderr, "Error: trying to use an operator on non valid types.\n");
@@ -162,7 +162,7 @@ static void _int_float_for_unary (FILE * code_file, const wave_coordinate * c, w
 static void _bool (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, wave_operator op)
 {
     if (t == WAVE_ATOM_LITERAL_BOOL)
-        _print_unary (code_file, indexes, c, t, "bool", op);
+        _print_unary (code_file, indexes, c, t, op);
     else
     {
         fprintf (stderr, "Error: trying to use a boolean operator on a non boolean value.\n");
@@ -197,9 +197,9 @@ static void _int_float_for_binary (FILE * code_file, const wave_coordinate * c, 
     if (left == right)
     {
         if (left == WAVE_ATOM_LITERAL_INT)
-            _print_binary (code_file, indexes, c, left, left, right, "int", op);
+            _print_binary (code_file, indexes, c, left, left, right, op);
         else if (left == WAVE_ATOM_LITERAL_FLOAT)
-            _print_binary (code_file, indexes, c, left, left, right, "float", op);
+            _print_binary (code_file, indexes, c, left, left, right, op);
         else
         {
             fprintf (stderr, "Error: trying to use an operator on non valid types.\n");
@@ -209,9 +209,9 @@ static void _int_float_for_binary (FILE * code_file, const wave_coordinate * c, 
     else
     {
         if (left == WAVE_ATOM_LITERAL_INT && right == WAVE_ATOM_LITERAL_FLOAT)
-            _print_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_FLOAT, left, right, "float", op);
+            _print_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_FLOAT, left, right, op);
         else if (left == WAVE_ATOM_LITERAL_FLOAT && right == WAVE_ATOM_LITERAL_INT)
-            _print_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_FLOAT, left, right, "float", op);
+            _print_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_FLOAT, left, right, op);
         else
         {
             fprintf (stderr, "Error: trying to use an operator on non valid types.\n");

@@ -32,11 +32,14 @@
 
 const char * const _atom_type_strings[] =
 {
-    [WAVE_ATOM_LITERAL_INT] = "_int",
-    [WAVE_ATOM_LITERAL_FLOAT] = "_float",
-    [WAVE_ATOM_LITERAL_BOOL] = "_bool",
-    [WAVE_ATOM_LITERAL_CHAR] = "_char",
-    [WAVE_ATOM_LITERAL_STRING] = "_string",
+    [WAVE_ATOM_LITERAL_INT] = "int",
+    [WAVE_ATOM_LITERAL_FLOAT] = "float",
+    [WAVE_ATOM_LITERAL_BOOL] = "bool",
+    [WAVE_ATOM_LITERAL_CHAR] = "char",
+    [WAVE_ATOM_LITERAL_STRING] = "string",
+    [WAVE_ATOM_OPERATOR] = "",
+    [WAVE_ATOM_PATH] = "",
+    [WAVE_ATOM_UNKNOWN] = "",
 };
 
 static const char * const _atom_type_data_strings[] =
@@ -59,7 +62,7 @@ void wave_code_generation_fprint_tab_with_init(FILE* file, const wave_int_list* 
 void wave_generate_content_assignement (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type t)
 {
     wave_code_generation_fprint_tab_with_init(code_file, list, c, "._content.");
-    fprintf (code_file, "%s", _atom_type_strings[t]);
+    fprintf (code_file, "_%s", wave_generation_atom_type_string (t));
 }
 
 void wave_generate_type_assignement (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type t)
