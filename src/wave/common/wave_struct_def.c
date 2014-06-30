@@ -149,6 +149,9 @@ static wave_operator _string_defined [] =
 static wave_operator _bool_defined [] =
 {
     WAVE_OP_UNARY_NOT, WAVE_OP_BINARY_AND, WAVE_OP_BINARY_OR,
+    WAVE_OP_BINARY_EQUALS, WAVE_OP_BINARY_DIFFERS, WAVE_OP_BINARY_LESSER,
+    WAVE_OP_BINARY_GREATER, WAVE_OP_BINARY_LESSER_OR_EQUALS,
+    WAVE_OP_BINARY_GREATER_OR_EQUALS,
     WAVE_OP_UNKNOWN,
 };
 
@@ -197,6 +200,10 @@ void wave_data_unary (const wave_data * operand, wave_data * result, wave_operat
     else if (t == WAVE_DATA_FLOAT)
     {
         wave_data_set_float (result, _unary_float_to_float[op] (operand->_content._float));
+    }
+    else if (t == WAVE_DATA_BOOL)
+    {
+        wave_data_set_bool (result, wave_bool_not (operand->_content._bool));
     }
 }
 
