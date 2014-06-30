@@ -36,8 +36,8 @@
 #include <string.h>
 
 #include "wave/common/wave_types.h"
+#include "wave/common/wave_operator.h"
 #include "wave/ast/wave_path.h"
-#include "wave/ast/wave_operator.h"
 
 /**
  * \defgroup wave_atom_group Wave Atom

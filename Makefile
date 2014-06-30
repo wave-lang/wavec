@@ -140,7 +140,6 @@ print_tests: test_ast_print.o libhash.a libwave.a libwaveast.a | bin_dir
 	$(CC) $(FLAGS_CC) -o $(PATH_OBJ)/$@ -c $<
 
 # Wave AST
-wave_operator.o: wave_operator.c wave_operator.h
 wave_path.o: wave_path.c wave_path.h
 wave_atom.o: wave_atom.c wave_atom.h wave_types.h wave_path.h wave_operator.h
 wave_collection.o: wave_collection.c wave_collection.h wave_atom.h
@@ -162,6 +161,7 @@ wave_generation_atom.o: wave_generation_atom.c wave_generation_atom.h
 
 # Wave common
 wave_types.o: wave_types.c wave_types.h
+wave_operator.o: wave_operator.c wave_operator.h
 
 # Tests
 test_ast_print.o: test_ast_print.c
@@ -171,8 +171,9 @@ test_wave_collection.o: test_wave_collection.c test_wave_collection.h wave_colle
 unit_tests.o: unit_tests.c wave_test_suites.h
 
 # Wave common lib
-libwave.a: wave_types.o | lib_dir
-	ar crvs $(PATH_LIB)/libwave.a $(PATH_OBJ)/wave_types.o
+libwave.a: wave_types.o wave_operator.o | lib_dir
+	ar crvs $(PATH_LIB)/libwave.a $(PATH_OBJ)/wave_types.o \
+		$(PATH_OBJ)/wave_operator.o
 
 # Compiler lib
 libwaveast.a: wave_operator.o wave_path.o wave_atom.o \

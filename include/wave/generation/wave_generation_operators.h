@@ -34,9 +34,9 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "wave/ast/wave_operator.h"
-#include "wave/ast/wave_collection.h"
 #include "wave/common/wave_types.h"
+#include "wave/common/wave_operator.h"
+#include "wave/ast/wave_collection.h"
 #include "wave/generation/wave_generation_common.h"
 
 /**
