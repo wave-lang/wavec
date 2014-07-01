@@ -227,6 +227,23 @@ static void _int_float_for_binary (FILE * code_file, const wave_coordinate * c, 
     }
 }
 
+static void _all_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, wave_operator op)
+{
+    if (left == right)
+        _print_binary (code_file, indexes, c, left, left, right, op);
+    else
+    {
+        if ((left == WAVE_ATOM_LITERAL_INT && right == WAVE_ATOM_LITERAL_FLOAT)
+            || (left == WAVE_ATOM_LITERAL_FLOAT && right == WAVE_ATOM_LITERAL_INT))
+            _print_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_FLOAT, left, right, op);
+        else
+        {
+            fprintf (stderr, "Error: trying to use an operator on non valid types.\n");
+            exit (1);
+        }
+    }
+}
+
 static void _binary (FILE * code_file, const wave_collection * collection, wave_operator op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type,  wave_atom_type, wave_int_list *, wave_operator))
 {
     if (wave_collection_has_previous (collection) && wave_collection_has_previous (wave_collection_get_previous (collection)))
@@ -243,7 +260,19 @@ static void _binary (FILE * code_file, const wave_collection * collection, wave_
             wave_atom_type ta_left = wave_atom_get_type (a_left);
             wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
             wave_coordinate * c = wave_collection_get_coordinate (collection);
-            fun (code_file, c, ta_left, ta_right, indexes, op);
+            if (ta_left == WAVE_ATOM_PATH || ta_left == WAVE_ATOM_OPERATOR
+                || ta_right == WAVE_ATOM_PATH || ta_right == WAVE_ATOM_OPERATOR)
+            {
+                fprintf (code_file, "wave_data_binary (& ");
+                _print_tab_minus (code_file, indexes, c, -2);
+                fprintf (code_file, ", & ");
+                _print_tab_minus (code_file, indexes, c, -1);
+                fprintf (code_file, ", & ");
+                wave_code_generation_fprint_tab_with_init(code_file, indexes, c, "");
+                fprintf (code_file, ", %s);\n", _operator_enum_strings[op]);
+            }
+            else
+                fun (code_file, c, ta_left, ta_right, indexes, op);
         }
     }
     else
@@ -338,6 +367,51 @@ static void _binary_divide (FILE * code_file, const wave_collection * collection
     _binary_int_float (code_file, collection, o);
 }
 
+static void _binary_all (FILE * code_file, const wave_collection * collection, wave_operator op)
+{
+    _binary (code_file, collection, op, _all_for_binary);
+}
+
+static void _binary_min (FILE * code_file, const wave_collection * collection, wave_operator op)
+{
+    _binary_all (code_file, collection, op);
+}
+
+static void _binary_max (FILE * code_file, const wave_collection * collection, wave_operator op)
+{
+    _binary_all (code_file, collection, op);
+}
+
+static void _binary_equals (FILE * code_file, const wave_collection * collection, wave_operator op)
+{
+    _binary_all (code_file, collection, op);
+}
+
+static void _binary_differs (FILE * code_file, const wave_collection * collection, wave_operator op)
+{
+    _binary_all (code_file, collection, op);
+}
+
+static void _binary_lesser_or_equals (FILE * code_file, const wave_collection * collection, wave_operator op)
+{
+    _binary_all (code_file, collection, op);
+}
+
+static void _binary_greater_or_equals (FILE * code_file, const wave_collection * collection, wave_operator op)
+{
+    _binary_all (code_file, collection, op);
+}
+
+static void _binary_greater (FILE * code_file, const wave_collection * collection, wave_operator op)
+{
+    _binary_all (code_file, collection, op);
+}
+
+static void _binary_lesser (FILE * code_file, const wave_collection * collection, wave_operator op)
+{
+    _binary_all (code_file, collection, op);
+}
+
 static void (* const _operator_functions[]) (FILE *, const wave_collection *, wave_operator) =
 {
     [WAVE_OP_UNARY_PLUS]                = _unary_plus,
@@ -354,17 +428,17 @@ static void (* const _operator_functions[]) (FILE *, const wave_collection *, wa
     [WAVE_OP_UNARY_FLOOR]               = _unary_floor,
     [WAVE_OP_BINARY_PLUS]               = NULL,
     [WAVE_OP_BINARY_MINUS]              = _binary_minus,
-    [WAVE_OP_BINARY_MIN]                = NULL,
-    [WAVE_OP_BINARY_MAX]                = NULL,
+    [WAVE_OP_BINARY_MIN]                = _binary_min,
+    [WAVE_OP_BINARY_MAX]                = _binary_max,
     [WAVE_OP_BINARY_TIMES]              = _binary_times,
     [WAVE_OP_BINARY_DIVIDE]             = _binary_divide,
     [WAVE_OP_BINARY_MOD]                = NULL,
-    [WAVE_OP_BINARY_EQUALS]             = NULL,
-    [WAVE_OP_BINARY_DIFFERS]            = NULL,
-    [WAVE_OP_BINARY_LESSER_OR_EQUALS]   = NULL,
-    [WAVE_OP_BINARY_GREATER_OR_EQUALS]  = NULL,
-    [WAVE_OP_BINARY_GREATER]            = NULL,
-    [WAVE_OP_BINARY_LESSER]             = NULL,
+    [WAVE_OP_BINARY_EQUALS]             = _binary_equals,
+    [WAVE_OP_BINARY_DIFFERS]            = _binary_differs,
+    [WAVE_OP_BINARY_LESSER_OR_EQUALS]   = _binary_lesser_or_equals,
+    [WAVE_OP_BINARY_GREATER_OR_EQUALS]  = _binary_greater_or_equals,
+    [WAVE_OP_BINARY_GREATER]            = _binary_greater,
+    [WAVE_OP_BINARY_LESSER]             = _binary_lesser,
     [WAVE_OP_BINARY_AND]                = NULL,
     [WAVE_OP_BINARY_OR]                 = NULL,
     [WAVE_OP_BINARY_GET]                = NULL,
