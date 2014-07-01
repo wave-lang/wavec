@@ -142,7 +142,7 @@ static void _wave_code_generation_fprint_char(FILE* code_file, const wave_collec
 }
 
 static void _wave_code_generation_fprint_string(FILE* code_file, const wave_collection* collection){
-    _wave_generate_with_strings_inside_tm(code_file, collection, WAVE_ATOM_LITERAL_CHAR);
+    _wave_generate_with_strings_inside_tm(code_file, collection, WAVE_ATOM_LITERAL_STRING);
 }
 
 static void _wave_code_generation_fprint_path(FILE* code_file, const wave_collection* collection){
