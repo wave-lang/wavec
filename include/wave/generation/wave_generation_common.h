@@ -36,6 +36,8 @@
 #include "wave/ast/wave_int_list.h"
 #include "wave/ast/wave_coordinate.h"
 
+void wave_code_generate_error (FILE * file, const char * error_message);
+
 void wave_code_generation_fprint_tab_with_init(FILE* file, const wave_int_list* list, const wave_coordinate * coord ,const char* struct_field);
 
 void wave_generate_content_assignement (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type t);
@@ -43,6 +45,7 @@ void wave_generate_content_assignement (FILE * const code_file, const wave_int_l
 void wave_generate_type_assignement (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type t);
 
 const char * wave_generation_atom_type_string (wave_atom_type t);
+
 const char * wave_generation_atom_type_data_string (wave_atom_type t);
 
 #endif /* __WAVE_GENERATION_COMMON_H__ */

@@ -51,6 +51,11 @@ static const char * const _atom_type_data_strings[] =
     [WAVE_ATOM_LITERAL_STRING] = "WAVE_DATA_STRING",
 };
 
+void wave_code_generate_error (FILE * file, const char * error_message)
+{
+    fprintf (file, "fprintf (stderr, \"Error: %s\\n\");\nexit(1);\n", error_message);
+}
+
 void wave_code_generation_fprint_tab_with_init(FILE* file, const wave_int_list* list, const wave_coordinate * coord ,const char* struct_field){
     fprintf(file, "wave_tab");
     wave_int_list_fprint(file, list);

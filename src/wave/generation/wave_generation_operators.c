@@ -106,11 +106,6 @@ static const char * const _operator_functions_strings[] =
     [WAVE_OP_UNKNOWN                 ] = "unknown",
 };
 
-static inline void _generate_error (FILE * code_file, const char * message)
-{
-    fprintf (code_file, "fprintf (stderr, \"Error: %s\\n\");\nexit(1);\n", message);
-}
-
 static inline void _print_tab_minus (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, int shift)
 {
     wave_coordinate * minus = wave_coordinate_alloc ();
@@ -172,7 +167,7 @@ static void _int_float_for_unary (FILE * code_file, const wave_coordinate * c, w
         _print_unary (code_file, indexes, c, t, op);
     else
     {
-        _generate_error (code_file, "trying to use an operator on non valid types.");
+        wave_code_generate_error (code_file, "trying to use an operator on non valid types.");
     }
 }
 
@@ -181,7 +176,7 @@ static void _bool (FILE * code_file, const wave_coordinate * c, wave_atom_type t
     if (t == WAVE_ATOM_LITERAL_BOOL)
         _print_unary (code_file, indexes, c, t, op);
     else
-        _generate_error (code_file, "trying to use a boolean operator on a non boolean value.");
+        wave_code_generate_error (code_file, "trying to use a boolean operator on a non boolean value.");
 }
 
 static void _unary (FILE * code_file, const wave_collection * collection, wave_operator op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type, wave_int_list *, wave_operator))
@@ -210,7 +205,7 @@ static void _unary (FILE * code_file, const wave_collection * collection, wave_o
     }
     else
     {
-        _generate_error (code_file, "no operand supplied to the operator.");
+        wave_code_generate_error (code_file, "no operand supplied to the operator.");
     }
 }
 
@@ -223,7 +218,7 @@ static void _int_float_for_binary (FILE * code_file, const wave_coordinate * c, 
         else if (left == WAVE_ATOM_LITERAL_FLOAT)
             _print_binary (code_file, indexes, c, left, left, right, op);
         else
-            _generate_error (code_file, "trying to use an operator on non valid types.");
+            wave_code_generate_error (code_file, "trying to use an operator on non valid types.");
     }
     else
     {
@@ -232,7 +227,7 @@ static void _int_float_for_binary (FILE * code_file, const wave_coordinate * c, 
         else if (left == WAVE_ATOM_LITERAL_FLOAT && right == WAVE_ATOM_LITERAL_INT)
             _print_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_FLOAT, left, right, op);
         else
-            _generate_error (code_file, "trying to use an operator on non valid types.");
+            wave_code_generate_error (code_file, "trying to use an operator on non valid types.");
     }
 }
 
@@ -249,7 +244,7 @@ static void _all_for_binary (FILE * code_file, const wave_coordinate * c, wave_a
             || (left == WAVE_ATOM_LITERAL_STRING && right == WAVE_ATOM_LITERAL_CHAR))
             _print_binary_char_string (code_file, indexes, c, WAVE_ATOM_LITERAL_STRING, left, right, op);
         else
-            _generate_error (code_file, "trying to use an operator on non valid types.");
+            wave_code_generate_error (code_file, "trying to use an operator on non valid types.");
     }
 }
 
@@ -268,11 +263,11 @@ static void _plus_for_binary (FILE * code_file, const wave_coordinate * c, wave_
                 || (left == WAVE_ATOM_LITERAL_STRING && right == WAVE_ATOM_LITERAL_CHAR))
                 _print_binary_char_string (code_file, indexes, c, WAVE_ATOM_LITERAL_STRING, left, right, op);
             else
-                _generate_error (code_file, "trying to use an operator on non valid types.");
+                wave_code_generate_error (code_file, "trying to use an operator on non valid types.");
         }
     }
     else
-        _generate_error (code_file, "trying to use an operator on non valid types.");
+        wave_code_generate_error (code_file, "trying to use an operator on non valid types.");
 }
 
 static void _bool_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, wave_operator op)
@@ -280,7 +275,7 @@ static void _bool_for_binary (FILE * code_file, const wave_coordinate * c, wave_
     if (left == WAVE_ATOM_LITERAL_BOOL && right == WAVE_ATOM_LITERAL_BOOL)
         _print_binary (code_file, indexes, c, left, left, right, op);
     else
-        _generate_error (code_file, "trying to use an operator on non valid types.");
+        wave_code_generate_error (code_file, "trying to use an operator on non valid types.");
 }
 
 static void _binary (FILE * code_file, const wave_collection * collection, wave_operator op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type,  wave_atom_type, wave_int_list *, wave_operator))
@@ -315,7 +310,7 @@ static void _binary (FILE * code_file, const wave_collection * collection, wave_
         }
     }
     else
-        _generate_error (code_file, "no operand supplied to the operator.");
+        wave_code_generate_error (code_file, "no operand supplied to the operator.");
 }
 
 #define _def_operator_function(function_name, generic_function) \
@@ -386,7 +381,7 @@ static void _binary_plus (FILE * code_file, const wave_collection * collection, 
 static void _unknown_error (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
     (void) collection; (void) op;
-    _generate_error (code_file, "Error: an unknown error has occured.");
+    wave_code_generate_error (code_file, "Error: an unknown error has occured.");
 }
 
 #undef _def_operator_function
