@@ -106,7 +106,7 @@ static const char * const _operator_functions_strings[] =
     [WAVE_OP_UNKNOWN                 ] = "unknown",
 };
 
-static void _print_tab_minus (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, int shift)
+static inline void _print_tab_minus (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, int shift)
 {
     wave_coordinate * minus = wave_coordinate_alloc ();
     wave_coordinate_set_constant  (minus, shift);
@@ -282,135 +282,56 @@ static void _binary (FILE * code_file, const wave_collection * collection, wave_
     }
 }
 
-static void _unary_int_float (FILE * code_file, const wave_collection * collection, wave_operator op)
+#define _def_operator_function(function_name, generic_function) \
+    static void function_name (FILE * code_file, const wave_collection * collection, wave_operator op) \
+    { \
+        generic_function (code_file, collection, op); \
+    }
+
+static inline void _unary_int_float (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
     _unary (code_file, collection, op, _int_float_for_unary);
 }
 
-static void _unary_plus (FILE * code_file, const wave_collection * collection, wave_operator op)
+static inline void _binary_int_float (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
-    _unary_int_float (code_file, collection, op);
+    _binary (code_file, collection, op, _int_float_for_binary);
 }
 
-static void _unary_minus (FILE * code_file, const wave_collection * collection, wave_operator op)
+static inline void _binary_all (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
-    _unary_int_float (code_file, collection, op);
+    _binary (code_file, collection, op, _all_for_binary);
 }
 
-static void _unary_increment (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _unary_int_float (code_file, collection, op);
-}
-
-static void _unary_decrement (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _unary_int_float (code_file, collection, op);
-}
-
-static void _unary_sqrt (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _unary_int_float (code_file, collection, op);
-}
-
-static void _unary_sin (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _unary_int_float (code_file, collection, op);
-}
-
-static void _unary_cos (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _unary_int_float (code_file, collection, op);
-}
-
-static void _unary_log (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _unary_int_float (code_file, collection, op);
-}
-
-static void _unary_exp (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _unary_int_float (code_file, collection, op);
-}
-
-static void _unary_ceil (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _unary_int_float (code_file, collection, op);
-}
-
-static void _unary_floor (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _unary_int_float (code_file, collection, op);
-}
+_def_operator_function (_unary_plus, _unary_int_float)
+_def_operator_function (_unary_minus, _unary_int_float)
+_def_operator_function (_unary_increment, _unary_int_float)
+_def_operator_function (_unary_decrement, _unary_int_float)
+_def_operator_function (_unary_sqrt, _unary_int_float)
+_def_operator_function (_unary_sin, _unary_int_float)
+_def_operator_function (_unary_cos, _unary_int_float)
+_def_operator_function (_unary_log, _unary_int_float)
+_def_operator_function (_unary_exp, _unary_int_float)
+_def_operator_function (_unary_ceil, _unary_int_float)
+_def_operator_function (_unary_floor, _unary_int_float)
 
 static void _unary_not (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
     _unary (code_file, collection, op, _bool);
 }
 
-static void _binary_int_float (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _binary (code_file, collection, op, _int_float_for_binary);
-}
+_def_operator_function (_binary_minus, _binary_int_float)
+_def_operator_function (_binary_times, _binary_int_float)
+_def_operator_function (_binary_divide, _binary_int_float)
 
-static void _binary_minus (FILE * code_file, const wave_collection * collection, wave_operator o)
-{
-    _binary_int_float (code_file, collection, o);
-}
-
-static void _binary_times (FILE * code_file, const wave_collection * collection, wave_operator o)
-{
-    _binary_int_float (code_file, collection, o);
-}
-
-static void _binary_divide (FILE * code_file, const wave_collection * collection, wave_operator o)
-{
-    _binary_int_float (code_file, collection, o);
-}
-
-static void _binary_all (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _binary (code_file, collection, op, _all_for_binary);
-}
-
-static void _binary_min (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _binary_all (code_file, collection, op);
-}
-
-static void _binary_max (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _binary_all (code_file, collection, op);
-}
-
-static void _binary_equals (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _binary_all (code_file, collection, op);
-}
-
-static void _binary_differs (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _binary_all (code_file, collection, op);
-}
-
-static void _binary_lesser_or_equals (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _binary_all (code_file, collection, op);
-}
-
-static void _binary_greater_or_equals (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _binary_all (code_file, collection, op);
-}
-
-static void _binary_greater (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _binary_all (code_file, collection, op);
-}
-
-static void _binary_lesser (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    _binary_all (code_file, collection, op);
-}
+_def_operator_function (_binary_min, _binary_all)
+_def_operator_function (_binary_max, _binary_all)
+_def_operator_function (_binary_equals, _binary_all)
+_def_operator_function (_binary_differs, _binary_all)
+_def_operator_function (_binary_lesser_or_equals, _binary_all)
+_def_operator_function (_binary_greater_or_equals, _binary_all)
+_def_operator_function (_binary_greater, _binary_all)
+_def_operator_function (_binary_lesser, _binary_all)
 
 static void (* const _operator_functions[]) (FILE *, const wave_collection *, wave_operator) =
 {
