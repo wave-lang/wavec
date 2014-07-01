@@ -1151,6 +1151,173 @@ wave_bool wave_string_lesser (const_wave_string a, const_wave_string b);
 
 /**
  * \brief Concatenate two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return The resulting wave_string.
+ * \relatesalso wave_string
+ * \warning The resulting wave_string is allocated and thus shall be freed once uneeded.
+ */
+wave_string wave_string_plus_char_left (wave_char a, const_wave_string b);
+
+/**
+ * \brief \c min of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return min(a,b)
+ * \relatesalso wave_string
+ * \warning The resulting wave_string is allocated and thus shall be freed once uneeded.
+ */
+wave_string wave_string_min_char_left (wave_char a, const_wave_string b);
+
+/**
+ * \brief \c max of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return max(a,b)
+ * \relatesalso wave_string
+ * \warning The resulting wave_string is allocated and thus shall be freed once uneeded.
+ */
+wave_string wave_string_max_char_left (wave_char a, const_wave_string b);
+
+/**
+ * \brief \c equality of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a == b
+ * \relatesalso wave_string
+ */
+wave_bool wave_string_equals_char_left (wave_char a, const_wave_string b);
+
+/**
+ * \brief \c differs of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a != b
+ * \relatesalso wave_string
+ */
+wave_bool wave_string_differs_char_left (wave_char a, const_wave_string b);
+
+/**
+ * \brief \c lesser \c or \c equals of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a <= b
+ * \relatesalso wave_string
+ */
+wave_bool wave_string_lesser_or_equals_char_left (wave_char a, const_wave_string b);
+
+/**
+ * \brief \c greater \c or \c equals of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a >= b
+ * \relatesalso wave_string
+ */
+wave_bool wave_string_greater_or_equals_char_left (wave_char a, const_wave_string b);
+
+/**
+ * \brief \c greater of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a > b
+ * \relatesalso wave_string
+ */
+wave_bool wave_string_greater_char_left (wave_char a, const_wave_string b);
+
+/**
+ * \brief \c lesser of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a < b
+ * \relatesalso wave_string
+ */
+wave_bool wave_string_lesser_char_left (wave_char a, const_wave_string b);
+/**
+ * \brief Concatenate two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return The resulting wave_string.
+ * \relatesalso wave_string
+ * \warning The resulting wave_string is allocated and thus shall be freed once uneeded.
+ */
+wave_string wave_string_plus_char_right (const_wave_string a, wave_char b);
+
+/**
+ * \brief \c min of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return min(a,b)
+ * \relatesalso wave_string
+ * \warning The resulting wave_string is allocated and thus shall be freed once uneeded.
+ */
+wave_string wave_string_min_char_right (const_wave_string a, wave_char b);
+
+/**
+ * \brief \c max of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return max(a,b)
+ * \relatesalso wave_string
+ * \warning The resulting wave_string is allocated and thus shall be freed once uneeded.
+ */
+wave_string wave_string_max_char_right (const_wave_string a, wave_char b);
+
+/**
+ * \brief \c equality of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a == b
+ * \relatesalso wave_string
+ */
+wave_bool wave_string_equals_char_right (const_wave_string a, wave_char b);
+
+/**
+ * \brief \c differs of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a != b
+ * \relatesalso wave_string
+ */
+wave_bool wave_string_differs_char_right (const_wave_string a, wave_char b);
+
+/**
+ * \brief \c lesser \c or \c equals of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a <= b
+ * \relatesalso wave_string
+ */
+wave_bool wave_string_lesser_or_equals_char_right (const_wave_string a, wave_char b);
+
+/**
+ * \brief \c greater \c or \c equals of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a >= b
+ * \relatesalso wave_string
+ */
+wave_bool wave_string_greater_or_equals_char_right (const_wave_string a, wave_char b);
+
+/**
+ * \brief \c greater of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a > b
+ * \relatesalso wave_string
+ */
+wave_bool wave_string_greater_char_right (const_wave_string a, wave_char b);
+
+/**
+ * \brief \c lesser of two wave_string.
+ * \param a A wave_string.
+ * \param b A wave_string.
+ * \return a < b
+ * \relatesalso wave_string
+ */
+wave_bool wave_string_lesser_char_right (const_wave_string a, wave_char b);
+
+/**
+ * \brief Concatenate two wave_string.
  * \param destination Destination.
  * \param source Source.
  * \return pointer to the resulting string \c destination.
