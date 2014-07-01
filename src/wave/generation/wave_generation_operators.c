@@ -244,6 +244,17 @@ static void _all_for_binary (FILE * code_file, const wave_coordinate * c, wave_a
     }
 }
 
+static void _bool_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, wave_operator op)
+{
+    if (left == WAVE_ATOM_LITERAL_BOOL && right == WAVE_ATOM_LITERAL_BOOL)
+        _print_binary (code_file, indexes, c, left, left, right, op);
+    else
+    {
+        fprintf (stderr, "Error: trying to use an operator on non valid types.\n");
+        exit (1);
+    }
+}
+
 static void _binary (FILE * code_file, const wave_collection * collection, wave_operator op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type,  wave_atom_type, wave_int_list *, wave_operator))
 {
     if (wave_collection_has_previous (collection) && wave_collection_has_previous (wave_collection_get_previous (collection)))
@@ -303,6 +314,11 @@ static inline void _binary_all (FILE * code_file, const wave_collection * collec
     _binary (code_file, collection, op, _all_for_binary);
 }
 
+static inline void _binary_bool (FILE * code_file, const wave_collection * collection, wave_operator op)
+{
+    _binary (code_file, collection, op, _bool_for_binary);
+}
+
 _def_operator_function (_unary_plus, _unary_int_float)
 _def_operator_function (_unary_minus, _unary_int_float)
 _def_operator_function (_unary_increment, _unary_int_float)
@@ -333,6 +349,9 @@ _def_operator_function (_binary_greater_or_equals, _binary_all)
 _def_operator_function (_binary_greater, _binary_all)
 _def_operator_function (_binary_lesser, _binary_all)
 
+_def_operator_function (_binary_and, _binary_bool)
+_def_operator_function (_binary_or, _binary_bool)
+
 static void (* const _operator_functions[]) (FILE *, const wave_collection *, wave_operator) =
 {
     [WAVE_OP_UNARY_PLUS]                = _unary_plus,
@@ -360,8 +379,8 @@ static void (* const _operator_functions[]) (FILE *, const wave_collection *, wa
     [WAVE_OP_BINARY_GREATER_OR_EQUALS]  = _binary_greater_or_equals,
     [WAVE_OP_BINARY_GREATER]            = _binary_greater,
     [WAVE_OP_BINARY_LESSER]             = _binary_lesser,
-    [WAVE_OP_BINARY_AND]                = NULL,
-    [WAVE_OP_BINARY_OR]                 = NULL,
+    [WAVE_OP_BINARY_AND]                = _binary_and,
+    [WAVE_OP_BINARY_OR]                 = _binary_or,
     [WAVE_OP_BINARY_GET]                = NULL,
     [WAVE_OP_SPECIFIC_ATOM]             = NULL,
     [WAVE_OP_SPECIFIC_STOP]             = NULL,
