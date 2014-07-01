@@ -402,7 +402,7 @@ wave_float wave_float_from_string (const char * str)
 // wave_char
 ////////////////////////////////////////////////////////////////////////////////
 
-wave_string wave_char_plus (wave_char a, wave_char b)
+wave_string wave_char_binary_plus (wave_char a, wave_char b)
 {
     wave_string string = _wave_string_alloc (2);
     string[0] = a;

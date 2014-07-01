@@ -969,7 +969,7 @@ static const wave_char WAVE_CHAR_MIN = CHAR_MIN;
  * \param b A wave_char
  * \return The wave_string.
  */
-wave_string wave_char_plus (wave_char a, wave_char b);
+wave_string wave_char_binary_plus (wave_char a, wave_char b);
 
 /**
  * \brief \c min operation for wave_char.
