@@ -84,19 +84,19 @@ static const char * const _operator_functions_strings[] =
     [WAVE_OP_UNARY_FLOOR             ] = "floor",
     [WAVE_OP_BINARY_PLUS             ] = "binary_plus",
     [WAVE_OP_BINARY_MINUS            ] = "binary_minus",
-    [WAVE_OP_BINARY_MIN              ] = "binary_min",
-    [WAVE_OP_BINARY_MAX              ] = "binary_max",
-    [WAVE_OP_BINARY_TIMES            ] = "binary_times",
-    [WAVE_OP_BINARY_DIVIDE           ] = "binary_divide",
-    [WAVE_OP_BINARY_MOD              ] = "binary_mod",
-    [WAVE_OP_BINARY_EQUALS           ] = "binary_equals",
-    [WAVE_OP_BINARY_DIFFERS          ] = "binary_differs",
-    [WAVE_OP_BINARY_LESSER_OR_EQUALS ] = "binary_lesser_or_equals",
-    [WAVE_OP_BINARY_GREATER_OR_EQUALS] = "binary_greater_or_equals",
-    [WAVE_OP_BINARY_GREATER          ] = "binary_greater",
-    [WAVE_OP_BINARY_LESSER           ] = "binary_lesser",
-    [WAVE_OP_BINARY_AND              ] = "binary_and",
-    [WAVE_OP_BINARY_OR               ] = "binary_or",
+    [WAVE_OP_BINARY_MIN              ] = "min",
+    [WAVE_OP_BINARY_MAX              ] = "max",
+    [WAVE_OP_BINARY_TIMES            ] = "times",
+    [WAVE_OP_BINARY_DIVIDE           ] = "divide",
+    [WAVE_OP_BINARY_MOD              ] = "mod",
+    [WAVE_OP_BINARY_EQUALS           ] = "equals",
+    [WAVE_OP_BINARY_DIFFERS          ] = "differs",
+    [WAVE_OP_BINARY_LESSER_OR_EQUALS ] = "lesser_or_equals",
+    [WAVE_OP_BINARY_GREATER_OR_EQUALS] = "greater_or_equals",
+    [WAVE_OP_BINARY_GREATER          ] = "greater",
+    [WAVE_OP_BINARY_LESSER           ] = "lesser",
+    [WAVE_OP_BINARY_AND              ] = "and",
+    [WAVE_OP_BINARY_OR               ] = "or",
     [WAVE_OP_BINARY_GET              ] = "binary_get",
     [WAVE_OP_SPECIFIC_ATOM           ] = "specific_atom",
     [WAVE_OP_SPECIFIC_STOP           ] = "specific_stop",
@@ -121,7 +121,7 @@ static inline void _print_operator_prelude (FILE * code_file, const wave_int_lis
 {
     wave_generate_type_assignement (code_file, list, c, t);
     wave_generate_content_assignement (code_file, list, c, t);
-    fprintf (code_file, " = wave_%s_%s (", wave_generation_atom_type_string (t), _operator_functions_strings[op]);
+    fprintf (code_file, " = wave_%s_%s", wave_generation_atom_type_string (t), _operator_functions_strings[op]);
 }
 
 static inline void _print_arg (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, int shift)
@@ -133,17 +133,32 @@ static inline void _print_arg (FILE * code_file, const wave_int_list * list, con
 static void _print_unary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, wave_operator op)
 {
     _print_operator_prelude (code_file, list, c, t, op);
+    fprintf (code_file, " (");
     _print_arg (code_file, list, c, t, -1);
+    fprintf (code_file, ");\n");
+}
+
+static void _print_args_binary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type left, wave_atom_type right)
+{
+    _print_arg (code_file, list, c, left, -2);
+    fprintf (code_file, ", ");
+    _print_arg (code_file, list, c, right, -1);
     fprintf (code_file, ");\n");
 }
 
 static void _print_binary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type destination, wave_atom_type left, wave_atom_type right, wave_operator op)
 {
     _print_operator_prelude (code_file, list, c, destination, op);
-    _print_arg (code_file, list, c, left, -2);
-    fprintf (code_file, ", ");
-    _print_arg (code_file, list, c, right, -1);
-    fprintf (code_file, ");\n");
+    fprintf (code_file, " (");
+    _print_args_binary (code_file, list, c, left, right);
+}
+
+static void _print_binary_char_string (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type destination, wave_atom_type left, wave_atom_type right, wave_operator op)
+{
+    _print_operator_prelude (code_file, list, c, destination, op);
+    fprintf (code_file, "_char_%s", left == WAVE_ATOM_LITERAL_CHAR ? "left" : "right");
+    fprintf (code_file, " (");
+    _print_args_binary (code_file, list, c, left, right);
 }
 
 static void _int_float_for_unary (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, wave_operator op)
@@ -236,6 +251,9 @@ static void _all_for_binary (FILE * code_file, const wave_coordinate * c, wave_a
         if ((left == WAVE_ATOM_LITERAL_INT && right == WAVE_ATOM_LITERAL_FLOAT)
             || (left == WAVE_ATOM_LITERAL_FLOAT && right == WAVE_ATOM_LITERAL_INT))
             _print_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_FLOAT, left, right, op);
+        else if ((left == WAVE_ATOM_LITERAL_CHAR && right == WAVE_ATOM_LITERAL_STRING)
+            || (left == WAVE_ATOM_LITERAL_STRING && right == WAVE_ATOM_LITERAL_CHAR))
+            _print_binary_char_string (code_file, indexes, c, WAVE_ATOM_LITERAL_STRING, left, right, op);
         else
         {
             fprintf (stderr, "Error: trying to use an operator on non valid types.\n");
