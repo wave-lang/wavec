@@ -465,7 +465,7 @@ wave_int wave_char_code (wave_char c)
 // wave_string
 ////////////////////////////////////////////////////////////////////////////////
 
-wave_string wave_string_plus (const_wave_string a, const_wave_string b)
+wave_string wave_string_binary_plus (const_wave_string a, const_wave_string b)
 {
     size_t total_size = wave_string_length (a) + wave_string_length (b);
     wave_string new_string = _wave_string_alloc (total_size);
@@ -535,7 +535,7 @@ wave_bool wave_string_lesser (const_wave_string a, const_wave_string b)
         return function_name (a, b_string); \
     }
 
-_wave_string_char_op (wave_string, wave_string_plus)
+_wave_string_char_op (wave_string, wave_string_binary_plus)
 _wave_string_char_op (wave_string, wave_string_min)
 _wave_string_char_op (wave_string, wave_string_max)
 _wave_string_char_op (wave_bool, wave_string_equals)

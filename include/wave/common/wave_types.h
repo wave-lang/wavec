@@ -1073,7 +1073,7 @@ wave_int wave_char_code (wave_char c);
  * \relatesalso wave_string
  * \warning The resulting wave_string is allocated and thus shall be freed once uneeded.
  */
-wave_string wave_string_plus (const_wave_string a, const_wave_string b);
+wave_string wave_string_binary_plus (const_wave_string a, const_wave_string b);
 
 /**
  * \brief \c min of two wave_string.
@@ -1157,7 +1157,7 @@ wave_bool wave_string_lesser (const_wave_string a, const_wave_string b);
  * \relatesalso wave_string
  * \warning The resulting wave_string is allocated and thus shall be freed once uneeded.
  */
-wave_string wave_string_plus_char_left (wave_char a, const_wave_string b);
+wave_string wave_string_binary_plus_char_left (wave_char a, const_wave_string b);
 
 /**
  * \brief \c min of two wave_string.
@@ -1240,7 +1240,7 @@ wave_bool wave_string_lesser_char_left (wave_char a, const_wave_string b);
  * \relatesalso wave_string
  * \warning The resulting wave_string is allocated and thus shall be freed once uneeded.
  */
-wave_string wave_string_plus_char_right (const_wave_string a, wave_char b);
+wave_string wave_string_binary_plus_char_right (const_wave_string a, wave_char b);
 
 /**
  * \brief \c min of two wave_string.
