@@ -49,8 +49,14 @@ typedef enum wave_data_type{
     WAVE_DATA_BOOL,             /**< A boolean value */
     WAVE_DATA_SEQ,              /**< A sequential collection. */
     WAVE_DATA_PAR,              /**< A parallel collection. */
+    WAVE_DATA_OPERATOR,         /**< An operator */
     WAVE_DATA_UNKNOWN,          /**< Used when no type is set yet */
 } wave_data_type;
+
+typedef enum wave_function_type{
+    FUNCTION_UNARY = 0,
+    FUNCTION_BINARY,
+} wave_function_type;
 
 /**
  * \brief The data structure used for the storage of the wave data types.
@@ -69,8 +75,17 @@ typedef struct wave_data{
             struct wave_data * _tab;
             size_t _size;
         } _collection;
+        struct
+        {
+            union{
+                void (*fun_binary)(const struct wave_data*, const struct wave_data*, struct wave_data*);
+                void (*fun_unary)(const struct wave_data*, struct wave_data*);
+            } _fun;
+            wave_function_type type;
+        } _function;
     } _content;                     /**< The union to store multiple data values */
-    struct wave_data * up;          /**< The upper wave_data */
+    size_t _index;
+    struct wave_data * _up;          /**< The upper wave_data */
 } wave_data;
 
 wave_data_type wave_data_get_type (const wave_data * data);
@@ -88,5 +103,11 @@ void wave_data_set_string (wave_data * data, wave_string s);
 void wave_data_unary (const wave_data * operand, wave_data * result, wave_operator op);
 
 void wave_data_binary (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op);
+
+static inline int wave_data_get_collection_size(wave_data* data){
+    if(data->_type == WAVE_DATA_SEQ || data->_type == WAVE_DATA_PAR)
+        return data->_content._collection._size;
+    return -1;
+}
 
 #endif // ( __WAVE8STRUCT_DEF_H__ )
