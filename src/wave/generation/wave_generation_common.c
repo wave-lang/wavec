@@ -51,6 +51,22 @@ static const char * const _atom_type_data_strings[] =
     [WAVE_ATOM_LITERAL_STRING] = "WAVE_DATA_STRING",
 };
 
+void wave_code_generate_error (FILE * file, const char * error_message, const char * error_code)
+{
+    fprintf
+    (
+        file,
+        "fprintf (stderr, \"Error: %s\\n\");\nexit(%s);\n",
+        error_message,
+        error_code != NULL ? error_code : "1"
+    );
+}
+
+void wave_code_generate_error_unknown (FILE * file)
+{
+    wave_code_generate_error (file, "an unknown error has occured.", "EX_SOFTWARE");
+}
+
 void wave_code_generation_fprint_tab_with_init(FILE* file, const wave_int_list* list, const wave_coordinate * coord ,const char* struct_field){
     fprintf(file, "wave_tab");
     wave_int_list_fprint(file, list);
