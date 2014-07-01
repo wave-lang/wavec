@@ -51,7 +51,7 @@ typedef enum wave_data_type{
 } wave_data_type;
 
 typedef enum wave_function_type{
-    FUNCTION_UNARY,
+    FUNCTION_UNARY = 0,
     FUNCTION_BINARY,
 } wave_function_type;
 
@@ -75,14 +75,20 @@ typedef struct wave_data{
         struct
         {
             union{
-                struct wave_data* (*fun_binary)(struct wave_data*, struct wave_data*);
-                struct wave_data* (*fun_unary)(struct wave_data*);
+                void (*fun_binary)(const struct wave_data*, const struct wave_data*, struct wave_data*);
+                void (*fun_unary)(const struct wave_data*, struct wave_data*);
             } _fun;
             wave_function_type type;
-        } function;
+        } _function;
     } _content;                     /**< The union to store multiple data values */
-    size_t index;
-    struct wave_data * up;          /**< The upper wave_data */
+    size_t _index;
+    struct wave_data * _up;          /**< The upper wave_data */
 } wave_data;
+
+static inline int wave_data_get_collection_size(wave_data* data){
+    if(data->_type == WAVE_DATA_SEQ || data->_type == WAVE_DATA_PAR)
+        return data->_content._collection._size;
+    return -1;
+}
 
 #endif // ( __WAVE8STRUCT_DEF_H__ )
