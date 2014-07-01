@@ -38,6 +38,8 @@
 
 void wave_code_generate_error (FILE * file, const char * error_message, const char * error_code);
 
+void wave_code_generate_error_unknown (FILE * file);
+
 void wave_code_generation_fprint_tab_with_init(FILE* file, const wave_int_list* list, const wave_coordinate * coord ,const char* struct_field);
 
 void wave_generate_content_assignement (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type t);
