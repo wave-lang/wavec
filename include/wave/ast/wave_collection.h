@@ -174,6 +174,14 @@ void * wave_collection_alloc (void);
  */
 void * wave_collection_free (wave_collection * w);
 
+/**
+ * \brief Copy a collection.
+ * \param c Collection.
+ * \relatesalso wave_collection
+ * \return copy.
+ */
+void * wave_collection_copy (const wave_collection * c);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////
