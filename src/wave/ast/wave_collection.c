@@ -540,14 +540,12 @@ static wave_collection * _access_collection (wave_collection * c, const wave_pat
     return access;
 }
 
-int wave_collection_calculating_path_length_following_it_without_counting_what_is_not_in_the_last_square_brackets(const wave_collection* c, const wave_path* p);
-
 /**
  * \param recorded_path the last recorded path.
  * \param rewind_recording rewind_recording will_contain the rewind_recording_if not NULL
  * \param counting_all if true will count all the move and otherwise will only count the last recorded one
  */
-int wave_collection_calculating_path_length_following_it_without_or_without_counting_and_with_or_without_recording_and_with_or_without_returning_the_destination(const wave_collection* c, const wave_path* p, wave_path* recorded_path, wave_path* rewind_recording, bool counting_all, const wave_collection** destination){
+static int wave_follow_collection_with_extra_bonus(const wave_collection* c, const wave_path* p, wave_path* recorded_path, wave_path* rewind_recording, bool counting_all, const wave_collection** destination){
     int size = 0;
 
     const wave_path* internal_recorded_path = recorded_path;
@@ -601,7 +599,7 @@ int wave_collection_calculating_path_length_following_it_without_or_without_coun
 
             case WAVE_MOVE_REWIND:
                 if(recorded_path != NULL){
-                    int size_rewind = wave_collection_calculating_path_length_following_it_without_or_without_counting_and_with_or_without_recording_and_with_or_without_returning_the_destination(c, recorded_path, recorded_path, rewind_recording, counting_all, &c);
+                    int size_rewind = wave_follow_collection_with_extra_bonus(c, recorded_path, recorded_path, rewind_recording, counting_all, &c);
                     if(counting_all)
                         size += size_rewind;
                 }
@@ -618,7 +616,9 @@ int wave_collection_calculating_path_length_following_it_without_or_without_coun
                 if(recorded_path == NULL){ // FIRST ENCOUNTER TO REGISTER A PART
                     wave_path* part_pathq = wave_path_get_part(p);
                     wave_path temp;
-                    int size_mv_part = wave_collection_calculating_path_length_following_it_without_or_without_counting_and_with_or_without_recording_and_with_or_without_returning_the_destination(c, part_pathq, recorded_path, &temp, true, &c);
+                    temp._next_path = NULL;
+                    temp._previous_path = NULL;
+                    int size_mv_part = wave_follow_collection_with_extra_bonus(c, part_pathq, recorded_path, &temp, true, &c);
                     size += size_mv_part;
                     recorded_path = temp._next_path;
                     recorded_path->_previous_path = NULL;
@@ -626,8 +626,12 @@ int wave_collection_calculating_path_length_following_it_without_or_without_coun
                 else{
                     wave_path* part_pathq = wave_path_get_part(p);
                     wave_path temp;
+                    temp._next_path = NULL;
+                    temp._previous_path = NULL;
                     if(rewind_recording == NULL){
-                        int size_mv_part = wave_collection_calculating_path_length_following_it_without_or_without_counting_and_with_or_without_recording_and_with_or_without_returning_the_destination(c, part_pathq, recorded_path, &temp, true, &c);
+                        int size_mv_part = wave_follow_collection_with_extra_bonus(c, part_pathq, recorded_path, &temp, true, &c);
+                        if(!counting_all)
+                            size = 0;
                         size += size_mv_part;
                         if(recorded_path != internal_recorded_path)
                             wave_path_free(recorded_path);
@@ -635,7 +639,9 @@ int wave_collection_calculating_path_length_following_it_without_or_without_coun
                         recorded_path->_previous_path = NULL;
                     }
                     else{
-                        int size_mv_part = wave_collection_calculating_path_length_following_it_without_or_without_counting_and_with_or_without_recording_and_with_or_without_returning_the_destination(c, part_pathq, recorded_path, &temp, true, &c);
+                        int size_mv_part = wave_follow_collection_with_extra_bonus(c, part_pathq, recorded_path, &temp, true, &c);
+                        if(!counting_all)
+                            size = 0;
                         size += size_mv_part;
                         if(recorded_path != internal_recorded_path)
                             wave_path_free(recorded_path);
@@ -651,12 +657,27 @@ int wave_collection_calculating_path_length_following_it_without_or_without_coun
                 exit(1);
                 break;
         }
+        p = wave_path_get_next(p);
     }
 
-    if(internal_recorded_path == NULL && recorded_path != NULL)
+    if(internal_recorded_path == NULL && recorded_path != NULL || internal_recorded_path != recorded_path)
         wave_path_free(recorded_path);
-    *destination = c;
+
+    if(destination != NULL)
+        *destination = c;
+
+    //printf("Size : %d\n", size);
     return size;
+}
+
+int wave_collection_get_path_size(const wave_collection* c, const wave_path* path){
+    return wave_follow_collection_with_extra_bonus(c, path, NULL, NULL, false, NULL);
+}
+
+const wave_collection* wave_collection_get_collection_pointed(const wave_collection* c, const wave_path* path){
+    const wave_collection* end;
+    wave_follow_collection_with_extra_bonus(c, path, NULL, NULL, false, &end);
+    return end;
 }
 
 bool wave_collection_path_is_valid (wave_collection * c, const wave_path * p)

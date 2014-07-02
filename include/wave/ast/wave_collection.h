@@ -579,4 +579,8 @@ void wave_collection_print (const wave_collection * c);
  */
 void wave_collection_fprint_full_indexes (FILE * stream, const wave_collection * c);
 
+int wave_collection_get_path_size(const wave_collection* c, const wave_path* path);
+
+const wave_collection* wave_collection_get_collection_pointed(const wave_collection* c, const wave_path* path);
+
 #endif /* __WAVE_COLLECTION_H__ */
