@@ -402,7 +402,7 @@ static void _specific_print (FILE * const code_file, const wave_collection * con
         wave_coordinate * c = wave_collection_get_coordinate (collection);
         fprintf (code_file, "wave_data_fprint (stdout, & ");
         _print_tab_minus (code_file, indexes, c, -1);
-        fprintf (code_file, ");\nprintf(\"\\n\");");
+        fprintf (code_file, ");\nprintf(\"\\n\");\n");
     }
     else
         _operand_error (code_file);
