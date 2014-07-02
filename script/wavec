@@ -1,0 +1,13 @@
+#!/bin/bash
+# Very basic script for wave compiling
+
+for WAVE_SRC in $*; do
+    WAVE_PP=${WAVE_SRC/\.wave/}.wave_pp
+    C_SRC=${WAVE_PP/\.wave_pp/\.c}
+    EXE=${C_SRC/\.c/}
+    wavepp "$WAVE_SRC" "$WAVE_PP"
+    wave2c "$WAVE_PP" "$C_SRC"
+    gcc "$C_SRC" -o "$EXE" -std=c99 -Iinclude -Llib -lm -lwave
+done
+
+exit 0

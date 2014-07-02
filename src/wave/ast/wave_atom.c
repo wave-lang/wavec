@@ -116,17 +116,17 @@ static inline wave_atom_content _wave_atom_content_from_path (wave_path * path)
  */
 static inline void _wave_atom_content_fprint_int (FILE * stream, const wave_atom_content * c)
 {
-    fprintf (stream, "%d", c->_int);
+    wave_int_fprint (stream, c->_int);
 }
 
 static inline void _wave_atom_content_fprint_float (FILE * stream, const wave_atom_content * c)
 {
-    fprintf (stream, "%f", c->_float);
+    wave_float_fprint (stream, c->_float);
 }
 
 static inline void _wave_atom_content_fprint_bool (FILE * stream, const wave_atom_content * c)
 {
-    fprintf (stream, "%s", c->_bool ? "true" : "false");
+    wave_bool_fprint (stream, c->_bool);
 }
 
 /* Symbols used in printing functions for characterss, strings and operators. */
@@ -136,12 +136,16 @@ static const char _path_symbol = '@';
 
 static inline void _wave_atom_content_fprint_char (FILE * stream, const wave_atom_content * c)
 {
-    fprintf (stream, "%c%c%c", _char_delimiter, c->_char, _char_delimiter);
+    fprintf (stream, "%c", _char_delimiter);
+    wave_char_fprint (stream, c->_char);
+    fprintf (stream, "%c", _char_delimiter);
 }
 
 static inline void _wave_atom_content_fprint_string (FILE * stream, const wave_atom_content * c)
 {
-    fprintf (stream, "%c%s%c", _string_delimiter, c->_string, _string_delimiter);
+    fprintf (stream, "%c", _string_delimiter);
+    wave_string_fprint (stream, c->_string);
+    fprintf (stream, "%c", _string_delimiter);
 }
 
 static inline void _wave_atom_content_fprint_operator (FILE * stream, const wave_atom_content * c)
@@ -234,6 +238,34 @@ void * wave_atom_free (wave_atom * const atom)
         free (atom);
     }
     return NULL;
+}
+
+static inline void _copy_string (const wave_atom * const original, wave_atom * const copy)
+{
+    copy->_content._string = wave_string_duplicate (original->_content._string);
+}
+
+static inline void _copy_path (const wave_atom * const original, wave_atom * const copy)
+{
+    copy->_content._path = wave_path_copy (original->_content._path);
+}
+
+void * wave_atom_copy (const wave_atom * atom)
+{
+    wave_atom * copy = NULL;
+    if (atom != NULL)
+    {
+        copy = wave_atom_alloc ();
+        * copy = * atom;
+
+        wave_atom_type t = wave_atom_get_type (atom);
+        if (t == WAVE_ATOM_PATH)
+            _copy_path (atom, copy);
+        else if (t == WAVE_ATOM_LITERAL_STRING)
+            _copy_string (atom, copy);
+    }
+
+    return copy;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

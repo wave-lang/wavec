@@ -33,6 +33,7 @@
 #define __WAVE_TYPES_H__
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <limits.h>
 #include <math.h>
@@ -305,8 +306,8 @@ typedef char wave_char;
  * strcmp               | wave_string_compare()
  * strcpy               | wave_string_copy()
  * strlen               | wave_string_length()
- * strchr               | wave_string_first_character()
- * strrchr              | wave_string_last_character()
+ * strchr               | wave_string_first_matching_character()
+ * strrchr              | wave_string_last_matching_character()
  * strstr               | wave_string_sub_string()
  * strdup               | wave_string_duplicate()
  *
@@ -465,6 +466,14 @@ wave_bool wave_bool_max (wave_bool a, wave_bool b);
  * \relatesalso wave_bool
  */
 wave_bool wave_bool_from_string (const char * s);
+
+/**
+ * \brief Print a wave_bool to a stream.
+ * \param stream Stream.
+ * \param b value.
+ * \relatesalso wave_bool
+ */
+void wave_bool_fprint (FILE * stream, wave_bool b);
 
 ////////////////////////////////////////////////////////////////////////////////
 // wave_int
@@ -716,6 +725,14 @@ wave_bool wave_int_greater (wave_int a, wave_int b);
  */
 wave_bool wave_int_lesser (wave_int a, wave_int b);
 
+/**
+ * \brief Print a wave_int to a stream.
+ * \param stream Stream.
+ * \param i Value.
+ * \relatesalso wave_int
+ */
+void wave_int_fprint (FILE * stream, wave_int i);
+
 ////////////////////////////////////////////////////////////////////////////////
 // wave_float
 ////////////////////////////////////////////////////////////////////////////////
@@ -941,6 +958,14 @@ wave_bool wave_float_lesser (wave_float a, wave_float b);
  */
 wave_float wave_float_from_string (const char * str);
 
+/**
+ * \brief Print a wave_float to a stream.
+ * \param stream Stream.
+ * \param f Value.
+ * \relatesalso wave_float
+ */
+void wave_float_fprint (FILE * stream, wave_float f);
+
 ////////////////////////////////////////////////////////////////////////////////
 // wave_char
 ////////////////////////////////////////////////////////////////////////////////
@@ -969,7 +994,7 @@ static const wave_char WAVE_CHAR_MIN = CHAR_MIN;
  * \param b A wave_char
  * \return The wave_string.
  */
-wave_string wave_char_plus (wave_char a, wave_char b);
+wave_string wave_char_binary_plus (wave_char a, wave_char b);
 
 /**
  * \brief \c min operation for wave_char.
@@ -1060,6 +1085,14 @@ wave_char wave_char_from_wave_int (wave_int code);
  * \sa wave_char_from_wave_int
  */
 wave_int wave_char_code (wave_char c);
+
+/**
+ * \brief Print a wave_char to a stream.
+ * \param stream Stream.
+ * \param c Value.
+ * \relatesalso wave_char
+ */
+void wave_char_fprint (FILE * stream, wave_char c);
 
 ////////////////////////////////////////////////////////////////////////////////
 // wave_string
@@ -1317,6 +1350,14 @@ wave_bool wave_string_greater_char_right (const_wave_string a, wave_char b);
 wave_bool wave_string_lesser_char_right (const_wave_string a, wave_char b);
 
 /**
+ * \brief Print a wave_string to a stream.
+ * \param stream Stream.
+ * \param s Value.
+ * \relatesalso wave_string
+ */
+void wave_string_fprint (FILE * stream, const_wave_string s);
+
+/**
  * \brief Concatenate two wave_string.
  * \param destination Destination.
  * \param source Source.
@@ -1368,7 +1409,7 @@ size_t wave_string_length (const_wave_string s);
  * \relatesalso wave_string
  * \note This function mimics \c strchr from \c string.h, please read its manual for further information.
  */
-wave_string wave_string_first_character (const_wave_string s, wave_char c);
+wave_string wave_string_first_matching_character (const_wave_string s, wave_char c);
 
 /**
  * \brief Locate the last occurence of a character in a wave_string.
@@ -1379,7 +1420,7 @@ wave_string wave_string_first_character (const_wave_string s, wave_char c);
  * \relatesalso wave_string
  * \note This function mimics \c strrchr from \c string.h, please read its manual for further information.
  */
-wave_string wave_string_last_character (const_wave_string s, wave_char c);
+wave_string wave_string_last_matching_character (const_wave_string s, wave_char c);
 
 /**
  * \brief Locate a substring in a wave_string.
@@ -1401,5 +1442,14 @@ wave_string wave_string_sub_string (const_wave_string haystack, const_wave_strin
  * \relatesalso wave_string
  */
 wave_string wave_string_duplicate (const_wave_string s);
+
+/**
+ * \brief Get the nth wave_char of a wave_string.
+ * \param s String.
+ * \param n N.
+ * \relatesalso wave_string
+ * \warning This function assumes the wave_string has at least \c n wave_char !
+ */
+wave_char wave_string_nth (const_wave_string s, size_t n);
 
 #endif /* __WAVE_TYPES_H__ */

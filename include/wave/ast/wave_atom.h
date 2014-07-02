@@ -220,6 +220,14 @@ void * wave_atom_alloc (void);
  */
 void * wave_atom_free (wave_atom * atom);
 
+/**
+ * \brief Copy an atom.
+ * \param atom Atom.
+ * \return Copy.
+ * \relatesalso wave_atom
+ */
+void * wave_atom_copy (const wave_atom * atom);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Atom type information.
 ////////////////////////////////////////////////////////////////////////////////

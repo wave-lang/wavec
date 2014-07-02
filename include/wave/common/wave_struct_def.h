@@ -110,4 +110,6 @@ static inline int wave_data_get_collection_size(wave_data* data){
     return -1;
 }
 
+void wave_data_fprint (FILE * stream, const wave_data * data);
+
 #endif // ( __WAVE8STRUCT_DEF_H__ )
