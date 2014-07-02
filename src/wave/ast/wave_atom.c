@@ -240,6 +240,34 @@ void * wave_atom_free (wave_atom * const atom)
     return NULL;
 }
 
+static inline void _copy_string (const wave_atom * const original, wave_atom * const copy)
+{
+    copy->_content._string = wave_string_duplicate (original->_content._string);
+}
+
+static inline void _copy_path (const wave_atom * const original, wave_atom * const copy)
+{
+    copy->_content._path = wave_path_copy (original->_content._path);
+}
+
+void * wave_atom_copy (const wave_atom * atom)
+{
+    wave_atom * copy = NULL;
+    if (atom != NULL)
+    {
+        copy = wave_atom_alloc ();
+        * copy = * atom;
+
+        wave_atom_type t = wave_atom_get_type (atom);
+        if (t == WAVE_ATOM_PATH)
+            _copy_path (atom, copy);
+        else if (t == WAVE_ATOM_LITERAL_STRING)
+            _copy_string (atom, copy);
+    }
+
+    return copy;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Atom type information.
 ////////////////////////////////////////////////////////////////////////////////
