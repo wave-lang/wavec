@@ -92,6 +92,14 @@ void * wave_collection_info_alloc (void);
  */
 void wave_collection_info_free (wave_collection_info * info);
 
+/**
+ * \brief Copy a wave_collection_info.
+ * \param info Info.
+ * \return Copy.
+ * \relatesalso wave_collection_info
+ */
+void * wave_collection_info_copy (const wave_collection_info * info);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////

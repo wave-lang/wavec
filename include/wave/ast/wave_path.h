@@ -205,6 +205,14 @@ void * wave_path_alloc (void);
  */
 void * wave_path_free (wave_path * p);
 
+/**
+ * \brief Copy a wave_path.
+ * \param p Path.
+ * \return Copy.
+ * \relatesalso wave_path
+ */
+void * wave_path_copy (const wave_path * p);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////

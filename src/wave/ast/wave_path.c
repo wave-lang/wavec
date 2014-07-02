@@ -81,6 +81,50 @@ void * wave_path_free (wave_path * p)
     return NULL;
 }
 
+static inline void _copy_move (const wave_path * const original, wave_path * const copy)
+{
+    copy->_move = original->_move;
+}
+
+static inline void _copy_part (const wave_path * const original, wave_path * const copy)
+{
+    copy->_complex_move._part = wave_path_copy (original->_complex_move._part);
+}
+
+static inline void _copy_repeat (const wave_path * const original, wave_path * const copy)
+{
+    copy->_complex_move._repeat._type = original->_complex_move._repeat._type;
+    copy->_complex_move._repeat._number = original->_complex_move._repeat._number;
+    copy->_complex_move._repeat._path = wave_path_copy (original->_complex_move._repeat._path);
+}
+
+static inline void _copy (const wave_path * const original, wave_path * const copy)
+{
+    wave_move_type t = wave_path_get_move (original);
+    _copy_move (original, copy);
+    if (t == WAVE_MOVE_PART)
+        _copy_part (original, copy);
+    else if (t == WAVE_MOVE_REP)
+        _copy_repeat (original, copy);
+}
+
+void * wave_path_copy (const wave_path * p)
+{
+    wave_path * copy = NULL;
+    if (p != NULL)
+    {
+        copy = wave_path_alloc ();
+        _copy (p, copy);
+        for (wave_path * current = wave_path_get_next (p); current != NULL; current = wave_path_get_next (current))
+        {
+            wave_path * current_copy = wave_path_alloc ();
+            _copy (current, current_copy);
+            wave_path_add_path (copy, current_copy);
+        }
+    }
+    return copy;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////

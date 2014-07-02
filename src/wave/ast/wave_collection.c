@@ -110,6 +110,57 @@ void * wave_collection_free (wave_collection * c)
     return NULL;
 }
 
+static inline void _copy_atom (const wave_collection * const original, wave_collection * const copy)
+{
+    copy->_inner._atom = wave_atom_copy (original->_inner._atom);
+}
+
+static inline void _copy_list (const wave_collection * const original, wave_collection * const copy)
+{
+    copy->_inner._list = wave_collection_copy (original->_inner._list);
+}
+
+static inline void _copy_repetition (const wave_collection * const original, wave_collection * const copy)
+{
+    copy->_inner._repetition = original->_inner._repetition;
+    copy->_inner._repetition._list = wave_collection_copy (original->_inner._repetition._list);
+    if (wave_collection_get_repetition_type (original) == WAVE_COLLECTION_REPETITION_PATH)
+        copy->_inner._repetition._description._path = wave_path_copy (original->_inner._repetition._description._path);
+}
+
+static inline void _copy_current (const wave_collection * const original, wave_collection * const copy)
+{
+    /* Be careful! Don't override the value (the pointer) of the _info member ! */
+    wave_collection_type t = wave_collection_get_type (original);
+    copy->_type = original->_type;
+    if (t != WAVE_COLLECTION_UNKNOWN)
+    {
+        if (t == WAVE_COLLECTION_ATOM)
+            _copy_atom (original, copy);
+        else if (t == WAVE_COLLECTION_REP_SEQ || t == WAVE_COLLECTION_REP_PAR)
+            _copy_repetition (original, copy);
+        else
+            _copy_list (original, copy);
+    }
+}
+
+void * wave_collection_copy (const wave_collection * c)
+{
+    wave_collection * copy = NULL;
+    if (c != NULL)
+    {
+        copy = wave_collection_alloc ();
+        _copy_current (c, copy);
+        for (wave_collection * current = wave_collection_get_next (c); current != NULL; current = wave_collection_get_next (current))
+        {
+            wave_collection * current_copy = wave_collection_alloc ();
+            _copy_current (current, current_copy);
+            wave_collection_add_collection (copy, current_copy);
+        }
+    }
+    return copy;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////
@@ -361,6 +412,38 @@ void wave_collection_set_repetition_path (wave_collection * const c, wave_path *
     c->_inner._repetition._description._path = p;
 }
 
+void _duplicate_list (wave_collection * list, int times)
+{
+    int copy_number = times - 1;
+    wave_collection * copies[copy_number];
+    for (int i = 0; i < copy_number; ++i)
+        copies[i] = wave_collection_copy (list);
+    for (int i = 0; i < copy_number; ++i)
+        wave_collection_add_collection (list, copies[i]);
+}
+
+void wave_collection_set_repetition_seq_times (wave_collection * c, int times)
+{
+    _duplicate_list (c, times);
+}
+
+void wave_collection_set_repetition_par_times (wave_collection * c, int times)
+{
+    _duplicate_list (c, times);
+}
+
+void wave_collection_set_repetition_seq_path (wave_collection * c, wave_collection * list, wave_path * p)
+{
+    wave_collection_set_repetition_seq_list (c, list);
+    wave_collection_set_repetition_path (c, p);
+}
+
+void wave_collection_set_repetition_par_path (wave_collection * c, wave_collection * list, wave_path * p)
+{
+    wave_collection_set_repetition_par_list (c, list);
+    wave_collection_set_repetition_path (c, p);
+}
+
 void wave_collection_set_cyclic_seq_list (wave_collection * c, wave_collection * list)
 {
     _wave_collection_set_list (c, list, WAVE_COLLECTION_CYCLIC_SEQ);
@@ -392,7 +475,6 @@ void wave_collection_compute_indexes (wave_collection * c)
         }
     }
 }
-
 
 static inline void  _wave_collection_set_length (wave_collection * c)
 {
