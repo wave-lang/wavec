@@ -412,6 +412,38 @@ void wave_collection_set_repetition_path (wave_collection * const c, wave_path *
     c->_inner._repetition._description._path = p;
 }
 
+void _duplicate_list (wave_collection * list, int times)
+{
+    int copy_number = times - 1;
+    wave_collection * copies[copy_number];
+    for (int i = 0; i < copy_number; ++i)
+        copies[i] = wave_collection_copy (list);
+    for (int i = 0; i < copy_number; ++i)
+        wave_collection_add_collection (list, copies[i]);
+}
+
+void wave_collection_set_repetition_seq_times (wave_collection * c, int times)
+{
+    _duplicate_list (c, times);
+}
+
+void wave_collection_set_repetition_par_times (wave_collection * c, int times)
+{
+    _duplicate_list (c, times);
+}
+
+void wave_collection_set_repetition_seq_path (wave_collection * c, wave_collection * list, wave_path * p)
+{
+    wave_collection_set_repetition_seq_list (c, list);
+    wave_collection_set_repetition_path (c, p);
+}
+
+void wave_collection_set_repetition_par_path (wave_collection * c, wave_collection * list, wave_path * p)
+{
+    wave_collection_set_repetition_par_list (c, list);
+    wave_collection_set_repetition_path (c, p);
+}
+
 void wave_collection_set_cyclic_seq_list (wave_collection * c, wave_collection * list)
 {
     _wave_collection_set_list (c, list, WAVE_COLLECTION_CYCLIC_SEQ);
@@ -443,7 +475,6 @@ void wave_collection_compute_indexes (wave_collection * c)
         }
     }
 }
-
 
 static inline void  _wave_collection_set_length (wave_collection * c)
 {
