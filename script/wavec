@@ -1,12 +1,27 @@
 #!/bin/bash
 # Very basic script for wave compiling
 
+SCRIPT_PATH=$(dirname $0)
+
+WAVEPP=wavepp
+WAVE2C=wave2c
+
+WAVE2C="$SCRIPT_PATH/wave2c"
+
+if ! command -v "$WAVEPP" > /dev/null 2>&1; then
+    WAVEPP="$SCRIPT_PATH/wavepp"
+fi
+
+if ! command -v "$WAVE2C" > /dev/null 2>&1; then
+    WAVE2C="$SCRIPT_PATH/wave2c"
+fi
+
 for WAVE_SRC in $*; do
     WAVE_PP=${WAVE_SRC/\.wave/}.wave_pp
     C_SRC=${WAVE_PP/\.wave_pp/\.c}
     EXE=${C_SRC/\.c/}
-    wavepp "$WAVE_SRC" "$WAVE_PP"
-    wave2c "$WAVE_PP" "$C_SRC"
+    $WAVEPP "$WAVE_SRC" "$WAVE_PP"
+    $WAVE2C "$WAVE_PP" "$C_SRC"
     gcc "$C_SRC" -o "$EXE" -std=c99 -Iinclude -Llib -lm -lwave
 done
 
