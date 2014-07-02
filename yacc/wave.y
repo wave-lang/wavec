@@ -119,16 +119,14 @@ Collection_rep_seq : Elem_seq
 
 Elem_seq : Obrace_sequential Atomic_collection Collection_rep_seq Cbrace Integer_litteral
                   {
-                      $$ = wave_collection_alloc();
+                      $$ = $2;
                       wave_collection_add_collection($2, $3);
-                      wave_collection_set_repetition_seq_list($$, $2);
-                      wave_collection_set_repetition_times($$, $5);
+                      wave_collection_set_repetition_seq_times ($2, $5);
                   }
          | Obrace_sequential Atomic_collection Cbrace Integer_litteral
                   {
-                      $$ = wave_collection_alloc();
-                      wave_collection_set_repetition_seq_list($$, $2);
-                      wave_collection_set_repetition_times($$, $4);
+                      $$ = $2;
+                      wave_collection_set_repetition_seq_times ($2, $4);
                   }
          | Obrace_sequential Atomic_collection Collection_rep_seq Cbrace Number_sign Path
                   {
@@ -173,16 +171,14 @@ Collection_rep_par : Elem_par
 
 Elem_par : Obrace_parallel Atomic_collection Collection_rep_par Cbrace Integer_litteral
                   {
-                      $$ = wave_collection_alloc();
+                      $$ = $2;
                       wave_collection_add_collection($2, $3);
-                      wave_collection_set_repetition_par_list($$, $2);
-                      wave_collection_set_repetition_times($$, $5);
+                      wave_collection_set_repetition_par_times ($2, $5);
                   }
          |  Obrace_parallel Atomic_collection Cbrace Integer_litteral
                   {
-                      $$ = wave_collection_alloc();
-                      wave_collection_set_repetition_par_list($$, $2);
-                      wave_collection_set_repetition_times($$, $4);
+                      $$ = $2;
+                      wave_collection_set_repetition_par_times ($2, $4);
                   }
          | Obrace_parallel Atomic_collection Collection_rep_par Cbrace Number_sign Path
                   {

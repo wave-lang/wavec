@@ -92,12 +92,16 @@ static inline void _wave_coordinate_copy_var (wave_coordinate * destination, con
 
 void * wave_coordinate_copy (const wave_coordinate * const c)
 {
-    wave_coordinate * copy = wave_coordinate_alloc ();
-    * copy = * c;
-    if (c->_type == WAVE_COORD_PLUS || c->_type == WAVE_COORD_TIMES)
-        _wave_coordinate_copy_binary (copy, c);
-    else if (c->_type == WAVE_COORD_VAR)
-        _wave_coordinate_copy_var (copy, c);
+    wave_coordinate * copy = NULL;
+    if (c != NULL)
+    {
+        copy = wave_coordinate_alloc ();
+        * copy = * c;
+        if (c->_type == WAVE_COORD_PLUS || c->_type == WAVE_COORD_TIMES)
+            _wave_coordinate_copy_binary (copy, c);
+        else if (c->_type == WAVE_COORD_VAR)
+            _wave_coordinate_copy_var (copy, c);
+    }
 
     return copy;
 }

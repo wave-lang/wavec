@@ -174,6 +174,14 @@ void * wave_collection_alloc (void);
  */
 void * wave_collection_free (wave_collection * w);
 
+/**
+ * \brief Copy a collection.
+ * \param c Collection.
+ * \relatesalso wave_collection
+ * \return copy.
+ */
+void * wave_collection_copy (const wave_collection * c);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////
@@ -492,6 +500,10 @@ void wave_collection_set_repetition_times (wave_collection * c, int times);
  */
 void wave_collection_set_repetition_path (wave_collection * c, wave_path * p);
 
+void wave_collection_set_repetition_seq_times (wave_collection * c, int times);
+void wave_collection_set_repetition_seq_path (wave_collection * c, wave_collection * list, wave_path * p);
+void wave_collection_set_repetition_par_times (wave_collection * c, int times);
+void wave_collection_set_repetition_par_path (wave_collection * c, wave_collection * list, wave_path * p);
 /**
  * \brief Set cyclic seq list.
  * \param[in,out] c Collection.

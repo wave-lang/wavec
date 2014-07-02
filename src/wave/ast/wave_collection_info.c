@@ -52,6 +52,19 @@ void wave_collection_info_free (wave_collection_info * info)
     }
 }
 
+void * wave_collection_info_copy (const wave_collection_info * const info)
+{
+    wave_collection_info * copy = NULL;
+    if (info != NULL)
+    {
+        copy = wave_collection_info_alloc ();
+        * copy = * info;
+        copy->_coordinate = wave_coordinate_copy (info->_coordinate);
+        copy->_length = wave_coordinate_copy (info->_length);
+    }
+    return copy;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Getters.
 ////////////////////////////////////////////////////////////////////////////////
