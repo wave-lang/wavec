@@ -147,5 +147,6 @@ int main(int argc, char** argv){
     fclose( yyin );
     fclose( yyout );
     preproc_clean();
+    yylex_destroy();
     return EXIT_SUCCESS;
 }
