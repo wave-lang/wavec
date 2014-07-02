@@ -417,7 +417,7 @@ void wave_float_fprint (FILE * const stream, wave_float f)
 // wave_char
 ////////////////////////////////////////////////////////////////////////////////
 
-wave_string wave_char_plus (wave_char a, wave_char b)
+wave_string wave_char_binary_plus (wave_char a, wave_char b)
 {
     wave_string string = _wave_string_alloc (2);
     string[0] = a;

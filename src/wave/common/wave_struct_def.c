@@ -207,7 +207,213 @@ void wave_data_unary (const wave_data * operand, wave_data * result, wave_operat
     }
 }
 
+static wave_int (* const _binary_int []) (wave_int, wave_int) =
+{
+    [WAVE_OP_BINARY_PLUS] = wave_int_binary_plus,
+    [WAVE_OP_BINARY_MINUS] = wave_int_binary_minus,
+    [WAVE_OP_BINARY_MIN] = wave_int_min,
+    [WAVE_OP_BINARY_MAX] = wave_int_max,
+    [WAVE_OP_BINARY_TIMES] = wave_int_times,
+    [WAVE_OP_BINARY_DIVIDE] = wave_int_divide,
+    [WAVE_OP_BINARY_MOD] = wave_int_mod,
+};
+
+static wave_bool (* const _binary_int_to_bool []) (wave_int, wave_int) =
+{
+    [WAVE_OP_BINARY_EQUALS] = wave_int_equals,
+    [WAVE_OP_BINARY_DIFFERS] = wave_int_differs,
+    [WAVE_OP_BINARY_LESSER_OR_EQUALS] = wave_int_lesser_or_equals,
+    [WAVE_OP_BINARY_GREATER_OR_EQUALS] = wave_int_greater_or_equals,
+    [WAVE_OP_BINARY_GREATER] = wave_int_greater,
+    [WAVE_OP_BINARY_LESSER] = wave_int_lesser,
+};
+
+static wave_float (* const _binary_float []) (wave_float, wave_float) =
+{
+    [WAVE_OP_BINARY_PLUS] = wave_float_binary_plus,
+    [WAVE_OP_BINARY_MINUS] = wave_float_binary_minus,
+    [WAVE_OP_BINARY_MIN] = wave_float_min,
+    [WAVE_OP_BINARY_MAX] = wave_float_max,
+    [WAVE_OP_BINARY_TIMES] = wave_float_times,
+    [WAVE_OP_BINARY_DIVIDE] = wave_float_divide,
+    [WAVE_OP_BINARY_MOD] = wave_float_mod,
+};
+
+static wave_bool (* const _binary_float_to_bool []) (wave_float, wave_float) =
+{
+    [WAVE_OP_BINARY_EQUALS] = wave_float_equals,
+    [WAVE_OP_BINARY_DIFFERS] = wave_float_differs,
+    [WAVE_OP_BINARY_LESSER_OR_EQUALS] = wave_float_lesser_or_equals,
+    [WAVE_OP_BINARY_GREATER_OR_EQUALS] = wave_float_greater_or_equals,
+    [WAVE_OP_BINARY_GREATER] = wave_float_greater,
+    [WAVE_OP_BINARY_LESSER] = wave_float_lesser,
+};
+
+static wave_char (* const _binary_char []) (wave_char, wave_char) =
+{
+    [WAVE_OP_BINARY_MIN] = wave_char_min,
+    [WAVE_OP_BINARY_MAX] = wave_char_max,
+};
+
+static wave_bool (* const _binary_char_to_bool []) (wave_char, wave_char) =
+{
+    [WAVE_OP_BINARY_EQUALS] = wave_char_equals,
+    [WAVE_OP_BINARY_DIFFERS] = wave_char_differs,
+    [WAVE_OP_BINARY_LESSER_OR_EQUALS] = wave_char_lesser_or_equals,
+    [WAVE_OP_BINARY_GREATER_OR_EQUALS] = wave_char_greater_or_equals,
+    [WAVE_OP_BINARY_GREATER] = wave_char_greater,
+    [WAVE_OP_BINARY_LESSER] = wave_char_lesser,
+};
+
+static wave_string (* const _binary_string []) (const_wave_string, const_wave_string) =
+{
+    [WAVE_OP_BINARY_PLUS] = wave_string_binary_plus,
+    [WAVE_OP_BINARY_MIN] = wave_string_min,
+    [WAVE_OP_BINARY_MAX] = wave_string_max,
+};
+
+static wave_bool (* const _binary_string_to_bool []) (const_wave_string, const_wave_string) =
+{
+    [WAVE_OP_BINARY_EQUALS] = wave_string_equals,
+    [WAVE_OP_BINARY_DIFFERS] = wave_string_differs,
+    [WAVE_OP_BINARY_LESSER_OR_EQUALS] = wave_string_lesser_or_equals,
+    [WAVE_OP_BINARY_GREATER_OR_EQUALS] = wave_string_greater_or_equals,
+    [WAVE_OP_BINARY_GREATER] = wave_string_greater,
+    [WAVE_OP_BINARY_LESSER] = wave_string_lesser,
+};
+
+static wave_bool (* const _binary_bool []) (wave_bool, wave_bool) =
+{
+    [WAVE_OP_BINARY_AND] = wave_bool_and,
+    [WAVE_OP_BINARY_OR] = wave_bool_or,
+};
+
+static inline bool _operator_is_test (wave_operator op)
+{
+    return op == WAVE_OP_BINARY_EQUALS || op == WAVE_OP_BINARY_DIFFERS
+        || op == WAVE_OP_BINARY_LESSER_OR_EQUALS || op == WAVE_OP_BINARY_GREATER
+        || op == WAVE_OP_BINARY_GREATER_OR_EQUALS || op == WAVE_OP_BINARY_LESSER;
+}
+
 void wave_data_binary (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op)
 {
-    (void) left; (void) right; (void) result; (void) op;
+    wave_data_type left_type = wave_data_get_type (left);
+    wave_data_type right_type = wave_data_get_type (right);
+    if (! _is_defined (left_type, op) || ! _is_defined (right_type, op))
+    {
+        fprintf (stderr, "Error, trying to use an operator on the wrong type.\n");
+        exit (EX_DATAERR);
+    }
+
+    if (left_type == right_type)
+    {
+        if (left_type == WAVE_DATA_BOOL)
+            wave_data_set_bool (result, _binary_bool[op] (left->_content._bool, right->_content._bool));
+        else if (left_type == WAVE_DATA_INT)
+        {
+            wave_int left_value = left->_content._int;
+            wave_int right_value = right->_content._int;
+            if (_operator_is_test (op))
+                wave_data_set_bool (result, _binary_int_to_bool[op] (left_value, right_value));
+            else
+                wave_data_set_int (result, _binary_int[op] (left_value, right_value));
+        }
+        else if (left_type == WAVE_DATA_FLOAT)
+        {
+            wave_float left_value = left->_content._float;
+            wave_float right_value = right->_content._float;
+            if (_operator_is_test (op))
+                wave_data_set_bool (result, _binary_float_to_bool[op] (left_value, right_value));
+            else
+                wave_data_set_float (result, _binary_float[op] (left_value, right_value));
+        }
+        else if (left_type == WAVE_DATA_CHAR)
+        {
+            wave_char left_value = left->_content._char;
+            wave_char right_value = right->_content._char;
+            if (_operator_is_test (op))
+                wave_data_set_bool (result, _binary_char_to_bool[op] (left_value, right_value));
+            else if (op == WAVE_OP_BINARY_PLUS)
+                wave_data_set_string (result, wave_char_binary_plus (left_value, right_value));
+            else
+                wave_data_set_char (result, _binary_char[op] (left_value, right_value));
+        }
+        else if (left_type == WAVE_DATA_STRING)
+        {
+            wave_string left_value = left->_content._string;
+            wave_string right_value = right->_content._string;
+            if (_operator_is_test (op))
+                wave_data_set_bool (result, _binary_string_to_bool[op] (left_value, right_value));
+            else
+                wave_data_set_string (result, _binary_string[op] (left_value, right_value));
+        }
+    }
+}
+
+#define _def_data_printer_simple(data_type) \
+    static void _data_ ## data_type ## _fprint (FILE * const stream, const wave_data * const data) \
+    { \
+        wave_ ## data_type ## _fprint (stream, data->_content._ ## data_type); \
+    }
+
+_def_data_printer_simple (int)
+_def_data_printer_simple (float)
+_def_data_printer_simple (bool)
+
+#undef _def_data_printer_simple
+
+#define _def_data_printer_char_string(data_type, delimiter) \
+    static void _data_ ## data_type ## _fprint (FILE * const stream, const wave_data * const data) \
+    { \
+        fprintf (stream, "%c", delimiter); \
+        wave_ ## data_type ## _fprint (stream, data->_content._ ## data_type); \
+        fprintf (stream, "%c", delimiter); \
+    }
+
+_def_data_printer_char_string (char, '\'')
+_def_data_printer_char_string (string, '\"')
+
+#undef _def_data_printer_char_string
+
+static void _data_collection_fprint (FILE * const stream, const wave_data * const data, const char * delimiter)
+{
+    fprintf (stream, "(");
+    size_t size = data->_content._collection._size;
+    for (size_t i = 0; i < size - 1; ++i)
+    {
+        wave_data_fprint (stream, & data->_content._collection._tab[i]);
+        fprintf (stream, "%s", delimiter);
+    }
+    wave_data_fprint (stream, & data->_content._collection._tab[size - 1]);
+    fprintf (stream, ")");
+}
+
+static void _data_seq_fprint (FILE * const stream, const wave_data * const data)
+{
+    _data_collection_fprint (stream, data, ";");
+}
+
+static void _data_par_fprint (FILE * const stream, const wave_data * const data)
+{
+    _data_collection_fprint (stream, data, "||");
+}
+
+static void (* const _data_print_functions []) (FILE *, const wave_data *) =
+{
+    [WAVE_DATA_INT] = _data_int_fprint,
+    [WAVE_DATA_FLOAT] = _data_float_fprint,
+    [WAVE_DATA_CHAR] = _data_char_fprint,
+    [WAVE_DATA_STRING] = _data_string_fprint,
+    [WAVE_DATA_BOOL] = _data_bool_fprint,
+    [WAVE_DATA_SEQ] = _data_seq_fprint,
+    [WAVE_DATA_PAR] = _data_par_fprint,
+    [WAVE_DATA_OPERATOR] = NULL,
+    [WAVE_DATA_UNKNOWN] = NULL,
+};
+
+void wave_data_fprint (FILE * const stream, const wave_data * data)
+{
+    wave_data_type t = wave_data_get_type (data);
+    if (t >= 0 && t < WAVE_DATA_UNKNOWN && _data_print_functions[t] != NULL)
+        _data_print_functions[t] (stream, data);
 }
