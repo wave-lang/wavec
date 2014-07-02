@@ -66,7 +66,7 @@ vpath %.o $(PATH_OBJ)
 vpath %.a $(PATH_LIB) $(PATH_LIB_HASH)
 vpath %.y $(PATH_YACC)
 vpath %.l $(PATH_LEX)
-vpath wavec $(PATH_BIN)
+vpath wave2c $(PATH_BIN)
 vpath wavepp $(PATH_BIN)
 vpath main $(PATH_BIN)
 vpath wave_yacc.c $(PATH_SRC_YACC)
@@ -76,7 +76,7 @@ vpath wave_lex.c $(PATH_SRC_LEX)
 # Main
 ################################################################################
 
-all: wavec wavepp main
+all: wave2c wavepp main
 
 ################################################################################
 # Hash
@@ -101,7 +101,7 @@ wave_yacc.o: wave_yacc.c | obj_dir
 # Lex
 ################################################################################
 
-wavec: wave_lex.o wave_yacc.o libhash.a libwave.a libwaveast.a | bin_dir
+wave2c: wave_lex.o wave_yacc.o libhash.a libwave.a libwaveast.a | bin_dir
 	$(CC) -o $(PATH_BIN)/$@ $(PATH_OBJ)/wave_lex.o $(PATH_OBJ)/wave_yacc.o $(FLAGS_CC_LINK)
 
 wavepp: wave_preprocessor.o preproc_utils.o libhash.a | bin_dir
@@ -215,6 +215,23 @@ bin_dir:
 
 yacc_dir:
 	@mkdir -p $(PATH_INCLUDE_YACC) $(PATH_SRC_YACC)
+
+################################################################################
+# (Un)Installing
+################################################################################
+
+install: main
+	@cp -R include/wave /usr/local/include/wave
+	@mkdir -p /usr/local/lib/wave
+	@cp -R lib/libwave.a /usr/local/lib/wave/libwave.a
+	@cp bin/wave2c /usr/local/bin/wave2c
+	@cp bin/wavepp /usr/local/bin/wavepp
+	@cp script/wavec /usr/local/bin/wavec
+
+uninstall:
+	@rm -rf /usr/local/lib/wave
+	@rm -rf /usr/local/include/wave
+	@rm -f /usr/local/bin/wave2c /usr/local/bin/wavepp /usr/local/bin/wave2c
 
 ################################################################################
 # Cleaning

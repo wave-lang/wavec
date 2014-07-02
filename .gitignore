@@ -39,6 +39,6 @@ wave_preprocessor.c
 src/wave/lex/wave_lex.c
 parse_out.wave
 
-# Wave comp
-wavec
-wave_preprocessor
+# Wave compiler executables
+wave2c
+wavepp
