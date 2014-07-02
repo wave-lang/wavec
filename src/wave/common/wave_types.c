@@ -41,7 +41,7 @@ static inline wave_string _wave_string_alloc (size_t length)
     return calloc (length + 1, sizeof (wave_char));
 }
 
-static inline void _string_to_lower (char * s)
+static inline void _string_to_lower (char * const s)
 {
     for (int i = 0; s[i]; ++i)
         s[i] = (wave_char) tolower (s[i]);
@@ -121,6 +121,11 @@ wave_bool wave_bool_from_string (const char * s)
     return strcmp (word, "true") == 0;
 }
 
+void wave_bool_fprint (FILE * const stream, wave_bool b)
+{
+    fprintf (stream, "%s", b == true ? "true" : "false");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // wave_int ////////////////////////////////////////////////////////////////////////////////
 
@@ -129,7 +134,7 @@ wave_int wave_int_from_wave_float (wave_float f)
     return (wave_int) f;
 }
 
-wave_int wave_int_from_string (const char * str)
+wave_int wave_int_from_string (const char * const str)
 {
     return atoi (str);
 }
@@ -258,6 +263,11 @@ wave_bool wave_int_greater (wave_int a, wave_int b)
 wave_bool wave_int_lesser (wave_int a, wave_int b)
 {
     return a < b;
+}
+
+void wave_int_fprint (FILE * stream, wave_int i)
+{
+    fprintf (stream, "%d", i);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -393,9 +403,14 @@ wave_bool wave_float_lesser (wave_float a, wave_float b)
     return isless (a, b);
 }
 
-wave_float wave_float_from_string (const char * str)
+wave_float wave_float_from_string (const char * const str)
 {
     return strtof (str, NULL);
+}
+
+void wave_float_fprint (FILE * const stream, wave_float f)
+{
+    fprintf (stream, "%f", f);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -459,6 +474,11 @@ wave_char wave_char_from_wave_int (wave_int code)
 wave_int wave_char_code (wave_char c)
 {
     return c;
+}
+
+void wave_char_fprint (FILE * const stream, wave_char c)
+{
+    fprintf (stream, "%c", c);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -547,6 +567,11 @@ _wave_string_char_op (wave_bool, wave_string_greater)
 
 #undef _wave_string_char_op
 
+void wave_string_fprint (FILE * const stream, const_wave_string s)
+{
+    fprintf (stream, "%s", s);
+}
+
 wave_string wave_string_cat (wave_string restrict destination, const_wave_string restrict source)
 {
     return strcat (destination, source);
@@ -567,12 +592,12 @@ size_t wave_string_length (const_wave_string s)
     return strlen (s);
 }
 
-wave_string wave_string_first_character (const_wave_string s, wave_char c)
+wave_string wave_string_first_matching_character (const_wave_string s, wave_char c)
 {
     return strchr (s, c);
 }
 
-wave_string wave_string_last_character (const_wave_string s, wave_char c)
+wave_string wave_string_last_matching_character (const_wave_string s, wave_char c)
 {
     return strrchr (s, c);
 }
@@ -589,4 +614,9 @@ wave_string wave_string_duplicate (const_wave_string s)
     wave_string duplicate = malloc (length * sizeof * duplicate);
     wave_string_copy (duplicate, s);
     return duplicate;
+}
+
+wave_char wave_string_nth (const_wave_string s, size_t n)
+{
+    return s[n];
 }
