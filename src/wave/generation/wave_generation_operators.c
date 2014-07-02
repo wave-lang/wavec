@@ -392,6 +392,22 @@ static void _unknown_error (FILE * code_file, const wave_collection * collection
 
 #undef _def_operator_function
 
+static void _specific_print (FILE * const code_file, const wave_collection * const collection, wave_operator op)
+{
+    (void) op;
+
+    if (wave_collection_has_previous (collection))
+    {
+        wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
+        wave_coordinate * c = wave_collection_get_coordinate (collection);
+        fprintf (code_file, "wave_data_fprint (stdout, & ");
+        _print_tab_minus (code_file, indexes, c, -1);
+        fprintf (code_file, ");\nprintf(\"\\n\");");
+    }
+    else
+        _operand_error (code_file);
+}
+
 static void (* const _operator_functions[]) (FILE *, const wave_collection *, wave_operator) =
 {
     [WAVE_OP_UNARY_PLUS]                = _unary_plus,
@@ -426,7 +442,7 @@ static void (* const _operator_functions[]) (FILE *, const wave_collection *, wa
     [WAVE_OP_SPECIFIC_STOP]             = NULL,
     [WAVE_OP_SPECIFIC_CUT]              = NULL,
     [WAVE_OP_SPECIFIC_READ]             = NULL,
-    [WAVE_OP_SPECIFIC_PRINT]            = NULL,
+    [WAVE_OP_SPECIFIC_PRINT]            = _specific_print,
     [WAVE_OP_UNKNOWN]                   = _unknown_error,
 };
 
