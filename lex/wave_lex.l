@@ -47,7 +47,7 @@ int yyparse();
 Integer     [-][0-9]+|[0-9]+
 Float       [0-9]+"."[0-9]+|[0-9]*"."[0-9]+
 Character   "'"."'"
-String      \".*\"
+String      \"[^\"]*\"
 Boolean     True|False
 
 %%
