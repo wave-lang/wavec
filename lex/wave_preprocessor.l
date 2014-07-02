@@ -39,8 +39,8 @@ extern int yylval;
 }
 Integer     [0-9]+
 Float       [0-9]+"."[0-9]*|[0-9]*"."[0-9]+
-Character   "'"."'"
-String      "\"".*"\""
+Character   "'"[^\']"'"
+String      "\""[^\"]*"\""
 Boolean     True|False
 %x Definition Naming Be MacroDefinition Comment PREPROCESSOR
 
@@ -59,6 +59,12 @@ Boolean     True|False
         return 1;
     }
     fprintf(yyout, "%s", value);
+}
+<PREPROCESSOR>{String}                                         { /* Strings */
+    fprintf (yyout, yytext);
+}
+<PREPROCESSOR>{Character}                                      { /* Character */
+    fprintf (yyout, yytext);
 }
 <Naming><<EOF>>                                         {
     fprintf(stderr, "Error : Encontered end of file while waiting for a declaration. \"Let\" encontered line %d\n", let_row);
@@ -96,13 +102,13 @@ Boolean     True|False
         return 1;
     }
 }
-<MacroDefinition>\".*\"                                           { /* Strings */
+<MacroDefinition>{String}                                         { /* Strings */
     preproc_add_to_current_expression(yytext);
 }
-<MacroDefinition>'.*'                                             { /* Character */
+<MacroDefinition>{Character}                                      { /* Character */
     preproc_add_to_current_expression(yytext);
 }
-<MacroDefinition>[^.\n% a-zA-Z"']*                                 { /* Not identifier */
+<MacroDefinition>[^.\n% a-zA-Z"']*                                { /* Not identifier */
     preproc_add_to_current_expression(yytext);
 }
 <MacroDefinition>"."                                              {
