@@ -242,7 +242,10 @@ void * wave_atom_free (wave_atom * const atom)
 
 static inline void _copy_string (const wave_atom * const original, wave_atom * const copy)
 {
-    copy->_content._string = wave_string_duplicate (original->_content._string);
+    wave_string string_copy = NULL;
+    if (original->_content._string != NULL)
+        string_copy = wave_string_duplicate (original->_content._string);
+    copy->_content._string = string_copy;
 }
 
 static inline void _copy_path (const wave_atom * const original, wave_atom * const copy)
