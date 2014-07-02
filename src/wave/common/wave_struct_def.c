@@ -349,3 +349,71 @@ void wave_data_binary (const wave_data * left, const wave_data * right, wave_dat
         }
     }
 }
+
+#define _def_data_printer_simple(data_type) \
+    static void _data_ ## data_type ## _fprint (FILE * const stream, const wave_data * const data) \
+    { \
+        wave_ ## data_type ## _fprint (stream, data->_content._ ## data_type); \
+    }
+
+_def_data_printer_simple (int)
+_def_data_printer_simple (float)
+_def_data_printer_simple (bool)
+
+#undef _def_data_printer_simple
+
+#define _def_data_printer_char_string(data_type, delimiter) \
+    static void _data_ ## data_type ## _fprint (FILE * const stream, const wave_data * const data) \
+    { \
+        fprintf (stream, "%c", delimiter); \
+        wave_ ## data_type ## _fprint (stream, data->_content._ ## data_type); \
+        fprintf (stream, "%c", delimiter); \
+    }
+
+_def_data_printer_char_string (char, '\'')
+_def_data_printer_char_string (string, '\"')
+
+#undef _def_data_printer_char_string
+
+static void _data_collection_fprint (FILE * const stream, const wave_data * const data, const char * delimiter)
+{
+    fprintf (stream, "(");
+    size_t size = data->_content._collection._size;
+    for (size_t i = 0; i < size - 1; ++i)
+    {
+        wave_data_fprint (stream, & data->_content._collection._tab[i]);
+        fprintf (stream, "%s", delimiter);
+    }
+    wave_data_fprint (stream, & data->_content._collection._tab[size - 1]);
+    fprintf (stream, ")");
+}
+
+static void _data_seq_fprint (FILE * const stream, const wave_data * const data)
+{
+    _data_collection_fprint (stream, data, ";");
+}
+
+static void _data_par_fprint (FILE * const stream, const wave_data * const data)
+{
+    _data_collection_fprint (stream, data, "||");
+}
+
+static void (* const _data_print_functions []) (FILE *, const wave_data *) =
+{
+    [WAVE_DATA_INT] = _data_int_fprint,
+    [WAVE_DATA_FLOAT] = _data_float_fprint,
+    [WAVE_DATA_CHAR] = _data_char_fprint,
+    [WAVE_DATA_STRING] = _data_string_fprint,
+    [WAVE_DATA_BOOL] = _data_bool_fprint,
+    [WAVE_DATA_SEQ] = _data_seq_fprint,
+    [WAVE_DATA_PAR] = _data_par_fprint,
+    [WAVE_DATA_OPERATOR] = NULL,
+    [WAVE_DATA_UNKNOWN] = NULL,
+};
+
+void wave_data_fprint (FILE * const stream, const wave_data * data)
+{
+    wave_data_type t = wave_data_get_type (data);
+    if (t >= 0 && t < WAVE_DATA_UNKNOWN && _data_print_functions[t] != NULL)
+        _data_print_functions[t] (stream, data);
+}
