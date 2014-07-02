@@ -210,6 +210,7 @@ static void _unary (FILE * code_file, const wave_collection * collection, wave_o
             else
                 fun (code_file, c, ta, indexes, op);
         }
+        wave_int_list_free (indexes);
     }
     else
         _operand_error (code_file);
@@ -327,6 +328,7 @@ static void _binary (FILE * code_file, const wave_collection * collection, wave_
             }
             else
                 fun (code_file, c, ta_left, ta_right, indexes, op);
+            wave_int_list_free (indexes);
         }
     }
     else
@@ -417,6 +419,7 @@ static void _specific_print (FILE * const code_file, const wave_collection * con
         fprintf (code_file, "wave_data_fprint (stdout, & ");
         _print_tab_minus (code_file, indexes, c, -1);
         fprintf (code_file, ");\nprintf(\"\\n\");\n");
+        wave_int_list_free (indexes);
     }
     else
         _operand_error (code_file);
