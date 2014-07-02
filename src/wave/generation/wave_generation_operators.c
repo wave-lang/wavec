@@ -254,12 +254,26 @@ static void _all_for_binary (FILE * code_file, const wave_coordinate * c, wave_a
     }
 }
 
+static void _print_char_plus (FILE * code_file, const wave_int_list * indexes, const wave_coordinate * c)
+{
+    wave_generate_type_assignement (code_file, indexes, c, WAVE_ATOM_LITERAL_STRING);
+    wave_generate_content_assignement (code_file, indexes, c, WAVE_ATOM_LITERAL_STRING);
+    fprintf (code_file, " = wave_%s_%s", wave_generation_atom_type_string (WAVE_ATOM_LITERAL_CHAR), _operator_functions_strings[WAVE_OP_BINARY_PLUS]);
+    fprintf (code_file, " (");
+    _print_args_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_CHAR, WAVE_ATOM_LITERAL_CHAR);
+}
+
 static void _plus_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, wave_operator op)
 {
     if (left != WAVE_ATOM_LITERAL_BOOL && right != WAVE_ATOM_LITERAL_BOOL)
     {
         if (left == right)
+        {
+            if (left == WAVE_ATOM_LITERAL_CHAR)
+                _print_char_plus (code_file, indexes, c);
+            else
             _print_binary (code_file, indexes, c, left, left, right, op);
+        }
         else
         {
             if ((left == WAVE_ATOM_LITERAL_INT && right == WAVE_ATOM_LITERAL_FLOAT)
@@ -402,7 +416,7 @@ static void _specific_print (FILE * const code_file, const wave_collection * con
         wave_coordinate * c = wave_collection_get_coordinate (collection);
         fprintf (code_file, "wave_data_fprint (stdout, & ");
         _print_tab_minus (code_file, indexes, c, -1);
-        fprintf (code_file, ");\nprintf(\"\\n\");");
+        fprintf (code_file, ");\nprintf(\"\\n\");\n");
     }
     else
         _operand_error (code_file);
