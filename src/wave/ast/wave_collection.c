@@ -540,6 +540,125 @@ static wave_collection * _access_collection (wave_collection * c, const wave_pat
     return access;
 }
 
+int wave_collection_calculating_path_length_following_it_without_counting_what_is_not_in_the_last_square_brackets(const wave_collection* c, const wave_path* p);
+
+/**
+ * \param recorded_path the last recorded path.
+ * \param rewind_recording rewind_recording will_contain the rewind_recording_if not NULL
+ * \param counting_all if true will count all the move and otherwise will only count the last recorded one
+ */
+int wave_collection_calculating_path_length_following_it_without_or_without_counting_and_with_or_without_recording_and_with_or_without_returning_the_destination(const wave_collection* c, const wave_path* p, wave_path* recorded_path, wave_path* rewind_recording, bool counting_all, const wave_collection** destination){
+    int size = 0;
+
+    const wave_path* internal_recorded_path = recorded_path;
+
+    while(c != NULL && p != NULL){
+        wave_move_type wmt = wave_path_get_move(p);
+        switch(wmt){
+            case WAVE_MOVE_UP:
+                if(counting_all)
+                    size += 1;
+                if(rewind_recording != NULL){
+                    wave_path* new_one = wave_path_alloc();
+                    wave_path_set_move(new_one, WAVE_MOVE_DOWN);
+                    wave_path_add_path(rewind_recording, new_one);
+                }
+                c = wave_collection_get_parent(c);
+                break;
+
+            case WAVE_MOVE_DOWN:
+                if(counting_all)
+                    size += 1;
+                if(rewind_recording != NULL){
+                    wave_path* new_one = wave_path_alloc();
+                    wave_path_set_move(new_one, WAVE_MOVE_UP);
+                    wave_path_add_path(rewind_recording, new_one);
+                }
+                c = wave_collection_get_down(c);
+                break;
+
+            case WAVE_MOVE_PRE:
+                if(counting_all)
+                    size += 1;
+                if(rewind_recording != NULL){
+                    wave_path* new_one = wave_path_alloc();
+                    wave_path_set_move(new_one, WAVE_MOVE_SUC);
+                    wave_path_add_path(rewind_recording, new_one);
+                }
+                c = wave_collection_get_previous(c);
+                break;
+
+            case WAVE_MOVE_SUC:
+                if(counting_all)
+                    size += 1;
+                if(rewind_recording != NULL){
+                    wave_path* new_one = wave_path_alloc();
+                    wave_path_set_move(new_one, WAVE_MOVE_PRE);
+                    wave_path_add_path(rewind_recording, new_one);
+                }
+                c = wave_collection_get_next(c);
+                break;
+
+            case WAVE_MOVE_REWIND:
+                if(recorded_path != NULL){
+                    int size_rewind = wave_collection_calculating_path_length_following_it_without_or_without_counting_and_with_or_without_recording_and_with_or_without_returning_the_destination(c, recorded_path, recorded_path, rewind_recording, counting_all, &c);
+                    if(counting_all)
+                        size += size_rewind;
+                }
+                else{
+                    fprintf(stderr, "Found a rewind without a previous recorded path");
+                    return -1;
+                }
+                break;
+
+            case WAVE_MOVE_REP:
+                break;
+
+            case WAVE_MOVE_PART:
+                if(recorded_path == NULL){ // FIRST ENCOUNTER TO REGISTER A PART
+                    wave_path* part_pathq = wave_path_get_part(p);
+                    wave_path temp;
+                    int size_mv_part = wave_collection_calculating_path_length_following_it_without_or_without_counting_and_with_or_without_recording_and_with_or_without_returning_the_destination(c, part_pathq, recorded_path, &temp, true, &c);
+                    size += size_mv_part;
+                    recorded_path = temp._next_path;
+                    recorded_path->_previous_path = NULL;
+                }
+                else{
+                    wave_path* part_pathq = wave_path_get_part(p);
+                    wave_path temp;
+                    if(rewind_recording == NULL){
+                        int size_mv_part = wave_collection_calculating_path_length_following_it_without_or_without_counting_and_with_or_without_recording_and_with_or_without_returning_the_destination(c, part_pathq, recorded_path, &temp, true, &c);
+                        size += size_mv_part;
+                        if(recorded_path != internal_recorded_path)
+                            wave_path_free(recorded_path);
+                        recorded_path = temp._next_path;
+                        recorded_path->_previous_path = NULL;
+                    }
+                    else{
+                        int size_mv_part = wave_collection_calculating_path_length_following_it_without_or_without_counting_and_with_or_without_recording_and_with_or_without_returning_the_destination(c, part_pathq, recorded_path, &temp, true, &c);
+                        size += size_mv_part;
+                        if(recorded_path != internal_recorded_path)
+                            wave_path_free(recorded_path);
+                        wave_path_add_path(rewind_recording, wave_path_copy(temp._next_path));
+                        recorded_path = temp._next_path;
+                        recorded_path->_previous_path = NULL;
+                    }
+                }
+                break;
+
+            default:
+                fprintf(stderr, "A path or not a path ... that is the question\n");
+                exit(1);
+                break;
+        }
+    }
+
+    if(internal_recorded_path == NULL && recorded_path != NULL)
+        wave_path_free(recorded_path);
+    *destination = c;
+    return size;
+}
+
 bool wave_collection_path_is_valid (wave_collection * c, const wave_path * p)
 {
     return wave_collection_access (c, p, NULL) != NULL;

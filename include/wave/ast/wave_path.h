@@ -311,7 +311,7 @@ void wave_path_add_path (wave_path * p, wave_path * next);
  * \param[in] part Part.
  * \relatesalso wave_path
  * \warning \c must be not \c NULL.
- * \post wave_path_get_type() == #WAVE_MOVE_PART
+ * \post wave_path_get_move() == #WAVE_MOVE_PART
  */
 void wave_path_set_part (wave_path * p, wave_path * part);
 
@@ -321,7 +321,7 @@ void wave_path_set_part (wave_path * p, wave_path * part);
  * \param[in] t Type.
  * \relatesalso wave_path
  * \warning \c must be not \c NULL.
- * \post wave_path_get_type() == #WAVE_MOVE_REP
+ * \post wave_path_get_move() == #WAVE_MOVE_REP
  */
 void wave_path_set_repeat_type (wave_path * p, wave_path_repeat_type t);
 
@@ -331,7 +331,7 @@ void wave_path_set_repeat_type (wave_path * p, wave_path_repeat_type t);
  * \param[in] n Number.
  * \relatesalso wave_path
  * \warning \c must be not \c NULL.
- * \post wave_path_get_type() == #WAVE_MOVE_REP
+ * \post wave_path_get_move() == #WAVE_MOVE_REP
  * \post wave_path_get_repeat_type() == #WAVE_PATH_REPEAT_CONSTANT
  */
 void wave_path_set_repeat_number (wave_path * p, int n);
@@ -342,7 +342,7 @@ void wave_path_set_repeat_number (wave_path * p, int n);
  * \param[in] repeat Repat.
  * \relatesalso wave_path
  * \warning \c must be not \c NULL.
- * \post wave_path_get_type() == #WAVE_MOVE_REP
+ * \post wave_path_get_move() == #WAVE_MOVE_REP
  */
 void wave_path_set_repeat_path (wave_path * p, wave_path * repeat);
 
