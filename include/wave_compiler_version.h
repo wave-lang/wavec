@@ -44,6 +44,6 @@ static const unsigned int WAVE_COMPILER_VERSION_MINOR = 3;
 /**
  * \brief Wave compiler patch version.
  */
-static const unsigned int WAVE_COMPILER_VERSION_PATCH = 2;
+static const unsigned int WAVE_COMPILER_VERSION_PATCH = 3;
 
 #endif /* __WAVE_COMPILER_VERSION_H__ */
