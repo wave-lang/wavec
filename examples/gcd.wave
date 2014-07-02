@@ -1,0 +1,5 @@
+% GCD (Euclid's algorithm)
+
+Let gcd be (@u p;@u p 2{;0;=;@p 4;?;@p 5;mod}).
+
+48;180;gcd;!.   % compute the gcd of 48 and 180 and keep only the result 

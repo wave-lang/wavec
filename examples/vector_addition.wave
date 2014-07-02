@@ -1,0 +1,7 @@
+% addition of two vectors (data-parallel version)
+
+(1||2);(3||4);+;!.
+
+% addition of two vectors (control-parallel version)
+
+(1;3;+;!)||(2;4;+;!).
