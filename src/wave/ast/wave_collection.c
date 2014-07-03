@@ -726,7 +726,11 @@ int wave_collection_get_path_size_only_last_record(const wave_collection* c, con
 }
 
 int wave_collection_get_path_size(const wave_collection* c, const wave_path* path){
-    return wave_follow_collection_with_extra_bonus(c, path, NULL, NULL, true, NULL);
+    const wave_collection* end;
+    int size = wave_follow_collection_with_extra_bonus(c, path, NULL, NULL, true, &end);
+    if(end == NULL)
+        return -1;
+    return size;
 }
 
 const wave_collection* wave_collection_get_collection_pointed(const wave_collection* c, const wave_path* path){
