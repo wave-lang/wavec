@@ -30,6 +30,12 @@
  */
 #include "wave/common/wave_struct_def.h"
 
+static inline bool _is_constant (wave_data_type t)
+{
+    return t == WAVE_DATA_INT || t == WAVE_DATA_FLOAT || t == WAVE_DATA_CHAR
+        || t == WAVE_DATA_STRING || t == WAVE_DATA_BOOL;
+}
+
 wave_data_type wave_data_get_type (const wave_data * data)
 {
     return data->_type;
@@ -180,31 +186,57 @@ static bool _is_defined (wave_data_type t, wave_operator op)
     return _is_defined_tab (_defined_operators[t], op);
 }
 
+static void _operator_type_error (const wave_data * left, const wave_data * right, wave_operator op)
+{
+    fprintf (stderr, "Error: bad operator use.\noperator: ");
+    wave_operator_fprint (stderr, op);
+    fprintf (stderr, "\n%soperand: ", right == NULL ? "" : "left ");
+    wave_data_fprint (stderr, left);
+    if (right != NULL)
+    {
+        fprintf (stderr, "\nright operand: ");
+        wave_data_fprint (stderr, right);
+    }
+    fprintf (stderr, "\n");
+    exit (EX_DATAERR);
+}
+
+static void _map_unary (const wave_data * operand, wave_data * result, wave_operator op)
+{
+    size_t size = operand->_content._collection._size;
+    result->_type = WAVE_DATA_PAR;
+    result->_content._collection._tab = malloc (size * sizeof (wave_data));
+    result->_content._collection._size = size;
+    for (size_t i = 0; i < size; ++i)
+        wave_data_unary (& operand->_content._collection._tab[i], & result->_content._collection._tab[i], op);
+}
+
 void wave_data_unary (const wave_data * operand, wave_data * result, wave_operator op)
 {
     wave_data_type t = wave_data_get_type (operand);
-    if (! _is_defined (t, op))
+    if (_is_constant (t))
     {
-        fprintf (stderr, "Error, trying to use an operator on the wrong type.\n");
-        exit (EX_DATAERR);
-    }
+        if (! _is_defined (t, op))
+            _operator_type_error (operand, NULL, op);
 
-    if (t == WAVE_DATA_INT)
-    {
-        if (op == WAVE_OP_UNARY_PLUS || op == WAVE_OP_UNARY_MINUS
-            || op == WAVE_OP_UNARY_INCREMENT || op == WAVE_OP_UNARY_DECREMENT)
-            wave_data_set_int (result, _unary_int_to_int[op] (operand->_content._int));
-        else
-            wave_data_set_float (result, _unary_int_to_float[op] (operand->_content._int));
+        if (t == WAVE_DATA_INT)
+        {
+            if (op == WAVE_OP_UNARY_PLUS || op == WAVE_OP_UNARY_MINUS
+                || op == WAVE_OP_UNARY_INCREMENT || op == WAVE_OP_UNARY_DECREMENT)
+                wave_data_set_int (result, _unary_int_to_int[op] (operand->_content._int));
+            else
+                wave_data_set_float (result, _unary_int_to_float[op] (operand->_content._int));
+        }
+        else if (t == WAVE_DATA_FLOAT)
+            wave_data_set_float (result, _unary_float_to_float[op] (operand->_content._float));
+        else if (t == WAVE_DATA_BOOL)
+            wave_data_set_bool (result, wave_bool_not (operand->_content._bool));
     }
-    else if (t == WAVE_DATA_FLOAT)
-    {
-        wave_data_set_float (result, _unary_float_to_float[op] (operand->_content._float));
-    }
-    else if (t == WAVE_DATA_BOOL)
-    {
-        wave_data_set_bool (result, wave_bool_not (operand->_content._bool));
-    }
+    else if (t == WAVE_DATA_PAR)
+        _map_unary (operand, result, op);
+    else
+        _operator_type_error (operand, NULL, op);
+
 }
 
 static wave_int (* const _binary_int []) (wave_int, wave_int) =
@@ -295,59 +327,105 @@ static inline bool _operator_is_test (wave_operator op)
         || op == WAVE_OP_BINARY_GREATER_OR_EQUALS || op == WAVE_OP_BINARY_LESSER;
 }
 
+static inline void _set_binary_both_bool (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op)
+{
+    wave_data_set_bool (result, _binary_bool[op] (left->_content._bool, right->_content._bool));
+}
+
+static inline void _set_binary_both_int (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op)
+{
+    wave_int left_value = left->_content._int;
+    wave_int right_value = right->_content._int;
+    if (_operator_is_test (op))
+        wave_data_set_bool (result, _binary_int_to_bool[op] (left_value, right_value));
+    else
+        wave_data_set_int (result, _binary_int[op] (left_value, right_value));
+}
+
+static inline void _set_binary_both_float (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op)
+{
+    wave_float left_value = left->_content._float;
+    wave_float right_value = right->_content._float;
+    if (_operator_is_test (op))
+        wave_data_set_bool (result, _binary_float_to_bool[op] (left_value, right_value));
+    else
+        wave_data_set_float (result, _binary_float[op] (left_value, right_value));
+}
+
+static inline void _set_binary_both_char (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op)
+{
+    wave_char left_value = left->_content._char;
+    wave_char right_value = right->_content._char;
+    if (_operator_is_test (op))
+        wave_data_set_bool (result, _binary_char_to_bool[op] (left_value, right_value));
+    else if (op == WAVE_OP_BINARY_PLUS)
+        wave_data_set_string (result, wave_char_binary_plus (left_value, right_value));
+    else
+        wave_data_set_char (result, _binary_char[op] (left_value, right_value));
+}
+
+static inline void _set_binary_both_string (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op)
+{
+    wave_string left_value = left->_content._string;
+    wave_string right_value = right->_content._string;
+    if (_operator_is_test (op))
+        wave_data_set_bool (result, _binary_string_to_bool[op] (left_value, right_value));
+    else
+        wave_data_set_string (result, _binary_string[op] (left_value, right_value));
+}
+
+static void (* _set_binary_same_types []) (const wave_data *, const wave_data *, wave_data *, wave_operator) =
+{
+    [WAVE_DATA_BOOL] = _set_binary_both_bool,
+    [WAVE_DATA_INT] = _set_binary_both_int,
+    [WAVE_DATA_FLOAT] = _set_binary_both_float,
+    [WAVE_DATA_CHAR] = _set_binary_both_char,
+    [WAVE_DATA_STRING] = _set_binary_both_string,
+    [WAVE_DATA_SEQ] = NULL,
+    [WAVE_DATA_PAR] = NULL,
+    [WAVE_DATA_OPERATOR] = NULL,
+    [WAVE_DATA_UNKNOWN] = NULL,
+};
+
+static void _map_binary (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op)
+{
+    size_t size = left->_content._collection._size;
+    result->_type = WAVE_DATA_PAR;
+    result->_content._collection._tab = malloc (size * sizeof (wave_data));
+    result->_content._collection._size = size;
+    wave_data * tab_left = left->_content._collection._tab;
+    wave_data * tab_right = right->_content._collection._tab;
+    wave_data * tab_result = result->_content._collection._tab;
+    for (size_t i = 0; i < size; ++i)
+        wave_data_binary (& tab_left[i], & tab_right[i], & tab_result[i], op);
+}
+
 void wave_data_binary (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op)
 {
     wave_data_type left_type = wave_data_get_type (left);
     wave_data_type right_type = wave_data_get_type (right);
-    if (! _is_defined (left_type, op) || ! _is_defined (right_type, op))
+    if (_is_constant (left_type) && _is_constant (right_type))
     {
-        fprintf (stderr, "Error, trying to use an operator on the wrong type.\n");
-        exit (EX_DATAERR);
-    }
+        if (! _is_defined (left_type, op) || ! _is_defined (right_type, op))
+            _operator_type_error (left, right, op);
 
-    if (left_type == right_type)
+        if (left_type == right_type)
+                _set_binary_same_types[left_type] (left, right, result, op);
+    }
+    else if (left_type == WAVE_DATA_PAR && right_type == WAVE_DATA_PAR)
     {
-        if (left_type == WAVE_DATA_BOOL)
-            wave_data_set_bool (result, _binary_bool[op] (left->_content._bool, right->_content._bool));
-        else if (left_type == WAVE_DATA_INT)
+        size_t left_size = left->_content._collection._size;
+        size_t right_size = right->_content._collection._size;
+        if (left_size == right_size)
+            _map_binary (left, right, result, op);
+        else
         {
-            wave_int left_value = left->_content._int;
-            wave_int right_value = right->_content._int;
-            if (_operator_is_test (op))
-                wave_data_set_bool (result, _binary_int_to_bool[op] (left_value, right_value));
-            else
-                wave_data_set_int (result, _binary_int[op] (left_value, right_value));
-        }
-        else if (left_type == WAVE_DATA_FLOAT)
-        {
-            wave_float left_value = left->_content._float;
-            wave_float right_value = right->_content._float;
-            if (_operator_is_test (op))
-                wave_data_set_bool (result, _binary_float_to_bool[op] (left_value, right_value));
-            else
-                wave_data_set_float (result, _binary_float[op] (left_value, right_value));
-        }
-        else if (left_type == WAVE_DATA_CHAR)
-        {
-            wave_char left_value = left->_content._char;
-            wave_char right_value = right->_content._char;
-            if (_operator_is_test (op))
-                wave_data_set_bool (result, _binary_char_to_bool[op] (left_value, right_value));
-            else if (op == WAVE_OP_BINARY_PLUS)
-                wave_data_set_string (result, wave_char_binary_plus (left_value, right_value));
-            else
-                wave_data_set_char (result, _binary_char[op] (left_value, right_value));
-        }
-        else if (left_type == WAVE_DATA_STRING)
-        {
-            wave_string left_value = left->_content._string;
-            wave_string right_value = right->_content._string;
-            if (_operator_is_test (op))
-                wave_data_set_bool (result, _binary_string_to_bool[op] (left_value, right_value));
-            else
-                wave_data_set_string (result, _binary_string[op] (left_value, right_value));
+            _operator_type_error (left, right, op);
+            fprintf (stderr, "The two collections must be of the same size.\n");
         }
     }
+    else
+        _operator_type_error (left, right, op);
 }
 
 #define _def_data_printer_simple(data_type) \
