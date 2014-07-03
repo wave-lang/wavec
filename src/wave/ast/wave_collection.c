@@ -30,6 +30,16 @@
  */
 #include "wave/ast/wave_collection.h"
 
+static inline void _wave_collection_set_parent (wave_collection * const c, wave_collection * parent)
+{
+    wave_collection * current = c;
+    while (current != NULL)
+    {
+        current->_parent_collection = parent;
+        current = wave_collection_get_next (current);
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Initialization.
 ////////////////////////////////////////////////////////////////////////////////
@@ -118,6 +128,7 @@ static inline void _copy_atom (const wave_collection * const original, wave_coll
 static inline void _copy_list (const wave_collection * const original, wave_collection * const copy)
 {
     copy->_inner._list = wave_collection_copy (original->_inner._list);
+    _wave_collection_set_parent (copy->_inner._list, copy);
 }
 
 static inline void _copy_repetition (const wave_collection * const original, wave_collection * const copy)
@@ -349,16 +360,6 @@ void wave_collection_set_atom (wave_collection * const c, wave_atom * const a)
 {
     wave_collection_set_type (c, WAVE_COLLECTION_ATOM);
     c->_inner._atom = a;
-}
-
-static inline void _wave_collection_set_parent (wave_collection * const c, wave_collection * parent)
-{
-    wave_collection * current = c;
-    while (current != NULL)
-    {
-        current->_parent_collection = parent;
-        current = wave_collection_get_next (current);
-    }
 }
 
 static inline void _wave_collection_set_list (wave_collection * const c, wave_collection * list, wave_collection_type t)
