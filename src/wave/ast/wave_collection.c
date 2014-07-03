@@ -501,7 +501,6 @@ static inline void  _wave_collection_set_length (wave_collection * c)
         {
             wave_path *path = wave_collection_get_repetition_path(c);
             int path_length = 0;
-            wave_collection_access(c, path, &path_length);
             wave_coordinate_set_constant (repetition, path_length);
         }
         wave_coordinate_set_times (length, repetition, length_sum);
@@ -552,84 +551,22 @@ void wave_collection_compute_length_and_coords (wave_collection * c)
 // Interaction with paths.
 ////////////////////////////////////////////////////////////////////////////////
 
-static inline wave_collection * _access_collection_repeat_number (wave_collection * c, const wave_path * p)
-{
-    wave_collection * m = c;
-    for (int i = 0; m != NULL && i < p->_complex_move._repeat._number; ++i)
-        m = wave_collection_access (m, p->_complex_move._repeat._path, NULL);
-
-    return m;
-}
-
-static inline wave_collection * _access_collection_repeat_infinite (wave_collection * c, const wave_path * p, int * path_size)
-{
-    wave_collection * m = c;
-    wave_collection * next = m;
-    if( path_size != NULL )
-        * path_size = -1;
-
-    while (next != NULL)
-    {
-        if( path_size != NULL )
-            *path_size += 1;
-        m = next;
-        next = wave_collection_access (m, p->_complex_move._repeat._path, NULL);
-    }
-
-    return m;
-}
-
-static wave_collection * _access_collection (wave_collection * c, const wave_path * p, int * path_size)
-{
-    wave_collection * access = NULL;
-    wave_move_type m = wave_path_get_move (p);
-    if( path_size != NULL )
-        * path_size = 1;        // Case where the path is a single move
-    if (m == WAVE_MOVE_UP)
-        access = wave_collection_get_parent (c);
-    else if (m == WAVE_MOVE_DOWN)
-        access = wave_collection_get_down (c);
-    else if (m == WAVE_MOVE_PRE)
-        access = wave_collection_get_previous (c);
-    else if (m == WAVE_MOVE_SUC)
-        access = wave_collection_get_next (c);
-    else if (m == WAVE_MOVE_REP)
-    {
-        if (wave_path_get_repeat_type (p) == WAVE_PATH_REPEAT_CONSTANT){
-            access = _access_collection_repeat_number (c, p);
-
-            if(access == NULL){                  // The path is not correct !!!!
-                fprintf(stderr, "Error : wrong path.\nFor the sake of mankind the path below will not be followed.\nPath : ");
-                wave_path_fprint(stderr, p);
-                fprintf(stderr, "\n");
-                exit(1);
-            }
-            else{
-                if( path_size != NULL )
-                    * path_size = wave_path_get_repeat_number(p);
-            }
-        }
-        else{
-            access = _access_collection_repeat_infinite (c, p, path_size);
-            if(path_size != NULL){
-            }
-        }
-    }
-
-    if( path_size != NULL )
-        printf("access_collection %d\n", *path_size);
-
-    return access;
-}
-
 /**
- * \param recorded_path the last recorded path.
- * \param rewind_recording rewind_recording will_contain the rewind_recording_if not NULL
- * \param counting_all if true will count all the move and otherwise will only count the last recorded one
+ * \brief Follow the path and calculate the size in the same time with reversal and etc.
+ * \param c The starting collection where the path \c p begins.
+ * \param p The path to follow.
+ * \param recorded_path The path already recorded. Can be \c NULL.
+ * \param rewind_recording Only if a path is curently recording.
+ * \param counting_all True if all the moves must be counted, false if only the last recorded path must be counted.
+ * \param destination Return the pointer to the wave_collection where the path is pointing.
+ *
+ * This function follows the path and return all the informations you wanted.
+ * If you want the total size set counting_all to \c true.
+ * If you want the destination give to destination a pointer to a wave_collection pointer.
  */
 static int wave_follow_collection_with_extra_bonus(const wave_collection* c, const wave_path* p, wave_path* recorded_path, wave_path* rewind_recording, bool counting_all, const wave_collection** destination){
-    int size = 0;
 
+    int size = 0;
     const wave_path* internal_recorded_path = recorded_path;
 
     while(c != NULL && p != NULL){
@@ -701,6 +638,8 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
                     temp._next_path = NULL;
                     temp._previous_path = NULL;
                     int size_mv_part = wave_follow_collection_with_extra_bonus(c, part_pathq, recorded_path, &temp, true, &c);
+                    if(!counting_all)
+                        size = 0;
                     size += size_mv_part;
                     recorded_path = temp._next_path;
                     recorded_path->_previous_path = NULL;
@@ -752,8 +691,12 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
     return size;
 }
 
-int wave_collection_get_path_size(const wave_collection* c, const wave_path* path){
+int wave_collection_get_path_size_only_last_record(const wave_collection* c, const wave_path* path){
     return wave_follow_collection_with_extra_bonus(c, path, NULL, NULL, false, NULL);
+}
+
+int wave_collection_get_path_size(const wave_collection* c, const wave_path* path){
+    return wave_follow_collection_with_extra_bonus(c, path, NULL, NULL, true, NULL);
 }
 
 const wave_collection* wave_collection_get_collection_pointed(const wave_collection* c, const wave_path* path){
@@ -764,37 +707,7 @@ const wave_collection* wave_collection_get_collection_pointed(const wave_collect
 
 bool wave_collection_path_is_valid (wave_collection * c, const wave_path * p)
 {
-    return wave_collection_access (c, p, NULL) != NULL;
-}
-
-wave_collection * wave_collection_access (wave_collection * c, const wave_path * p, int * path_length)
-{
-    const wave_path * current_move = p;
-    wave_collection * current_collection = c;
-    int total_path_size;
-
-    if( path_length != NULL ){
-        total_path_size = *path_length;
-    }
-
-    while (current_move != NULL && current_collection != NULL)
-    {
-        if( path_length != NULL )
-            *path_length = 0;
-
-        current_collection = _access_collection (current_collection, current_move, path_length);
-
-        if( path_length != NULL )
-            total_path_size += *path_length;
-
-        current_move = wave_path_get_next (current_move);
-    }
-
-    if( path_length != NULL ){
-        *path_length = total_path_size;
-    }
-
-    return current_collection;
+    return wave_collection_get_collection_pointed (c, p) != NULL;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

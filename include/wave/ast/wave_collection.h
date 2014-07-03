@@ -556,17 +556,6 @@ void wave_collection_compute_length_and_coords (wave_collection * c);
  */
 bool wave_collection_path_is_valid (wave_collection * c, const wave_path * p);
 
-/**
- * \brief Access a collection following path.
- * \param c Collection.
- * \param p Path.
- * \param path_size A pointer to an int where to store the path length. Can be \c NULL if you don't need it.
- * \return The seeked collection, if valid.
- * \retval NULL if the path is not valid.
- * \relatesalso wave_collection
- */
-wave_collection * wave_collection_access (wave_collection * c, const wave_path * p, int * path_size);
-
 ////////////////////////////////////////////////////////////////////////////////
 // Printing.
 ////////////////////////////////////////////////////////////////////////////////
@@ -591,8 +580,28 @@ void wave_collection_print (const wave_collection * c);
  */
 void wave_collection_fprint_full_indexes (FILE * stream, const wave_collection * c);
 
+/*
+ * \brief Get the size of the last recorded path of the collection.
+ * \param c The collection to start with.
+ * \param path The path to follow.
+ * \return The size of the last recorded path.
+ */
+int wave_collection_get_path_size_only_last_record(const wave_collection* c, const wave_path* path);
+
+/**
+ * \brief Get the size of the entire path.
+ * \param c The collection to start with.
+ * \param path The path to follow.
+ * \return The size of the path followed.
+ */
 int wave_collection_get_path_size(const wave_collection* c, const wave_path* path);
 
+/**
+ * \brief Get the end collection following a path.
+ * \param c The collection to start with.
+ * \param path The path to follow.
+ * \return The collection at the end of the path.
+ */
 const wave_collection* wave_collection_get_collection_pointed(const wave_collection* c, const wave_path* path);
 
 #endif /* __WAVE_COLLECTION_H__ */
