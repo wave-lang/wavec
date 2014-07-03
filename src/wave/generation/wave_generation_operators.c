@@ -317,14 +317,14 @@ static void _binary (FILE * code_file, const wave_collection * collection, wave_
         wave_collection * left = wave_collection_get_previous (right);
         wave_collection_type tc_right = wave_collection_get_type (right);
         wave_collection_type tc_left = wave_collection_get_type (left);
+        wave_coordinate * c = wave_collection_get_coordinate (collection);
+        wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
         if (tc_right == WAVE_COLLECTION_ATOM && tc_left == WAVE_COLLECTION_ATOM)
         {
             wave_atom * a_right = wave_collection_get_atom (right);
             wave_atom * a_left = wave_collection_get_atom (left);
             wave_atom_type ta_right = wave_atom_get_type (a_right);
             wave_atom_type ta_left = wave_atom_get_type (a_left);
-            wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
-            wave_coordinate * c = wave_collection_get_coordinate (collection);
             if (ta_left == WAVE_ATOM_PATH || ta_left == WAVE_ATOM_OPERATOR
                 || ta_right == WAVE_ATOM_PATH || ta_right == WAVE_ATOM_OPERATOR)
             {
@@ -338,10 +338,20 @@ static void _binary (FILE * code_file, const wave_collection * collection, wave_
             }
             else
                 fun (code_file, c, ta_left, ta_right, indexes, op);
-            wave_int_list_free (indexes);
+        }
+        else if (tc_left == tc_right && tc_left == WAVE_COLLECTION_PAR)
+        {
+            fprintf (code_file, "wave_data_binary (& ");
+            _print_tab_minus (code_file, indexes, c, -2);
+            fprintf (code_file, ", & ");
+            _print_tab_minus (code_file, indexes, c, -1);
+            fprintf (code_file, ", & ");
+            wave_code_generation_fprint_tab_with_init(code_file, indexes, c, "");
+            fprintf (code_file, ", %s);\n", _operator_enum_strings[op]);
         }
         else
             _type_error (code_file);
+        wave_int_list_free (indexes);
     }
     else
         _operand_error (code_file);

@@ -387,6 +387,18 @@ static void (* _set_binary_same_types []) (const wave_data *, const wave_data *,
     [WAVE_DATA_UNKNOWN] = NULL,
 };
 
+static void _map_binary (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op)
+{
+    size_t size = left->_content._collection._size;
+    result->_type = WAVE_DATA_PAR;
+    result->_content._collection._tab = malloc (size * sizeof (wave_data));
+    result->_content._collection._size = size;
+    wave_data * tab_left = left->_content._collection._tab;
+    wave_data * tab_right = right->_content._collection._tab;
+    wave_data * tab_result = result->_content._collection._tab;
+    for (size_t i = 0; i < size; ++i)
+        wave_data_binary (& tab_left[i], & tab_right[i], & tab_result[i], op);
+}
 
 void wave_data_binary (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op)
 {
@@ -399,6 +411,18 @@ void wave_data_binary (const wave_data * left, const wave_data * right, wave_dat
 
         if (left_type == right_type)
                 _set_binary_same_types[left_type] (left, right, result, op);
+    }
+    else if (left_type == WAVE_DATA_PAR && right_type == WAVE_DATA_PAR)
+    {
+        size_t left_size = left->_content._collection._size;
+        size_t right_size = right->_content._collection._size;
+        if (left_size == right_size)
+            _map_binary (left, right, result, op);
+        else
+        {
+            _operator_type_error (left, right, op);
+            fprintf (stderr, "The two collections must be of the same size.\n");
+        }
     }
     else
         _operator_type_error (left, right, op);
