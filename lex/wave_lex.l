@@ -55,8 +55,8 @@ Boolean     True|False
 {Float}                                 yylval.Wave_float = wave_float_from_string(yytext); return Float_litteral;
 {Character}                             yylval.Wave_char = * (yytext + 1); return Char_litteral;
 {String}                                size_t length_string = strlen(yytext); yylval.Wave_string = calloc ( length_string - 1, sizeof(char) ); strncpy(yylval.Wave_string, yytext+1, length_string - 2); return String_litteral;
-"True"                                  yylval.Wave_bool = true; return Boolean_litteral;
-"False"                                 yylval.Wave_bool = false; return Boolean_litteral;
+"true"                                  yylval.Wave_bool = true; return Boolean_litteral;
+"false"                                 yylval.Wave_bool = false; return Boolean_litteral;
 "."                                     return Dot;
 "{||"                                   return Obrace_parallel;
 "{;"                                    return Obrace_sequential;
