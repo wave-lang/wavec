@@ -45,5 +45,6 @@ typedef struct wave_garbage_collector
 void * wave_garbage_alloc (size_t size);
 void wave_garbage_register (void * pointer);
 void wave_garbage_clean (void);
+void wave_garbage_destroy (void);
 
 #endif /* __WAVE_GARBAGE_H__ */

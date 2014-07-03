@@ -86,6 +86,8 @@ static inline void _current_phrase (FILE * output, wave_phrase * p, unsigned int
     file_cat (output, alloc_file);
     file_cat (output, code_file);
 
+    fprintf (output, "wave_garbage_clean ();\n");
+
     fclose (code_file);
     fclose (alloc_file);
     fprintf (output, "}\n");
@@ -109,6 +111,7 @@ static inline void wave_code_generation_generate(FILE* output_file, wave_phrase*
     fprintf (output_file, "int main(void)\n{\n");
     for (unsigned int i = 0; i < count; ++i)
         fprintf (output_file, "phrase_%d ();\n", i);
+    fprintf (output_file, "wave_garbage_destroy ();\n");
     fprintf (output_file, "return 0;\n}\n");
 }
 

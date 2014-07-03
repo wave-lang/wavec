@@ -36,6 +36,7 @@ static const char * const _WAVE_HEADERS_LIST[] =
     "stdio.h",
     "sysexits.h",
     "wave/common/wave_struct_def.h",
+    "wave/common/wave_garbage.h",
     NULL,
 };
 

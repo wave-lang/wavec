@@ -37,11 +37,11 @@ static struct wave_garbage_collector _WAVE_GC =
     ._size = 0, ._count = 0, ._pointers = NULL,
 };
 
-void * wave_garbage_alloc (size_t size)
+static inline void _reset_gc (void)
 {
-    void * new_memory = malloc (size);
-    wave_garbage_register (new_memory);
-    return new_memory;
+    _WAVE_GC._size = 0;
+    _WAVE_GC._count = 0;
+    _WAVE_GC._pointers = NULL;
 }
 
 static inline void _grow_gc (void)
@@ -53,6 +53,13 @@ static inline void _grow_gc (void)
         _WAVE_GC._pointers = new_list;
         _WAVE_GC._size = new_size;
     }
+}
+
+void * wave_garbage_alloc (size_t size)
+{
+    void * new_memory = malloc (size);
+    wave_garbage_register (new_memory);
+    return new_memory;
 }
 
 void wave_garbage_register (void * pointer)
@@ -68,4 +75,11 @@ void wave_garbage_clean (void)
     for (size_t i = 0; i < _WAVE_GC._count; ++i)
         free (_WAVE_GC._pointers[i]);
     _WAVE_GC._count = 0;
+}
+
+void wave_garbage_destroy (void)
+{
+    wave_garbage_clean ();
+    free (_WAVE_GC._pointers);
+    _reset_gc ();
 }

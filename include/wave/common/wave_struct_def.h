@@ -35,6 +35,7 @@
 
 #include "wave/common/wave_types.h"
 #include "wave/common/wave_operator.h"
+#include "wave/common/wave_garbage.h"
 
 /**
  * \class wave_data_type
