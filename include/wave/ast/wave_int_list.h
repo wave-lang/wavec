@@ -221,6 +221,15 @@ void wave_int_list_insert (wave_int_list * list, size_t i, int element);
 void wave_int_list_fprint (FILE * stream, const wave_int_list * list);
 
 /**
+ * \brief Print a wave_int_list to a stream (code generation version).
+ * \param stream Stream.
+ * \param list List.
+ * \relatesalso wave_int_list
+ * \warning \c list must be not \c NULL.
+ */
+void wave_int_list_code_fprint (FILE * stream, const wave_int_list * list);
+
+/**
  * \brief Print a wave_int_list to stdout.
  * \param list List.
  * \warning \c list must be not \c NULL.
