@@ -187,6 +187,26 @@ static void _bool (FILE * code_file, const wave_coordinate * c, wave_atom_type t
         _type_error (code_file);
 }
 
+static void _print_dynamic_unary (FILE * code_file, wave_int_list * indexes, wave_coordinate * c, wave_operator op)
+{
+    fprintf (code_file, "wave_data_unary (& ");
+    _print_tab_minus (code_file, indexes, c, -1);
+    fprintf (code_file, ", & ");
+    wave_code_generation_fprint_tab_with_init(code_file, indexes, c, "");
+    fprintf (code_file, ", %s);\n", _operator_enum_strings[op]);
+}
+
+static void _print_dynamic_binary (FILE * code_file, wave_int_list * indexes, wave_coordinate * c, wave_operator op)
+{
+    fprintf (code_file, "wave_data_binary (& ");
+    _print_tab_minus (code_file, indexes, c, -2);
+    fprintf (code_file, ", & ");
+    _print_tab_minus (code_file, indexes, c, -1);
+    fprintf (code_file, ", & ");
+    wave_code_generation_fprint_tab_with_init(code_file, indexes, c, "");
+    fprintf (code_file, ", %s);\n", _operator_enum_strings[op]);
+}
+
 static void _unary (FILE * code_file, const wave_collection * collection, wave_operator op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type, wave_int_list *, wave_operator))
 {
     if (wave_collection_has_previous (collection))
@@ -200,24 +220,12 @@ static void _unary (FILE * code_file, const wave_collection * collection, wave_o
             wave_atom * a = wave_collection_get_atom (previous);
             wave_atom_type ta = wave_atom_get_type (a);
             if (ta == WAVE_ATOM_OPERATOR || ta == WAVE_ATOM_PATH)
-            {
-                fprintf (code_file, "wave_data_unary (& ");
-                _print_tab_minus (code_file, indexes, c, -1);
-                fprintf (code_file, ", & ");
-                wave_code_generation_fprint_tab_with_init(code_file, indexes, c, "");
-                fprintf (code_file, ", %s);\n", _operator_enum_strings[op]);
-            }
+                _print_dynamic_unary (code_file, indexes, c, op);
             else
                 fun (code_file, c, ta, indexes, op);
         }
         else if (tc == WAVE_COLLECTION_PAR)
-        {
-            fprintf (code_file, "wave_data_unary (& ");
-            _print_tab_minus (code_file, indexes, c, -1);
-            fprintf (code_file, ", & ");
-            wave_code_generation_fprint_tab_with_init(code_file, indexes, c, "");
-            fprintf (code_file, ", %s);\n", _operator_enum_strings[op]);
-        }
+            _print_dynamic_unary (code_file, indexes, c, op);
         else
             _type_error (code_file);
         wave_int_list_free (indexes);
@@ -327,27 +335,29 @@ static void _binary (FILE * code_file, const wave_collection * collection, wave_
             wave_atom_type ta_left = wave_atom_get_type (a_left);
             if (ta_left == WAVE_ATOM_PATH || ta_left == WAVE_ATOM_OPERATOR
                 || ta_right == WAVE_ATOM_PATH || ta_right == WAVE_ATOM_OPERATOR)
-            {
-                fprintf (code_file, "wave_data_binary (& ");
-                _print_tab_minus (code_file, indexes, c, -2);
-                fprintf (code_file, ", & ");
-                _print_tab_minus (code_file, indexes, c, -1);
-                fprintf (code_file, ", & ");
-                wave_code_generation_fprint_tab_with_init(code_file, indexes, c, "");
-                fprintf (code_file, ", %s);\n", _operator_enum_strings[op]);
-            }
+                _print_dynamic_binary (code_file, indexes, c, op);
             else
                 fun (code_file, c, ta_left, ta_right, indexes, op);
         }
         else if (tc_left == tc_right && tc_left == WAVE_COLLECTION_PAR)
+            _print_dynamic_binary (code_file, indexes, c, op);
+        else if (tc_right == WAVE_COLLECTION_ATOM && tc_left == WAVE_COLLECTION_PAR)
         {
-            fprintf (code_file, "wave_data_binary (& ");
-            _print_tab_minus (code_file, indexes, c, -2);
-            fprintf (code_file, ", & ");
-            _print_tab_minus (code_file, indexes, c, -1);
-            fprintf (code_file, ", & ");
-            wave_code_generation_fprint_tab_with_init(code_file, indexes, c, "");
-            fprintf (code_file, ", %s);\n", _operator_enum_strings[op]);
+            wave_atom * a = wave_collection_get_atom (right);
+            wave_atom_type ta = wave_atom_get_type (a);
+            if (ta == WAVE_ATOM_PATH || ta == WAVE_ATOM_OPERATOR)
+                _print_dynamic_binary (code_file, indexes, c, op);
+            else
+                _type_error (code_file);
+        }
+        else if (tc_left == WAVE_COLLECTION_ATOM && tc_right == WAVE_COLLECTION_PAR)
+        {
+            wave_atom * a = wave_collection_get_atom (left);
+            wave_atom_type ta = wave_atom_get_type (a);
+            if (ta == WAVE_ATOM_PATH || ta == WAVE_ATOM_OPERATOR)
+                _print_dynamic_binary (code_file, indexes, c, op);
+            else
+                _type_error (code_file);
         }
         else
             _type_error (code_file);
