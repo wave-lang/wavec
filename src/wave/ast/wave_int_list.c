@@ -205,7 +205,13 @@ void wave_int_list_insert (wave_int_list * list, size_t i, int element)
 void wave_int_list_fprint (FILE * stream, const wave_int_list * list)
 {
     for (wave_int_list_element * e = list->_first; e != NULL; e = e->_next_element)
-        fprintf (stream, "%d", e->_content);
+        fprintf (stream, "%d ", e->_content);
+}
+
+void wave_int_list_code_fprint (FILE * stream, const wave_int_list * list)
+{
+    for (wave_int_list_element * e = list->_first; e != NULL; e = e->_next_element)
+        fprintf (stream, "_%d", e->_content);
 }
 
 void wave_int_list_print (const wave_int_list * list)

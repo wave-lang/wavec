@@ -127,7 +127,7 @@ static void wave_code_generation_print_sub_info (FILE * code_file, const wave_co
     fprintf (code_file, ";\n");
 
     wave_code_generation_fprint_tab_with_init(code_file, parent_index_list, collection_coordinate, "._content._collection._tab = wave_tab");
-    wave_int_list_fprint(code_file, collection_index_list);
+    wave_int_list_code_fprint(code_file, collection_index_list);
     fprintf (code_file, ";\n");
 
     wave_int_list_free(parent_index_list);
