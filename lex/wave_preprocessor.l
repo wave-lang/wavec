@@ -45,7 +45,11 @@ Boolean     True|False
 %x Definition Naming Be MacroDefinition Comment PREPROCESSOR
 
 %%
-<PREPROCESSOR,Definition,Naming,Be,MacroDefinition>"\n"                        ++nb_rows;
+<Definition,Naming,Be,MacroDefinition>"\n"                        ++nb_rows;
+<PREPROCESSOR>"\n"                                      {
+    ++nb_rows;
+    fprintf(yyout, "\n");
+}
 <PREPROCESSOR,Definition,Naming,Be,MacroDefinition>[ \t]
 <PREPROCESSOR>"Let "+                                   {
     printf("Let ligne %u\n", nb_rows);
