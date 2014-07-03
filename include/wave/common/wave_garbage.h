@@ -1,6 +1,6 @@
 /**
- * \file wave_headers.c
- * \brief Wave headers.
+ * \file wave_garbage.h
+ * \brief Wave garbage collector.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
  * \author SCHMITT Maxime
  * \date 2014
@@ -28,20 +28,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "wave/generation/wave_headers.h"
+#ifndef __WAVE_GARBAGE_H__
+#define __WAVE_GARBAGE_H__
 
-static const char * const _WAVE_HEADERS_LIST[] =
-{
-    "stdlib.h",
-    "stdio.h",
-    "sysexits.h",
-    "wave/common/wave_struct_def.h",
-    "wave/common/wave_garbage.h",
-    NULL,
-};
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
-void wave_code_generation_fprintf_headers (FILE * const stream)
+typedef struct wave_garbage_collector
 {
-    for (unsigned int i = 0; _WAVE_HEADERS_LIST[i] != NULL; ++i)
-        fprintf (stream, "#include <%s>\n", _WAVE_HEADERS_LIST[i]);
-}
+    size_t _size;
+    size_t _count;
+    void ** _pointers;
+} wave_garbage_collector;
+
+void * wave_garbage_alloc (size_t size);
+void wave_garbage_register (void * pointer);
+void wave_garbage_clean (void);
+void wave_garbage_destroy (void);
+
+#endif /* __WAVE_GARBAGE_H__ */

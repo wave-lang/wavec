@@ -205,7 +205,7 @@ static void _map_unary (const wave_data * operand, wave_data * result, wave_oper
 {
     size_t size = operand->_content._collection._size;
     result->_type = WAVE_DATA_PAR;
-    result->_content._collection._tab = malloc (size * sizeof (wave_data));
+    result->_content._collection._tab = wave_garbage_alloc (size * sizeof (wave_data));
     result->_content._collection._size = size;
     for (size_t i = 0; i < size; ++i)
         wave_data_unary (& operand->_content._collection._tab[i], & result->_content._collection._tab[i], op);
@@ -391,7 +391,7 @@ static void _map_binary (const wave_data * left, const wave_data * right, wave_d
 {
     size_t size = left->_content._collection._size;
     result->_type = WAVE_DATA_PAR;
-    result->_content._collection._tab = malloc (size * sizeof (wave_data));
+    result->_content._collection._tab = wave_garbage_alloc (size * sizeof (wave_data));
     result->_content._collection._size = size;
     wave_data * tab_left = left->_content._collection._tab;
     wave_data * tab_right = right->_content._collection._tab;
