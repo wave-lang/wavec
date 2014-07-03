@@ -127,6 +127,13 @@ static inline void _print_tab_minus (FILE * code_file, const wave_int_list * lis
     wave_coordinate_free (shifted);
 }
 
+static void _print_register_string (FILE * code_file, const wave_int_list * indexes, const wave_coordinate * c)
+{
+    fprintf (code_file, "wave_garbage_register (");
+    wave_generate_content_assignement (code_file, indexes, c, WAVE_ATOM_LITERAL_STRING);
+    fprintf (code_file, ");\n");
+}
+
 static inline void _print_operator_prelude (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, wave_operator op)
 {
     wave_generate_type_assignement (code_file, list, c, t);
@@ -161,6 +168,8 @@ static void _print_binary (FILE * code_file, const wave_int_list * list, const w
     _print_operator_prelude (code_file, list, c, destination, op);
     fprintf (code_file, " (");
     _print_args_binary (code_file, list, c, left, right);
+    if (destination == WAVE_ATOM_LITERAL_STRING)
+        _print_register_string (code_file, list, c);
 }
 
 static void _print_binary_char_string (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type destination, wave_atom_type left, wave_atom_type right, wave_operator op)
@@ -169,6 +178,8 @@ static void _print_binary_char_string (FILE * code_file, const wave_int_list * l
     fprintf (code_file, "_char_%s", left == WAVE_ATOM_LITERAL_CHAR ? "left" : "right");
     fprintf (code_file, " (");
     _print_args_binary (code_file, list, c, left, right);
+    if (destination == WAVE_ATOM_LITERAL_STRING)
+        _print_register_string (code_file, list, c);
 }
 
 static void _int_float_for_unary (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, wave_operator op)
@@ -280,6 +291,8 @@ static void _print_char_plus (FILE * code_file, const wave_int_list * indexes, c
     fprintf (code_file, " = wave_%s_%s", wave_generation_atom_type_string (WAVE_ATOM_LITERAL_CHAR), _operator_functions_strings[WAVE_OP_BINARY_PLUS]);
     fprintf (code_file, " (");
     _print_args_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_CHAR, WAVE_ATOM_LITERAL_CHAR);
+    _print_register_string (code_file, indexes, c);
+
 }
 
 static void _plus_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, wave_operator op)
@@ -291,7 +304,7 @@ static void _plus_for_binary (FILE * code_file, const wave_coordinate * c, wave_
             if (left == WAVE_ATOM_LITERAL_CHAR)
                 _print_char_plus (code_file, indexes, c);
             else
-            _print_binary (code_file, indexes, c, left, left, right, op);
+                _print_binary (code_file, indexes, c, left, left, right, op);
         }
         else
         {
