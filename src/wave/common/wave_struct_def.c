@@ -180,14 +180,26 @@ static bool _is_defined (wave_data_type t, wave_operator op)
     return _is_defined_tab (_defined_operators[t], op);
 }
 
+static void _operator_type_error (const wave_data * left, const wave_data * right, wave_operator op)
+{
+    fprintf (stderr, "Error: bad operator use.\noperator: ");
+    wave_operator_fprint (stderr, op);
+    fprintf (stderr, "\n%soperand: ", right == NULL ? "" : "left ");
+    wave_data_fprint (stderr, left);
+    if (right != NULL)
+    {
+        fprintf (stderr, "\nright operand: ");
+        wave_data_fprint (stderr, right);
+    }
+    fprintf (stderr, "\n");
+    exit (EX_DATAERR);
+}
+
 void wave_data_unary (const wave_data * operand, wave_data * result, wave_operator op)
 {
     wave_data_type t = wave_data_get_type (operand);
     if (! _is_defined (t, op))
-    {
-        fprintf (stderr, "Error, trying to use an operator on the wrong type.\n");
-        exit (EX_DATAERR);
-    }
+        _operator_type_error (operand, NULL, op);
 
     if (t == WAVE_DATA_INT)
     {
@@ -300,10 +312,7 @@ void wave_data_binary (const wave_data * left, const wave_data * right, wave_dat
     wave_data_type left_type = wave_data_get_type (left);
     wave_data_type right_type = wave_data_get_type (right);
     if (! _is_defined (left_type, op) || ! _is_defined (right_type, op))
-    {
-        fprintf (stderr, "Error, trying to use an operator on the wrong type.\n");
-        exit (EX_DATAERR);
-    }
+        _operator_type_error (left, right, op);
 
     if (left_type == right_type)
     {
