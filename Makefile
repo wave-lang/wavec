@@ -225,15 +225,14 @@ yacc_dir:
 
 install: main
 	@cp -R $(PATH_INCLUDE)/wave /usr/local/include/wave
-	@mkdir -p /usr/local/lib/wave
-	@cp -R $(PATH_LIB)/libwave.a /usr/local/lib/wave/libwave.a
+	@cp $(PATH_LIB)/libwave.a /usr/local/lib/libwave.a
 	@cp $(PATH_BIN)/wave2c /usr/local/bin/wave2c
 	@cp $(PATH_BIN)/wavepp /usr/local/bin/wavepp
 	@cp $(PATH_BIN)/wavec /usr/local/bin/wavec
 
 uninstall:
-	@rm -rf /usr/local/lib/wave
 	@rm -rf /usr/local/include/wave
+	@rm -f /usr/local/lib/libwave.a
 	@rm -f /usr/local/bin/wave2c /usr/local/bin/wavepp /usr/local/bin/wavec
 
 ################################################################################
