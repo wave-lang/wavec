@@ -201,6 +201,16 @@ static void _operator_type_error (const wave_data * left, const wave_data * righ
     exit (EX_DATAERR);
 }
 
+static void _map_unary (const wave_data * operand, wave_data * result, wave_operator op)
+{
+    size_t size = operand->_content._collection._size;
+    result->_type = WAVE_DATA_PAR;
+    result->_content._collection._tab = malloc (size * sizeof (wave_data));
+    result->_content._collection._size = size;
+    for (size_t i = 0; i < size; ++i)
+        wave_data_unary (& operand->_content._collection._tab[i], & result->_content._collection._tab[i], op);
+}
+
 void wave_data_unary (const wave_data * operand, wave_data * result, wave_operator op)
 {
     wave_data_type t = wave_data_get_type (operand);
@@ -222,6 +232,8 @@ void wave_data_unary (const wave_data * operand, wave_data * result, wave_operat
         else if (t == WAVE_DATA_BOOL)
             wave_data_set_bool (result, wave_bool_not (operand->_content._bool));
     }
+    else if (t == WAVE_DATA_PAR)
+        _map_unary (operand, result, op);
     else
         _operator_type_error (operand, NULL, op);
 

@@ -210,6 +210,16 @@ static void _unary (FILE * code_file, const wave_collection * collection, wave_o
             else
                 fun (code_file, c, ta, indexes, op);
         }
+        else if (tc == WAVE_COLLECTION_PAR)
+        {
+            fprintf (code_file, "wave_data_unary (& ");
+            _print_tab_minus (code_file, indexes, c, -1);
+            fprintf (code_file, ", & ");
+            wave_code_generation_fprint_tab_with_init(code_file, indexes, c, "");
+            fprintf (code_file, ", %s);\n", _operator_enum_strings[op]);
+        }
+        else
+            _type_error (code_file);
         wave_int_list_free (indexes);
     }
     else
@@ -330,6 +340,8 @@ static void _binary (FILE * code_file, const wave_collection * collection, wave_
                 fun (code_file, c, ta_left, ta_right, indexes, op);
             wave_int_list_free (indexes);
         }
+        else
+            _type_error (code_file);
     }
     else
         _operand_error (code_file);
