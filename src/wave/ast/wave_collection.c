@@ -645,23 +645,29 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
                     temp._previous_path = NULL;
 
                     for(int i = 0; type == WAVE_PATH_REPEAT_CONSTANT && i < nb_times || type == WAVE_PATH_REPEAT_INFINITE && c != NULL; i++){
-                        temp_save = c;
+                        temp_save = c;      // Save for infinite repetition. If c is null get this one as last move possible.
+
                         if(wave_path_get_move(repeated_path) == WAVE_MOVE_PART)
                             size_rep = wave_follow_collection_with_extra_bonus(c, repeated_path, recorded_path, &temp, counting_all, &c);
                         else
                             size_rep = wave_follow_collection_with_extra_bonus(c, repeated_path, recorded_path, rewind_recording, counting_all, &c);
 
-                        if(!counting_all)
-                            size = 0;
-                        size += size_rep;
-
-                        if(type == WAVE_PATH_REPEAT_INFINITE && c == NULL){
-                            if(wave_path_get_move(repeated_path) == WAVE_MOVE_PART){
-                                wave_path_free(temp._next_path);
+                        if(type == WAVE_PATH_REPEAT_CONSTANT || type == WAVE_PATH_REPEAT_INFINITE && c != NULL){ // If the path is constant and the infinite repeat did not find the end.
+                            if( counting_all )
+                                size += size_rep;
+                            else{
+                                if(wave_path_get_move(repeated_path) == WAVE_MOVE_PART){ // Add only if the repeat is an record path and set to zero if repeted
+                                    size = 0;
+                                    size += size_rep;
+                                }
                             }
                         }
-                        else{
-                            if(wave_path_get_move(repeated_path) == WAVE_MOVE_PART){
+
+                        if(wave_path_get_move(repeated_path) == WAVE_MOVE_PART){
+                            if(type == WAVE_PATH_REPEAT_INFINITE && c == NULL){
+                                wave_path_free(temp._next_path);
+                            }
+                            else{
                                 if(recorded_path != internal_recorded_path)
                                     wave_path_free(recorded_path);
                                 if(rewind_recording != NULL)        // Case where the upper function is recording also. Add then a copy of what whe recorded when the recursive call happened
