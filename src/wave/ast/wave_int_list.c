@@ -94,6 +94,28 @@ bool wave_int_list_is_empty (const wave_int_list * list)
     return list->_first == NULL;
 }
 
+int wave_int_list_compare (const wave_int_list * a, const wave_int_list * b)
+{
+    size_t a_size = wave_int_list_size (a);
+    size_t b_size = wave_int_list_size (b);
+    size_t max_size = a_size > b_size ? b_size : a_size;
+
+    wave_int_list_element * a_element = a->_first;
+    wave_int_list_element * b_element = b->_first;
+
+    int comparison = 0;
+    for (size_t i = 0; comparison == 0 && i < max_size; ++i)
+    {
+        wave_int a_content = a_e->content;
+        wave_int b_content = a_b->content;
+        comparison = a_content > b_content ? 1 : a_content < b_content ? -1 : 0;
+        a_element = a_element->_next_element;
+        b_element = b_element->_next_element;
+    }
+
+    return comparison;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Modifiers.
 ////////////////////////////////////////////////////////////////////////////////

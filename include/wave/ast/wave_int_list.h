@@ -157,6 +157,18 @@ size_t wave_int_list_size (const wave_int_list * list);
  */
 bool wave_int_list_is_empty (const wave_int_list * list);
 
+/**
+ * \brief Compare two wave_int_list.
+ * \param a First list.
+ * \param b Second list.
+ * \retval -1 if \c a is lower than \c b.
+ * \retval 0 if \c a is equals to \c b.
+ * \retval 1 if \c a is greater than \c b.
+ * \relatesalso wave_int_list
+ * \warning neither \c a or \c b must be \c NULL.
+ */
+int wave_int_list_compare (const wave_int_list * a, const wave_int_list * b);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Modifiers.
 ////////////////////////////////////////////////////////////////////////////////
