@@ -622,10 +622,6 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
                     if(counting_all)
                         size += size_rewind;
                 }
-                else{
-                    fprintf(stderr, "Found a rewind without a previous recorded path");
-                    return -1;
-                }
                 break;
 
             case WAVE_MOVE_REP:
@@ -668,7 +664,8 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
                                 if(recorded_path != internal_recorded_path)
                                     wave_path_free(recorded_path);
                                 recorded_path = temp._next_path;
-                                recorded_path->_previous_path = NULL;
+                                if(recorded_path != NULL)
+                                    recorded_path->_previous_path = NULL;
                                 temp._next_path = NULL;
                             }
                             if(rewind_recording != NULL)        // Case where the upper function is recording also. Add then a copy of what whe recorded when the recursive call happened
@@ -697,7 +694,8 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
                         wave_path_add_path(rewind_recording, wave_path_copy(temp._next_path));
 
                     recorded_path = temp._next_path;
-                    recorded_path->_previous_path = NULL;
+                    if(recorded_path != NULL)
+                        recorded_path->_previous_path = NULL;
                 }
                 break;
 
