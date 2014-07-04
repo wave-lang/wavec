@@ -50,4 +50,14 @@ const char * wave_generation_atom_type_string (wave_atom_type t);
 
 const char * wave_generation_atom_type_data_string (wave_atom_type t);
 
+void fprintf_closing_curly (FILE * stream, unsigned long long int number);
+
+void wave_generate_stack_curly (void);
+
+void wave_generate_flush_curly (FILE * stream);
+
+unsigned long long int wave_generate_backup_curly (void);
+
+void wave_generate_restore_curly (unsigned long long int count);
+
 #endif /* __WAVE_GENERATION_COMMON_H__ */

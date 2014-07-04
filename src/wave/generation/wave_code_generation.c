@@ -152,8 +152,11 @@ void wave_code_generation_collection(FILE* code_file, FILE * alloc_file, const w
 }
 
 static void wave_code_generation_collection_seq(FILE* code_file, FILE * alloc_file, const wave_collection* collection){
+    unsigned long long int curly_backup = wave_generate_backup_curly ();
     wave_code_generation_alloc_collection_tab(alloc_file, collection);
     wave_code_generation_collection(code_file, alloc_file, wave_collection_get_list(collection) );
+    wave_generate_flush_curly (code_file);
+    wave_generate_restore_curly (curly_backup);
 }
 
 static inline void _fprintf_closing_curly (FILE * stream, unsigned int number)
@@ -163,12 +166,15 @@ static inline void _fprintf_closing_curly (FILE * stream, unsigned int number)
 }
 
 static void wave_code_generation_collection_par(FILE* code_file, FILE * alloc_file, const wave_collection* collection){
+    unsigned long long int curly_backup = wave_generate_backup_curly ();
     fprintf(code_file, "#pragma omp parallel\n{\n");
     fprintf(code_file, "#pragma omp sections\n{\n");
     wave_code_generation_alloc_collection_tab(alloc_file, collection);
     fprintf(code_file, "#pragma omp section\n{\n");
     wave_code_generation_collection(code_file, alloc_file, wave_collection_get_list(collection) );
     _fprintf_closing_curly (code_file, 3);
+    wave_generate_flush_curly (code_file);
+    wave_generate_restore_curly (curly_backup);
 }
 
 static void wave_code_generation_collection_rep_seq(FILE* code_file, FILE * alloc_file, const wave_collection* collection){

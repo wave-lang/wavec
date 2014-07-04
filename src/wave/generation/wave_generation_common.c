@@ -31,6 +31,8 @@
  */
 #include "wave/generation/wave_generation_common.h"
 
+static unsigned long long int _curly_count = 0;
+
 const char * const _atom_type_strings[] =
 {
     [WAVE_ATOM_LITERAL_INT] = "int",
@@ -96,4 +98,31 @@ const char * wave_generation_atom_type_string (wave_atom_type t)
 const char * wave_generation_atom_type_data_string (wave_atom_type t)
 {
     return _atom_type_data_strings[t];
+}
+
+void fprintf_closing_curly (FILE * stream, unsigned long long int number)
+{
+    for (unsigned long long int i = 0; i < number; ++i)
+        fprintf (stream, "}\n");
+}
+
+void wave_generate_stack_curly (void)
+{
+    _curly_count++;
+}
+
+void wave_generate_flush_curly (FILE * stream)
+{
+    fprintf_closing_curly (stream, _curly_count);
+    _curly_count = 0;
+}
+
+unsigned long long int wave_generate_backup_curly (void)
+{
+    return _curly_count;
+}
+
+void wave_generate_restore_curly (unsigned long long int count)
+{
+    _curly_count = count;
 }
