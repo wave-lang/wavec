@@ -371,7 +371,11 @@ static inline void _set_binary_both_string (const wave_data * left, const wave_d
     if (_operator_is_test (op))
         wave_data_set_bool (result, _binary_string_to_bool[op] (left_value, right_value));
     else
+    {
         wave_data_set_string (result, _binary_string[op] (left_value, right_value));
+        wave_garbage_register (result->_content._string);
+
+    }
 }
 
 static void (* _set_binary_same_types []) (const wave_data *, const wave_data *, wave_data *, wave_operator) =
@@ -400,6 +404,46 @@ static void _map_binary (const wave_data * left, const wave_data * right, wave_d
         wave_data_binary (& tab_left[i], & tab_right[i], & tab_result[i], op);
 }
 
+static void _set_binary_int_float (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op)
+{
+    wave_data_type left_type = wave_data_get_type (left);
+    wave_data_type right_type = wave_data_get_type (right);
+    wave_float left_float = left_type == WAVE_DATA_FLOAT ? left->_content._float : left->_content._int;
+    wave_float right_float = right_type == WAVE_DATA_FLOAT ? right->_content._float : right->_content._int;
+    if (_operator_is_test (op))
+        wave_data_set_bool (result, _binary_float_to_bool[op] (left_float, right_float));
+    else
+        wave_data_set_float (result, _binary_float[op] (left_float, right_float));
+}
+
+static void _set_binary_char_string_aux (const_wave_string left, const_wave_string right, wave_data * result, wave_operator op)
+{
+    if (_operator_is_test (op))
+        wave_data_set_bool (result, _binary_string[op] (left, right));
+    else
+    {
+        wave_data_set_string (result, _binary_string[op] (left, right));
+        wave_garbage_register (result->_content._string);
+    }
+}
+
+static void _set_binary_char_string (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op)
+{
+    if (wave_data_get_type (left) == WAVE_DATA_CHAR)
+    {
+        wave_char left_string[] = { left->_content._char, '\0' };
+        wave_string right_string = right->_content._string;
+        _set_binary_char_string_aux (left_string, right_string, result, op);
+    }
+    else
+    {
+        wave_string left_string = left->_content._string;
+        wave_char right_string[] = { right->_content._char, '\0' };
+        _set_binary_char_string_aux (left_string, right_string, result, op);
+    }
+}
+
+
 void wave_data_binary (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op)
 {
     wave_data_type left_type = wave_data_get_type (left);
@@ -410,7 +454,13 @@ void wave_data_binary (const wave_data * left, const wave_data * right, wave_dat
             _operator_type_error (left, right, op);
 
         if (left_type == right_type)
-                _set_binary_same_types[left_type] (left, right, result, op);
+            _set_binary_same_types[left_type] (left, right, result, op);
+        else if ((left_type == WAVE_DATA_FLOAT && right_type == WAVE_DATA_INT)
+            || (left_type == WAVE_DATA_INT && right_type == WAVE_DATA_FLOAT))
+            _set_binary_int_float (left, right, result, op);
+        else if ((left_type == WAVE_DATA_CHAR && right_type == WAVE_DATA_STRING)
+            || (left_type == WAVE_DATA_STRING && right_type == WAVE_DATA_CHAR))
+            _set_binary_char_string (left, right, result, op);
     }
     else if (left_type == WAVE_DATA_PAR && right_type == WAVE_DATA_PAR)
     {
