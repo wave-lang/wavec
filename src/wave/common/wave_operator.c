@@ -44,6 +44,8 @@ static char * _operator_characters[] =
     [WAVE_OP_UNARY_EXP] = "exp",
     [WAVE_OP_UNARY_CEIL] = "ceil",
     [WAVE_OP_UNARY_FLOOR] = "floor",
+    [WAVE_OP_UNARY_CHR] = "chr",
+    [WAVE_OP_UNARY_CODE] = "code",
     [WAVE_OP_BINARY_PLUS] = "+",
     [WAVE_OP_BINARY_MINUS] = "-",
     [WAVE_OP_BINARY_MIN] = "min",
@@ -67,6 +69,26 @@ static char * _operator_characters[] =
     [WAVE_OP_SPECIFIC_PRINT] = "print",
     [WAVE_OP_UNKNOWN] = "",
 };
+
+bool wave_operator_is_test (wave_operator op)
+{
+    return op >= WAVE_OP_BINARY_EQUALS && op <= WAVE_OP_BINARY_LESSER;
+}
+
+bool wave_operator_is_unary (wave_operator op)
+{
+    return op >= WAVE_OP_UNARY_PLUS && op <= WAVE_OP_UNARY_CODE;
+}
+
+bool wave_operator_is_binary (wave_operator op)
+{
+    return op >= WAVE_OP_BINARY_PLUS && op <= WAVE_OP_BINARY_GET;
+}
+
+bool wave_operator_is_specific (wave_operator op)
+{
+    return op >= WAVE_OP_SPECIFIC_ATOM && op <= WAVE_OP_SPECIFIC_PRINT;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Printing.

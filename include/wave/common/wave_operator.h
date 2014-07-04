@@ -33,6 +33,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 /**
  * \brief Wave operators.
@@ -40,41 +41,51 @@
  */
 typedef enum wave_operator
 {
-    WAVE_OP_UNARY_PLUS = 0,             /**<- Unary plus. */
-    WAVE_OP_UNARY_MINUS,                /**<- Unary minus. */
-    WAVE_OP_UNARY_INCREMENT,            /**<- Increment. */
-    WAVE_OP_UNARY_DECREMENT,            /**<- Decrement. */
-    WAVE_OP_UNARY_SQRT,                 /**<- Square root. */
-    WAVE_OP_UNARY_SIN,                  /**<- Sinus. */
-    WAVE_OP_UNARY_COS,                  /**<- Cosinus. */
-    WAVE_OP_UNARY_NOT,                  /**<- Not. */
-    WAVE_OP_UNARY_LOG,                  /**<- Logarithm. */
-    WAVE_OP_UNARY_EXP,                  /**<- Exponential. */
-    WAVE_OP_UNARY_CEIL,                 /**<- Ceilling. */
-    WAVE_OP_UNARY_FLOOR,                /**<- Floor. */
-    WAVE_OP_BINARY_PLUS,                /**<- Binary plus. */
-    WAVE_OP_BINARY_MINUS,               /**<- Binary minus. */
-    WAVE_OP_BINARY_MIN,                 /**<- Minimum. */
-    WAVE_OP_BINARY_MAX,                 /**<- Maximum. */
-    WAVE_OP_BINARY_TIMES,               /**<- Times. */
-    WAVE_OP_BINARY_DIVIDE,              /**<- Divide. */
-    WAVE_OP_BINARY_MOD,                 /**<- Mod. */
-    WAVE_OP_BINARY_EQUALS,              /**<- Equals. */
-    WAVE_OP_BINARY_DIFFERS,             /**<- Differs. */
-    WAVE_OP_BINARY_LESSER_OR_EQUALS,    /**<- Lesser than or equals. */
-    WAVE_OP_BINARY_GREATER_OR_EQUALS,   /**<- Greater than or equals. */
-    WAVE_OP_BINARY_GREATER,             /**<- Greater than. */
-    WAVE_OP_BINARY_LESSER,              /**<- Lesser than. */
-    WAVE_OP_BINARY_AND,                 /**<- And. */
-    WAVE_OP_BINARY_OR,                  /**<- Or. */
-    WAVE_OP_BINARY_GET,                 /**<- Get. */
-    WAVE_OP_SPECIFIC_ATOM,              /**<- Atom. */
-    WAVE_OP_SPECIFIC_STOP,              /**<- Stop. */
-    WAVE_OP_SPECIFIC_CUT,               /**<- Cut. */
-    WAVE_OP_SPECIFIC_READ,              /**<- Read. */
-    WAVE_OP_SPECIFIC_PRINT,             /**<- Print. */
-    WAVE_OP_UNKNOWN,                    /**<- Unknown. */
+    WAVE_OP_UNARY_PLUS = 0,             /**< Unary plus. */
+    WAVE_OP_UNARY_MINUS,                /**< Unary minus. */
+    WAVE_OP_UNARY_INCREMENT,            /**< Increment. */
+    WAVE_OP_UNARY_DECREMENT,            /**< Decrement. */
+    WAVE_OP_UNARY_SQRT,                 /**< Square root. */
+    WAVE_OP_UNARY_SIN,                  /**< Sinus. */
+    WAVE_OP_UNARY_COS,                  /**< Cosinus. */
+    WAVE_OP_UNARY_NOT,                  /**< Not. */
+    WAVE_OP_UNARY_LOG,                  /**< Logarithm. */
+    WAVE_OP_UNARY_EXP,                  /**< Exponential. */
+    WAVE_OP_UNARY_CEIL,                 /**< Ceilling. */
+    WAVE_OP_UNARY_FLOOR,                /**< Floor. */
+    WAVE_OP_UNARY_CHR,                  /**< Chr. */
+    WAVE_OP_UNARY_CODE,                 /**< Code. */
+    WAVE_OP_BINARY_PLUS,                /**< Binary plus. */
+    WAVE_OP_BINARY_MINUS,               /**< Binary minus. */
+    WAVE_OP_BINARY_MIN,                 /**< Minimum. */
+    WAVE_OP_BINARY_MAX,                 /**< Maximum. */
+    WAVE_OP_BINARY_TIMES,               /**< Times. */
+    WAVE_OP_BINARY_DIVIDE,              /**< Divide. */
+    WAVE_OP_BINARY_MOD,                 /**< Mod. */
+    WAVE_OP_BINARY_EQUALS,              /**< Equals. */
+    WAVE_OP_BINARY_DIFFERS,             /**< Differs. */
+    WAVE_OP_BINARY_LESSER_OR_EQUALS,    /**< Lesser than or equals. */
+    WAVE_OP_BINARY_GREATER_OR_EQUALS,   /**< Greater than or equals. */
+    WAVE_OP_BINARY_GREATER,             /**< Greater than. */
+    WAVE_OP_BINARY_LESSER,              /**< Lesser than. */
+    WAVE_OP_BINARY_AND,                 /**< And. */
+    WAVE_OP_BINARY_OR,                  /**< Or. */
+    WAVE_OP_BINARY_GET,                 /**< Get. */
+    WAVE_OP_SPECIFIC_ATOM,              /**< Atom. */
+    WAVE_OP_SPECIFIC_STOP,              /**< Stop. */
+    WAVE_OP_SPECIFIC_CUT,               /**< Cut. */
+    WAVE_OP_SPECIFIC_READ,              /**< Read. */
+    WAVE_OP_SPECIFIC_PRINT,             /**< Print. */
+    WAVE_OP_UNKNOWN,                    /**< Unknown. */
 } wave_operator;
+
+bool wave_operator_is_test (wave_operator op);
+
+bool wave_operator_is_unary (wave_operator op);
+
+bool wave_operator_is_binary (wave_operator op);
+
+bool wave_operator_is_specific (wave_operator op);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Printing.

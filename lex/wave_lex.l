@@ -86,6 +86,8 @@ log                                     return Log;
 exp                                     return Exp;
 ceil                                    return Ceil;
 floor                                   return Floor;
+chr                                     return Chr;
+code                                    return Code;
 "+"                                     return Plus;
 "-"                                     return Minus;
 min                                     return Min;

@@ -43,7 +43,7 @@
  * \see wave_types.h
  */
 typedef enum wave_data_type{
-    WAVE_DATA_INT = 0,          /**< A integer value */
+    WAVE_DATA_INT = 0,          /**< An integer value */
     WAVE_DATA_FLOAT,            /**< A floating point value */
     WAVE_DATA_CHAR,             /**< A character value */
     WAVE_DATA_STRING,           /**< A string value */
@@ -114,6 +114,8 @@ wave_bool wave_data_get_bool (const wave_data * data);
 void wave_data_unary (const wave_data * operand, wave_data * result, wave_operator op);
 
 void wave_data_binary (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op);
+
+wave_bool wave_data_is_atom (const wave_data * data);
 
 static inline int wave_data_get_collection_size(wave_data* data){
     if(data->_type == WAVE_DATA_SEQ || data->_type == WAVE_DATA_PAR)

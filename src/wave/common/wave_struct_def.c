@@ -32,8 +32,7 @@
 
 static inline bool _is_constant (wave_data_type t)
 {
-    return t == WAVE_DATA_INT || t == WAVE_DATA_FLOAT || t == WAVE_DATA_CHAR
-        || t == WAVE_DATA_STRING || t == WAVE_DATA_BOOL;
+    return t >= WAVE_DATA_INT && t <= WAVE_DATA_BOOL;
 }
 
 wave_data_type wave_data_get_type (const wave_data * const data)
@@ -151,7 +150,8 @@ static const wave_operator _int_defined [] =
     WAVE_OP_UNARY_PLUS, WAVE_OP_UNARY_MINUS, WAVE_OP_UNARY_INCREMENT,
     WAVE_OP_UNARY_DECREMENT, WAVE_OP_UNARY_SQRT, WAVE_OP_UNARY_SIN,
     WAVE_OP_UNARY_COS, WAVE_OP_UNARY_LOG, WAVE_OP_UNARY_EXP, WAVE_OP_UNARY_CEIL,
-    WAVE_OP_UNARY_FLOOR, WAVE_OP_BINARY_PLUS, WAVE_OP_BINARY_MINUS,
+    WAVE_OP_UNARY_FLOOR, WAVE_OP_UNARY_CHR,
+    WAVE_OP_BINARY_PLUS, WAVE_OP_BINARY_MINUS,
     WAVE_OP_BINARY_MIN, WAVE_OP_BINARY_MAX, WAVE_OP_BINARY_TIMES,
     WAVE_OP_BINARY_DIVIDE, WAVE_OP_BINARY_MOD, WAVE_OP_BINARY_EQUALS,
     WAVE_OP_BINARY_DIFFERS, WAVE_OP_BINARY_LESSER_OR_EQUALS,
@@ -176,6 +176,7 @@ static const wave_operator _float_defined [] =
 
 static const wave_operator _char_defined [] =
 {
+    WAVE_OP_UNARY_CODE,
     WAVE_OP_BINARY_PLUS, WAVE_OP_BINARY_MIN, WAVE_OP_BINARY_MAX,
     WAVE_OP_BINARY_EQUALS, WAVE_OP_BINARY_DIFFERS,
     WAVE_OP_BINARY_LESSER_OR_EQUALS, WAVE_OP_BINARY_GREATER_OR_EQUALS,
@@ -257,31 +258,39 @@ static void _map_unary (const wave_data * const operand, wave_data * const resul
 
 void wave_data_unary (const wave_data * const operand, wave_data * const result, wave_operator op)
 {
-    wave_data_type t = wave_data_get_type (operand);
-    if (_is_constant (t))
+    if (op != WAVE_OP_SPECIFIC_ATOM)
     {
-        if (! _is_defined (t, op))
-            _operator_type_error (operand, NULL, op);
-
-        if (t == WAVE_DATA_INT)
+        wave_data_type t = wave_data_get_type (operand);
+        if (_is_constant (t))
         {
-            wave_int int_value = wave_data_get_int (operand);
-            if (op == WAVE_OP_UNARY_PLUS || op == WAVE_OP_UNARY_MINUS
-                || op == WAVE_OP_UNARY_INCREMENT || op == WAVE_OP_UNARY_DECREMENT)
-                wave_data_set_int (result, _unary_int_to_int[op] (int_value));
-            else
-                wave_data_set_float (result, _unary_int_to_float[op] (int_value));
-        }
-        else if (t == WAVE_DATA_FLOAT)
-            wave_data_set_float (result, _unary_float_to_float[op] (wave_data_get_float (operand)));
-        else if (t == WAVE_DATA_BOOL)
-            wave_data_set_bool (result, wave_bool_not (wave_data_get_bool (operand)));
-    }
-    else if (t == WAVE_DATA_PAR)
-        _map_unary (operand, result, op);
-    else
-        _operator_type_error (operand, NULL, op);
+            if (! _is_defined (t, op))
+                _operator_type_error (operand, NULL, op);
 
+            if (t == WAVE_DATA_INT)
+            {
+                wave_int int_value = wave_data_get_int (operand);
+                if (op == WAVE_OP_UNARY_PLUS || op == WAVE_OP_UNARY_MINUS
+                    || op == WAVE_OP_UNARY_INCREMENT || op == WAVE_OP_UNARY_DECREMENT)
+                    wave_data_set_int (result, _unary_int_to_int[op] (int_value));
+                else if (op == WAVE_OP_UNARY_CHR)
+                    wave_data_set_char (result, wave_int_chr (int_value));
+                else
+                    wave_data_set_float (result, _unary_int_to_float[op] (int_value));
+            }
+            else if (t == WAVE_DATA_FLOAT)
+                wave_data_set_float (result, _unary_float_to_float[op] (wave_data_get_float (operand)));
+            else if (t == WAVE_DATA_BOOL)
+                wave_data_set_bool (result, wave_bool_not (wave_data_get_bool (operand)));
+            else if (t == WAVE_DATA_CHAR)
+                wave_data_set_int (result, wave_char_code (wave_data_get_char (operand)));
+        }
+        else if (t == WAVE_DATA_PAR)
+            _map_unary (operand, result, op);
+        else
+            _operator_type_error (operand, NULL, op);
+    }
+    else
+        wave_data_set_bool (result, wave_data_is_atom (operand));
 }
 
 static wave_int (* const _binary_int []) (wave_int, wave_int) =
@@ -365,13 +374,6 @@ static wave_bool (* const _binary_bool []) (wave_bool, wave_bool) =
     [WAVE_OP_BINARY_OR] = wave_bool_or,
 };
 
-static inline bool _operator_is_test (wave_operator op)
-{
-    return op == WAVE_OP_BINARY_EQUALS || op == WAVE_OP_BINARY_DIFFERS
-        || op == WAVE_OP_BINARY_LESSER_OR_EQUALS || op == WAVE_OP_BINARY_GREATER
-        || op == WAVE_OP_BINARY_GREATER_OR_EQUALS || op == WAVE_OP_BINARY_LESSER;
-}
-
 static inline void _set_binary_both_bool (const wave_data * const left, const wave_data * const right, wave_data * const result, wave_operator op)
 {
     wave_bool left_value = wave_data_get_bool (left);
@@ -383,7 +385,7 @@ static inline void _set_binary_both_int (const wave_data * const left, const wav
 {
     wave_int left_value = wave_data_get_int (left);
     wave_int right_value = wave_data_get_int (right);
-    if (_operator_is_test (op))
+    if (wave_operator_is_test (op))
         wave_data_set_bool (result, _binary_int_to_bool[op] (left_value, right_value));
     else
         wave_data_set_int (result, _binary_int[op] (left_value, right_value));
@@ -393,7 +395,7 @@ static inline void _set_binary_both_float (const wave_data * const left, const w
 {
     wave_float left_value = wave_data_get_float (left);
     wave_float right_value = wave_data_get_float (right);
-    if (_operator_is_test (op))
+    if (wave_operator_is_test (op))
         wave_data_set_bool (result, _binary_float_to_bool[op] (left_value, right_value));
     else
         wave_data_set_float (result, _binary_float[op] (left_value, right_value));
@@ -403,7 +405,7 @@ static inline void _set_binary_both_char (const wave_data * const left, const wa
 {
     wave_char left_value = wave_data_get_char (left);
     wave_char right_value = wave_data_get_char (right);
-    if (_operator_is_test (op))
+    if (wave_operator_is_test (op))
         wave_data_set_bool (result, _binary_char_to_bool[op] (left_value, right_value));
     else if (op == WAVE_OP_BINARY_PLUS)
         wave_data_set_string (result, wave_char_binary_plus (left_value, right_value));
@@ -415,7 +417,7 @@ static inline void _set_binary_both_string (const wave_data * const left, const 
 {
     wave_string left_value = wave_data_get_string (left);
     wave_string right_value = wave_data_get_string (right);
-    if (_operator_is_test (op))
+    if (wave_operator_is_test (op))
         wave_data_set_bool (result, _binary_string_to_bool[op] (left_value, right_value));
     else
     {
@@ -458,7 +460,7 @@ static void _set_binary_int_float (const wave_data * const left, const wave_data
 {
     wave_float left_value = wave_data_get_float (left);
     wave_float right_value = wave_data_get_float (right);
-    if (_operator_is_test (op))
+    if (wave_operator_is_test (op))
         wave_data_set_bool (result, _binary_float_to_bool[op] (left_value, right_value));
     else
         wave_data_set_float (result, _binary_float[op] (left_value, right_value));
@@ -468,7 +470,7 @@ static void _set_binary_char_string (const wave_data * const left, const wave_da
 {
     wave_string left_value = wave_data_get_string (left);
     wave_string right_value = wave_data_get_string (right);
-    if (_operator_is_test (op))
+    if (wave_operator_is_test (op))
         wave_data_set_bool (result, _binary_string[op] (left_value, right_value));
     else
     {
@@ -509,6 +511,11 @@ void wave_data_binary (const wave_data * const left, const wave_data * const rig
     }
     else
         _operator_type_error (left, right, op);
+}
+
+wave_bool wave_data_is_atom (const wave_data * data)
+{
+    return data->_type >= WAVE_DATA_INT && data->_type <= WAVE_DATA_BOOL;
 }
 
 #define _def_data_printer_simple(data_type) \
