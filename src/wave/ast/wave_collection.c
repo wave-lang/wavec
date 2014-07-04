@@ -644,15 +644,12 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
                     temp._next_path = NULL;
                     temp._previous_path = NULL;
 
-                    for(int i = 0; type == WAVE_PATH_REPEAT_CONSTANT && i < nb_times || type == WAVE_PATH_REPEAT_INFINITE && c != NULL; i++){
+                    for(int i = 0; (type == WAVE_PATH_REPEAT_CONSTANT && i < nb_times) || (type == WAVE_PATH_REPEAT_INFINITE && c != NULL); i++){
                         temp_save = c;      // Save for infinite repetition. If c is null get this one as last move possible.
 
-                        if(wave_path_get_move(repeated_path) == WAVE_MOVE_PART)
-                            size_rep = wave_follow_collection_with_extra_bonus(c, repeated_path, recorded_path, &temp, counting_all, &c);
-                        else
-                            size_rep = wave_follow_collection_with_extra_bonus(c, repeated_path, recorded_path, rewind_recording, counting_all, &c);
+                        size_rep = wave_follow_collection_with_extra_bonus(c, repeated_path, recorded_path, &temp, counting_all, &c);
 
-                        if(type == WAVE_PATH_REPEAT_CONSTANT || type == WAVE_PATH_REPEAT_INFINITE && c != NULL){ // If the path is constant and the infinite repeat did not find the end.
+                        if(type == WAVE_PATH_REPEAT_CONSTANT || (type == WAVE_PATH_REPEAT_INFINITE && c != NULL)){ // If the path is constant and the infinite repeat did not find the end.
                             if( counting_all )
                                 size += size_rep;
                             else{
@@ -663,18 +660,19 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
                             }
                         }
 
-                        if(wave_path_get_move(repeated_path) == WAVE_MOVE_PART){
-                            if(type == WAVE_PATH_REPEAT_INFINITE && c == NULL){
-                                wave_path_free(temp._next_path);
-                            }
-                            else{
+                        if(c == NULL){
+                            wave_path_free(temp._next_path);
+                        }
+                        else{
+                            if(wave_path_get_move(repeated_path) == WAVE_MOVE_PART){
                                 if(recorded_path != internal_recorded_path)
                                     wave_path_free(recorded_path);
-                                if(rewind_recording != NULL)        // Case where the upper function is recording also. Add then a copy of what whe recorded when the recursive call happened
-                                    wave_path_add_path(rewind_recording, wave_path_copy(temp._next_path));
                                 recorded_path = temp._next_path;
                                 recorded_path->_previous_path = NULL;
+                                temp._next_path = NULL;
                             }
+                            if(rewind_recording != NULL)        // Case where the upper function is recording also. Add then a copy of what whe recorded when the recursive call happened
+                                wave_path_add_path(rewind_recording, wave_path_copy(temp._next_path));
                         }
                     }
                     if(type == WAVE_PATH_REPEAT_INFINITE)
@@ -708,6 +706,7 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
                 exit(1);
                 break;
         }
+
         p = wave_path_get_next(p);
     }
 
@@ -717,8 +716,10 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
     if(destination != NULL)
         *destination = c;
 
-    //printf("Size : %d\n", size);
-    return size;
+    if(c == NULL)
+        return -1;
+    else
+        return size;
 }
 
 int wave_collection_get_path_size_only_last_record(const wave_collection* c, const wave_path* path){
@@ -742,6 +743,51 @@ const wave_collection* wave_collection_get_collection_pointed(const wave_collect
 bool wave_collection_path_is_valid (wave_collection * c, const wave_path * p)
 {
     return wave_collection_get_collection_pointed (c, p) != NULL;
+}
+
+static void copy_collection_path_time(wave_collection* c){
+    wave_collection* next = wave_collection_get_next(c);
+    wave_collection* previous = wave_collection_get_previous(c);
+    wave_collection* parent = wave_collection_get_parent(c);
+    wave_collection* collection_to_copy = wave_collection_get_repetition_list(c);
+    wave_collection* copy;
+
+    wave_collection_unroll_path( collection_to_copy );
+
+    int size = wave_collection_get_path_size_only_last_record(c, wave_collection_get_repetition_path(c));
+    if(size < 0){
+        fprintf(stderr, "The path is not valid\n");
+        exit(1);
+    }
+    if(size == 0){
+        fprintf(stderr, "The path did not contain any record.\n");
+        exit(1);
+    }
+    copy = wave_collection_copy( collection_to_copy );
+    for(int i=1; i < size; i++)
+        wave_collection_add_collection(copy, wave_collection_copy( collection_to_copy ));
+
+    _wave_collection_set_parent(copy, parent);
+    wave_collection_add_collection(copy, next);
+
+    previous->_next_collection = NULL;
+    wave_collection_add_collection(previous, copy);
+
+    c->_next_collection = NULL;
+    wave_collection_free(c);
+}
+
+void wave_collection_unroll_path(wave_collection* c){
+    if(c != NULL){
+        wave_collection_type type = wave_collection_get_type(c);
+        if( type == WAVE_COLLECTION_REP_SEQ || type == WAVE_COLLECTION_REP_PAR )
+            copy_collection_path_time(c);
+        else
+            if(type == WAVE_COLLECTION_SEQ || type == WAVE_COLLECTION_PAR ||
+                    type == WAVE_COLLECTION_CYCLIC_SEQ || type == WAVE_COLLECTION_CYCLIC_PAR)
+                wave_collection_unroll_path(wave_collection_get_list(c));
+        wave_collection_unroll_path( wave_collection_get_next(c) );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
