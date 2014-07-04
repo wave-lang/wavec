@@ -519,6 +519,12 @@ static void _specific_print (FILE * const code_file, const wave_collection * con
     {
         wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
         wave_coordinate * c = wave_collection_get_coordinate (collection);
+
+        wave_code_generation_fprint_tab_with_init(code_file, indexes, c, "");
+        fprintf (code_file, " = ");
+        _print_tab_minus (code_file, indexes, c, -1);
+        fprintf (code_file, ";\n");
+
         fprintf (code_file, "wave_data_fprint (stdout, & ");
         _print_tab_minus (code_file, indexes, c, -1);
         fprintf (code_file, ");\nprintf(\"\\n\");\n");
