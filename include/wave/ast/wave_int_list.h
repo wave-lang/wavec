@@ -35,6 +35,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#include "wave/common/wave_types.h"
+
 /**
  * \defgroup wave_int_list_group Wave Int List
  * \ingroup wave_collection_info_group

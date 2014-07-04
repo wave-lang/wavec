@@ -106,9 +106,9 @@ int wave_int_list_compare (const wave_int_list * a, const wave_int_list * b)
     int comparison = 0;
     for (size_t i = 0; comparison == 0 && i < max_size; ++i)
     {
-        wave_int a_content = a_e->content;
-        wave_int b_content = a_b->content;
-        comparison = a_content > b_content ? 1 : a_content < b_content ? -1 : 0;
+        wave_int a_content = a_element->_content;
+        wave_int b_content = b_element->_content;
+        comparison = wave_int_greater (a_content, b_content) ? 1 : wave_int_lesser (a_content, b_content) ? -1 : 0;
         a_element = a_element->_next_element;
         b_element = b_element->_next_element;
     }
