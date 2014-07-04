@@ -604,4 +604,6 @@ int wave_collection_get_path_size(const wave_collection* c, const wave_path* pat
  */
 const wave_collection* wave_collection_get_collection_pointed(const wave_collection* c, const wave_path* path);
 
+void wave_collection_unroll_path(wave_collection* c);
+
 #endif /* __WAVE_COLLECTION_H__ */
