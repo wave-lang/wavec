@@ -151,7 +151,8 @@ static const wave_operator _int_defined [] =
     WAVE_OP_UNARY_PLUS, WAVE_OP_UNARY_MINUS, WAVE_OP_UNARY_INCREMENT,
     WAVE_OP_UNARY_DECREMENT, WAVE_OP_UNARY_SQRT, WAVE_OP_UNARY_SIN,
     WAVE_OP_UNARY_COS, WAVE_OP_UNARY_LOG, WAVE_OP_UNARY_EXP, WAVE_OP_UNARY_CEIL,
-    WAVE_OP_UNARY_FLOOR, WAVE_OP_BINARY_PLUS, WAVE_OP_BINARY_MINUS,
+    WAVE_OP_UNARY_FLOOR, WAVE_OP_UNARY_CHR,
+    WAVE_OP_BINARY_PLUS, WAVE_OP_BINARY_MINUS,
     WAVE_OP_BINARY_MIN, WAVE_OP_BINARY_MAX, WAVE_OP_BINARY_TIMES,
     WAVE_OP_BINARY_DIVIDE, WAVE_OP_BINARY_MOD, WAVE_OP_BINARY_EQUALS,
     WAVE_OP_BINARY_DIFFERS, WAVE_OP_BINARY_LESSER_OR_EQUALS,
@@ -176,6 +177,7 @@ static const wave_operator _float_defined [] =
 
 static const wave_operator _char_defined [] =
 {
+    WAVE_OP_UNARY_CODE,
     WAVE_OP_BINARY_PLUS, WAVE_OP_BINARY_MIN, WAVE_OP_BINARY_MAX,
     WAVE_OP_BINARY_EQUALS, WAVE_OP_BINARY_DIFFERS,
     WAVE_OP_BINARY_LESSER_OR_EQUALS, WAVE_OP_BINARY_GREATER_OR_EQUALS,
@@ -269,6 +271,8 @@ void wave_data_unary (const wave_data * const operand, wave_data * const result,
             if (op == WAVE_OP_UNARY_PLUS || op == WAVE_OP_UNARY_MINUS
                 || op == WAVE_OP_UNARY_INCREMENT || op == WAVE_OP_UNARY_DECREMENT)
                 wave_data_set_int (result, _unary_int_to_int[op] (int_value));
+            else if (op == WAVE_OP_UNARY_CHR)
+                wave_data_set_char (result, wave_int_chr (int_value));
             else
                 wave_data_set_float (result, _unary_int_to_float[op] (int_value));
         }
@@ -276,6 +280,8 @@ void wave_data_unary (const wave_data * const operand, wave_data * const result,
             wave_data_set_float (result, _unary_float_to_float[op] (wave_data_get_float (operand)));
         else if (t == WAVE_DATA_BOOL)
             wave_data_set_bool (result, wave_bool_not (wave_data_get_bool (operand)));
+        else if (t == WAVE_DATA_CHAR)
+            wave_data_set_int (result, wave_char_code (wave_data_get_char (operand)));
     }
     else if (t == WAVE_DATA_PAR)
         _map_unary (operand, result, op);
