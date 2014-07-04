@@ -101,7 +101,7 @@ static const char * const _operator_functions_strings[] =
     [WAVE_OP_BINARY_LESSER           ] = "lesser",
     [WAVE_OP_BINARY_AND              ] = "and",
     [WAVE_OP_BINARY_OR               ] = "or",
-    [WAVE_OP_BINARY_GET              ] = "binary_get",
+    [WAVE_OP_BINARY_GET              ] = "get",
     [WAVE_OP_SPECIFIC_ATOM           ] = "specific_atom",
     [WAVE_OP_SPECIFIC_STOP           ] = "specific_stop",
     [WAVE_OP_SPECIFIC_CUT            ] = "specific_cut",
@@ -330,6 +330,14 @@ static void _print_char_plus (FILE * code_file, const wave_int_list * indexes, c
 
 }
 
+static void _get_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, wave_operator op)
+{
+    if (left == WAVE_ATOM_LITERAL_STRING && right == WAVE_ATOM_LITERAL_INT)
+        _print_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_CHAR, left, right, op);
+    else
+        _type_error (code_file);
+}
+
 static void _plus_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, wave_operator op)
 {
     if (left != WAVE_ATOM_LITERAL_BOOL && right != WAVE_ATOM_LITERAL_BOOL)
@@ -490,6 +498,11 @@ static void _binary_plus (FILE * code_file, const wave_collection * collection, 
     _binary (code_file, collection, op, _plus_for_binary);
 }
 
+static void _binary_get (FILE * code_file, const wave_collection * collection, wave_operator op)
+{
+    _binary (code_file, collection, op, _get_for_binary);
+}
+
 static void _unknown_error (FILE * code_file, const wave_collection * collection, wave_operator op)
 {
     (void) collection; (void) op;
@@ -509,6 +522,26 @@ static void _specific_print (FILE * const code_file, const wave_collection * con
         fprintf (code_file, "wave_data_fprint (stdout, & ");
         _print_tab_minus (code_file, indexes, c, -1);
         fprintf (code_file, ");\nprintf(\"\\n\");\n");
+        wave_int_list_free (indexes);
+    }
+    else
+        _operand_error (code_file);
+}
+
+static void _specific_atom (FILE * const code_file, const wave_collection * const collection, wave_operator op)
+{
+    (void) op;
+
+    if (wave_collection_has_previous (collection))
+    {
+        wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
+        wave_coordinate * c = wave_collection_get_coordinate (collection);
+        fprintf (code_file, "wave_data_unary (& ");
+        _print_tab_minus (code_file, indexes, c, -1);
+        fprintf (code_file, ", & ");
+        wave_code_generation_fprint_tab_with_init(code_file, indexes, c, "");
+        fprintf (code_file, ", %s", _operator_enum_strings[op]);
+        fprintf (code_file, ");\n");
         wave_int_list_free (indexes);
     }
     else
@@ -546,8 +579,8 @@ static void (* const _operator_functions[]) (FILE *, const wave_collection *, wa
     [WAVE_OP_BINARY_LESSER]             = _binary_lesser,
     [WAVE_OP_BINARY_AND]                = _binary_and,
     [WAVE_OP_BINARY_OR]                 = _binary_or,
-    [WAVE_OP_BINARY_GET]                = NULL,
-    [WAVE_OP_SPECIFIC_ATOM]             = NULL,
+    [WAVE_OP_BINARY_GET]                = _binary_get,
+    [WAVE_OP_SPECIFIC_ATOM]             = _specific_atom,
     [WAVE_OP_SPECIFIC_STOP]             = NULL,
     [WAVE_OP_SPECIFIC_CUT]              = NULL,
     [WAVE_OP_SPECIFIC_READ]             = NULL,

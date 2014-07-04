@@ -258,35 +258,39 @@ static void _map_unary (const wave_data * const operand, wave_data * const resul
 
 void wave_data_unary (const wave_data * const operand, wave_data * const result, wave_operator op)
 {
-    wave_data_type t = wave_data_get_type (operand);
-    if (_is_constant (t))
+    if (op != WAVE_OP_SPECIFIC_ATOM)
     {
-        if (! _is_defined (t, op))
-            _operator_type_error (operand, NULL, op);
-
-        if (t == WAVE_DATA_INT)
+        wave_data_type t = wave_data_get_type (operand);
+        if (_is_constant (t))
         {
-            wave_int int_value = wave_data_get_int (operand);
-            if (op == WAVE_OP_UNARY_PLUS || op == WAVE_OP_UNARY_MINUS
-                || op == WAVE_OP_UNARY_INCREMENT || op == WAVE_OP_UNARY_DECREMENT)
-                wave_data_set_int (result, _unary_int_to_int[op] (int_value));
-            else if (op == WAVE_OP_UNARY_CHR)
-                wave_data_set_char (result, wave_int_chr (int_value));
-            else
-                wave_data_set_float (result, _unary_int_to_float[op] (int_value));
-        }
-        else if (t == WAVE_DATA_FLOAT)
-            wave_data_set_float (result, _unary_float_to_float[op] (wave_data_get_float (operand)));
-        else if (t == WAVE_DATA_BOOL)
-            wave_data_set_bool (result, wave_bool_not (wave_data_get_bool (operand)));
-        else if (t == WAVE_DATA_CHAR)
-            wave_data_set_int (result, wave_char_code (wave_data_get_char (operand)));
-    }
-    else if (t == WAVE_DATA_PAR)
-        _map_unary (operand, result, op);
-    else
-        _operator_type_error (operand, NULL, op);
+            if (! _is_defined (t, op))
+                _operator_type_error (operand, NULL, op);
 
+            if (t == WAVE_DATA_INT)
+            {
+                wave_int int_value = wave_data_get_int (operand);
+                if (op == WAVE_OP_UNARY_PLUS || op == WAVE_OP_UNARY_MINUS
+                    || op == WAVE_OP_UNARY_INCREMENT || op == WAVE_OP_UNARY_DECREMENT)
+                    wave_data_set_int (result, _unary_int_to_int[op] (int_value));
+                else if (op == WAVE_OP_UNARY_CHR)
+                    wave_data_set_char (result, wave_int_chr (int_value));
+                else
+                    wave_data_set_float (result, _unary_int_to_float[op] (int_value));
+            }
+            else if (t == WAVE_DATA_FLOAT)
+                wave_data_set_float (result, _unary_float_to_float[op] (wave_data_get_float (operand)));
+            else if (t == WAVE_DATA_BOOL)
+                wave_data_set_bool (result, wave_bool_not (wave_data_get_bool (operand)));
+            else if (t == WAVE_DATA_CHAR)
+                wave_data_set_int (result, wave_char_code (wave_data_get_char (operand)));
+        }
+        else if (t == WAVE_DATA_PAR)
+            _map_unary (operand, result, op);
+        else
+            _operator_type_error (operand, NULL, op);
+    }
+    else
+        wave_data_set_bool (result, wave_data_is_atom (operand));
 }
 
 static wave_int (* const _binary_int []) (wave_int, wave_int) =
@@ -507,6 +511,11 @@ void wave_data_binary (const wave_data * const left, const wave_data * const rig
     }
     else
         _operator_type_error (left, right, op);
+}
+
+wave_bool wave_data_is_atom (const wave_data * data)
+{
+    return data->_type >= WAVE_DATA_INT && data->_type <= WAVE_DATA_BOOL;
 }
 
 #define _def_data_printer_simple(data_type) \

@@ -115,6 +115,8 @@ void wave_data_unary (const wave_data * operand, wave_data * result, wave_operat
 
 void wave_data_binary (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op);
 
+wave_bool wave_data_is_atom (const wave_data * data);
+
 static inline int wave_data_get_collection_size(wave_data* data){
     if(data->_type == WAVE_DATA_SEQ || data->_type == WAVE_DATA_PAR)
         return data->_content._collection._size;

@@ -1095,6 +1095,15 @@ wave_char wave_char_from_wave_int (wave_int code);
 wave_int wave_char_code (wave_char c);
 
 /**
+ * \brief Get the nth wave_char of a wave_string.
+ * \param s String.
+ * \param n N.
+ * \relatesalso wave_string
+ * \warning This function assumes the wave_string has at least \c n wave_char !
+ */
+wave_char wave_char_get (const_wave_string s, wave_int i);
+
+/**
  * \brief Print a wave_char to a stream.
  * \param stream Stream.
  * \param c Value.

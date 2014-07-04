@@ -270,6 +270,11 @@ wave_char wave_int_chr (wave_int i)
     return wave_char_from_wave_int (i);
 }
 
+wave_char wave_char_get (const_wave_string s, wave_int i)
+{
+    return wave_string_nth (s, i);
+}
+
 void wave_int_fprint (FILE * stream, wave_int i)
 {
     fprintf (stream, "%d", i);
