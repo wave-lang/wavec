@@ -22,7 +22,7 @@ for WAVE_SRC in $*; do
     EXE=${C_SRC/\.c/}
     $WAVEPP "$WAVE_SRC" "$WAVE_PP"
     $WAVE2C "$WAVE_PP" "$C_SRC"
-    gcc "$C_SRC" -o "$EXE" -std=c99 -Iinclude -Llib -lm -lwave
+    gcc "$C_SRC" -o "$EXE" -std=c99 -fopenmp -Iinclude -Llib -lm -lwave
 done
 
 exit 0
