@@ -248,8 +248,11 @@ static void _map_unary (const wave_data * const operand, wave_data * const resul
     result->_type = WAVE_DATA_PAR;
     result->_content._collection._tab = wave_garbage_alloc (size * sizeof (wave_data));
     result->_content._collection._size = size;
-    for (size_t i = 0; i < size; ++i)
-        wave_data_unary (& operand->_content._collection._tab[i], & result->_content._collection._tab[i], op);
+
+    long long int ll_size = (long long int) size;
+    #pragma omp parallel for
+        for (long long int i = 0; i < ll_size; ++i)
+            wave_data_unary (& operand->_content._collection._tab[i], & result->_content._collection._tab[i], op);
 }
 
 void wave_data_unary (const wave_data * const operand, wave_data * const result, wave_operator op)
@@ -444,8 +447,11 @@ static void _map_binary (const wave_data * const left, const wave_data * const r
     const wave_data * const tab_left = left->_content._collection._tab;
     const wave_data * const tab_right = right->_content._collection._tab;
     wave_data * const tab_result = result->_content._collection._tab;
-    for (size_t i = 0; i < size; ++i)
-        wave_data_binary (& tab_left[i], & tab_right[i], & tab_result[i], op);
+
+    long long int ll_size = (long long int) size;
+    #pragma omp parallel for
+        for (long long int i = 0; i < ll_size; ++i)
+            wave_data_binary (& tab_left[i], & tab_right[i], & tab_result[i], op);
 }
 
 static void _set_binary_int_float (const wave_data * const left, const wave_data * const right, wave_data * const result, wave_operator op)
