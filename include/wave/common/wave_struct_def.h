@@ -101,6 +101,16 @@ void wave_data_set_bool (wave_data * data, wave_bool b);
 
 void wave_data_set_string (wave_data * data, wave_string s);
 
+wave_int wave_data_get_int (const wave_data * data);
+
+wave_float wave_data_get_float (const wave_data * data);
+
+wave_char wave_data_get_char (const wave_data * data);
+
+wave_string wave_data_get_string (const wave_data * data);
+
+wave_bool wave_data_get_bool (const wave_data * data);
+
 void wave_data_unary (const wave_data * operand, wave_data * result, wave_operator op);
 
 void wave_data_binary (const wave_data * left, const wave_data * right, wave_data * result, wave_operator op);
