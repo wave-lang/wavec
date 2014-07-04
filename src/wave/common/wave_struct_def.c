@@ -32,8 +32,7 @@
 
 static inline bool _is_constant (wave_data_type t)
 {
-    return t == WAVE_DATA_INT || t == WAVE_DATA_FLOAT || t == WAVE_DATA_CHAR
-        || t == WAVE_DATA_STRING || t == WAVE_DATA_BOOL;
+    return t >= WAVE_DATA_INT && t <= WAVE_DATA_BOOL;
 }
 
 wave_data_type wave_data_get_type (const wave_data * const data)
@@ -371,13 +370,6 @@ static wave_bool (* const _binary_bool []) (wave_bool, wave_bool) =
     [WAVE_OP_BINARY_OR] = wave_bool_or,
 };
 
-static inline bool _operator_is_test (wave_operator op)
-{
-    return op == WAVE_OP_BINARY_EQUALS || op == WAVE_OP_BINARY_DIFFERS
-        || op == WAVE_OP_BINARY_LESSER_OR_EQUALS || op == WAVE_OP_BINARY_GREATER
-        || op == WAVE_OP_BINARY_GREATER_OR_EQUALS || op == WAVE_OP_BINARY_LESSER;
-}
-
 static inline void _set_binary_both_bool (const wave_data * const left, const wave_data * const right, wave_data * const result, wave_operator op)
 {
     wave_bool left_value = wave_data_get_bool (left);
@@ -389,7 +381,7 @@ static inline void _set_binary_both_int (const wave_data * const left, const wav
 {
     wave_int left_value = wave_data_get_int (left);
     wave_int right_value = wave_data_get_int (right);
-    if (_operator_is_test (op))
+    if (wave_operator_is_test (op))
         wave_data_set_bool (result, _binary_int_to_bool[op] (left_value, right_value));
     else
         wave_data_set_int (result, _binary_int[op] (left_value, right_value));
@@ -399,7 +391,7 @@ static inline void _set_binary_both_float (const wave_data * const left, const w
 {
     wave_float left_value = wave_data_get_float (left);
     wave_float right_value = wave_data_get_float (right);
-    if (_operator_is_test (op))
+    if (wave_operator_is_test (op))
         wave_data_set_bool (result, _binary_float_to_bool[op] (left_value, right_value));
     else
         wave_data_set_float (result, _binary_float[op] (left_value, right_value));
@@ -409,7 +401,7 @@ static inline void _set_binary_both_char (const wave_data * const left, const wa
 {
     wave_char left_value = wave_data_get_char (left);
     wave_char right_value = wave_data_get_char (right);
-    if (_operator_is_test (op))
+    if (wave_operator_is_test (op))
         wave_data_set_bool (result, _binary_char_to_bool[op] (left_value, right_value));
     else if (op == WAVE_OP_BINARY_PLUS)
         wave_data_set_string (result, wave_char_binary_plus (left_value, right_value));
@@ -421,7 +413,7 @@ static inline void _set_binary_both_string (const wave_data * const left, const 
 {
     wave_string left_value = wave_data_get_string (left);
     wave_string right_value = wave_data_get_string (right);
-    if (_operator_is_test (op))
+    if (wave_operator_is_test (op))
         wave_data_set_bool (result, _binary_string_to_bool[op] (left_value, right_value));
     else
     {
@@ -464,7 +456,7 @@ static void _set_binary_int_float (const wave_data * const left, const wave_data
 {
     wave_float left_value = wave_data_get_float (left);
     wave_float right_value = wave_data_get_float (right);
-    if (_operator_is_test (op))
+    if (wave_operator_is_test (op))
         wave_data_set_bool (result, _binary_float_to_bool[op] (left_value, right_value));
     else
         wave_data_set_float (result, _binary_float[op] (left_value, right_value));
@@ -474,7 +466,7 @@ static void _set_binary_char_string (const wave_data * const left, const wave_da
 {
     wave_string left_value = wave_data_get_string (left);
     wave_string right_value = wave_data_get_string (right);
-    if (_operator_is_test (op))
+    if (wave_operator_is_test (op))
         wave_data_set_bool (result, _binary_string[op] (left_value, right_value));
     else
     {

@@ -43,7 +43,7 @@
  * \see wave_types.h
  */
 typedef enum wave_data_type{
-    WAVE_DATA_INT = 0,          /**< A integer value */
+    WAVE_DATA_INT = 0,          /**< An integer value */
     WAVE_DATA_FLOAT,            /**< A floating point value */
     WAVE_DATA_CHAR,             /**< A character value */
     WAVE_DATA_STRING,           /**< A string value */
