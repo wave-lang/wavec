@@ -674,6 +674,7 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
                             if(rewind_recording != NULL)        // Case where the upper function is recording also. Add then a copy of what whe recorded when the recursive call happened
                                 wave_path_add_path(rewind_recording, wave_path_copy(temp._next_path));
                         }
+                        temp._next_path = NULL;
                     }
                     if(type == WAVE_PATH_REPEAT_INFINITE)
                         c = temp_save;
@@ -779,6 +780,7 @@ static void copy_collection_path_time(wave_collection* c){
 
 void wave_collection_unroll_path(wave_collection* c){
     if(c != NULL){
+        wave_collection* collection = wave_collection_get_next(c);
         wave_collection_type type = wave_collection_get_type(c);
         if( type == WAVE_COLLECTION_REP_SEQ || type == WAVE_COLLECTION_REP_PAR )
             copy_collection_path_time(c);
@@ -786,7 +788,7 @@ void wave_collection_unroll_path(wave_collection* c){
             if(type == WAVE_COLLECTION_SEQ || type == WAVE_COLLECTION_PAR ||
                     type == WAVE_COLLECTION_CYCLIC_SEQ || type == WAVE_COLLECTION_CYCLIC_PAR)
                 wave_collection_unroll_path(wave_collection_get_list(c));
-        wave_collection_unroll_path( wave_collection_get_next(c) );
+        wave_collection_unroll_path( collection );
     }
 }
 
