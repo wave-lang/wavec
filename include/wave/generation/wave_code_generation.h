@@ -78,6 +78,7 @@ static inline void _current_phrase (FILE * output, wave_phrase * p, unsigned int
     wave_collection* collection = wave_phrase_get_collection(p);
     wave_collection_unroll_path(collection);
     wave_collection_compute_indexes(collection);
+    wave_collection_replace_path(collection);
     wave_collection_compute_length_and_coords(collection);
     wave_code_generation_collection(code_file, alloc_file, collection);
 

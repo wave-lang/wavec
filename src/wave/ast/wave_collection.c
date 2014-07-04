@@ -500,7 +500,6 @@ static inline void  _wave_collection_set_length (wave_collection * c)
         }
         else
         {
-            wave_path *path = wave_collection_get_repetition_path(c);
             int path_length = 0;
             wave_coordinate_set_constant (repetition, path_length);
         }
@@ -711,7 +710,7 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
         p = wave_path_get_next(p);
     }
 
-    if(internal_recorded_path == NULL && recorded_path != NULL || internal_recorded_path != recorded_path)
+    if((internal_recorded_path == NULL && recorded_path != NULL) || internal_recorded_path != recorded_path)
         wave_path_free(recorded_path);
 
     if(destination != NULL)
@@ -789,6 +788,59 @@ void wave_collection_unroll_path(wave_collection* c){
                     type == WAVE_COLLECTION_CYCLIC_SEQ || type == WAVE_COLLECTION_CYCLIC_PAR)
                 wave_collection_unroll_path(wave_collection_get_list(c));
         wave_collection_unroll_path( collection );
+    }
+}
+static void _remplace_path_if_possible(wave_collection* c){
+    wave_collection* next = wave_collection_get_next(c);
+    wave_collection* previous = wave_collection_get_previous(c);
+    wave_collection* parent = wave_collection_get_parent(c);
+
+    wave_collection* pointed = (wave_collection*) wave_collection_get_collection_pointed(c, wave_atom_get_path(wave_collection_get_atom(c)));
+
+    wave_int_list* me = wave_collection_get_full_indexes(c);
+    wave_int_list* him_or_her = wave_collection_get_full_indexes(pointed);
+
+    int diff = wave_int_list_compare(me, him_or_her);
+
+    if(diff < 0){
+        wave_collection* next_collection = wave_collection_get_next(pointed);
+        pointed->_next_collection = NULL;
+        wave_collection* copy = wave_collection_copy( pointed );
+        pointed->_next_collection = next_collection;
+        if(wave_collection_has_previous(c))
+            c->_previous_collection->_next_collection = copy;
+        if(wave_collection_has_next(c))
+            c->_next_collection->_previous_collection = copy;
+        copy->_previous_collection = previous;
+        copy->_next_collection = next;
+        copy->_parent_collection = parent;
+
+        copy->_info = wave_collection_info_copy(c->_info);
+
+        if(wave_collection_get_type(copy) != WAVE_COLLECTION_ATOM)
+            wave_collection_compute_indexes(wave_collection_get_list(copy));
+
+        c->_next_collection = NULL;
+        wave_collection_free(c);
+    }
+}
+
+void wave_collection_replace_path(wave_collection* c){
+    if(c != NULL){
+        wave_collection* collection = wave_collection_get_next(c);
+        wave_collection_type type = wave_collection_get_type(c);
+        if(type == WAVE_COLLECTION_ATOM){
+            wave_atom* atom = wave_collection_get_atom(c);
+            wave_atom_type atom_type = wave_atom_get_type(atom);
+            if( atom_type == WAVE_ATOM_PATH )
+                _remplace_path_if_possible(c);
+        }
+        else
+            if(type == WAVE_COLLECTION_SEQ || type == WAVE_COLLECTION_PAR ||
+                type == WAVE_COLLECTION_CYCLIC_SEQ || type == WAVE_COLLECTION_CYCLIC_PAR){
+            wave_collection_replace_path(wave_collection_get_list(c));
+            }
+        wave_collection_replace_path(collection);
     }
 }
 

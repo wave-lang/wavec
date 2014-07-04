@@ -606,4 +606,6 @@ const wave_collection* wave_collection_get_collection_pointed(const wave_collect
 
 void wave_collection_unroll_path(wave_collection* c);
 
+void wave_collection_replace_path(wave_collection* c);
+
 #endif /* __WAVE_COLLECTION_H__ */
