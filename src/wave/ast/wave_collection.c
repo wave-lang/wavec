@@ -813,6 +813,8 @@ static void _remplace_path_if_possible(wave_collection* c){
     wave_collection* parent = wave_collection_get_parent(c);
 
     wave_collection* pointed = (wave_collection*) wave_collection_get_collection_pointed(c, wave_atom_get_path(wave_collection_get_atom(c)));
+    wave_collection_fprint(stderr, pointed);
+    fprintf(stderr, "Je suis pointé\n");
 
     wave_int_list* me = wave_collection_get_full_indexes(c);
     wave_int_list* him_or_her = wave_collection_get_full_indexes(pointed);
@@ -839,6 +841,31 @@ static void _remplace_path_if_possible(wave_collection* c){
 
         c->_next_collection = NULL;
         wave_collection_free(c);
+    }
+    else if(diff > 0){
+        if( !wave_collection_contains_path(pointed) ){
+            fprintf(stderr, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO\n");
+            wave_collection* next_collection = wave_collection_get_next(pointed);
+            pointed->_next_collection = NULL;
+            wave_collection* copy = wave_collection_copy( pointed );
+            pointed->_next_collection = next_collection;
+            if(wave_collection_has_previous(c))
+                c->_previous_collection->_next_collection = copy;
+            if(wave_collection_has_next(c))
+                c->_next_collection->_previous_collection = copy;
+            copy->_previous_collection = previous;
+            copy->_next_collection = next;
+
+            _wave_collection_set_parent(copy, parent);
+
+            copy->_info = wave_collection_info_copy(c->_info);
+
+            if(wave_collection_get_type(copy) != WAVE_COLLECTION_ATOM)
+                wave_collection_compute_indexes(wave_collection_get_list(copy));
+
+            c->_next_collection = NULL;
+            wave_collection_free(c);
+        }
     }
 }
 
