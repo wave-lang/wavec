@@ -8,20 +8,23 @@ Building
 ### Requirements
 #### Minimal requirements
 - GNU development tools
+- Lex
+- Yacc
 
 #### Optionnal requirements
 - ```doxygen``` and ```graphviz```
 - ```CUnit```
+- GNU ```indent```
 
 ### Ubuntu
 #### Ubuntu minimal requirements
 ```bash
-$ apt-get install build-essential
+$ apt-get install build-essential byacc flex
 ```
 
 #### Ubuntu optionnal requirements
 ```bash
-$ apt-get install doxygen graphviz
+$ apt-get install doxygen graphviz indent
 $ apt-get install libcunit1 libcunit1-dev libcunit1-doc libcunit1-ncurses libcunit1-ncurses-dev
 ```
 
@@ -29,11 +32,12 @@ $ apt-get install libcunit1 libcunit1-dev libcunit1-doc libcunit1-ncurses libcun
 #### Fedora minimal requirements
 ```bash
 $ yum groupinstall "Development Tools"
+$ yum install flex bison
 ```
 
 #### Fedora optionnal requirements
 ```bash
-$ yum install doxygen graphviz
+$ yum install doxygen graphviz indent
 $ yum install CUnit Cunit-devel
 ```
 
