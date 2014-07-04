@@ -33,6 +33,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 /**
  * \brief Wave operators.
@@ -77,6 +78,14 @@ typedef enum wave_operator
     WAVE_OP_SPECIFIC_PRINT,             /**< Print. */
     WAVE_OP_UNKNOWN,                    /**< Unknown. */
 } wave_operator;
+
+bool wave_operator_is_test (wave_operator op);
+
+bool wave_operator_is_unary (wave_operator op);
+
+bool wave_operator_is_binary (wave_operator op);
+
+bool wave_operator_is_specific (wave_operator op);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Printing.
