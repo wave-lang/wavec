@@ -1467,6 +1467,6 @@ wave_string wave_string_duplicate (const_wave_string s);
  * \relatesalso wave_string
  * \warning This function assumes the wave_string has at least \c n wave_char !
  */
-wave_char wave_string_nth (const_wave_string s, size_t n);
+wave_char wave_string_nth (const_wave_string s, wave_int n);
 
 #endif /* __WAVE_TYPES_H__ */

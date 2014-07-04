@@ -626,7 +626,7 @@ wave_string wave_string_duplicate (const_wave_string s)
     return duplicate;
 }
 
-wave_char wave_string_nth (const_wave_string s, size_t n)
+wave_char wave_string_nth (const_wave_string s, wave_int n)
 {
     return s[n];
 }
