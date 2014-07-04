@@ -50,7 +50,7 @@ void yyerror(const char * s);
 %token Integer_litteral Float_litteral Boolean_litteral String_litteral Char_litteral
 %token Infinity
 %token Prec Succ Up Down Rewind
-%token Unary_plus Unary_minus Increment Decrement Square_root Sin Cos Not Log Exp Ceil Floor
+%token Unary_plus Unary_minus Increment Decrement Square_root Sin Cos Not Log Exp Ceil Floor Chr Code
 %token Plus Minus Min Max Star Divid Mod Equal Not_equal Upper_equal Lesser_equal Lesser Upper And Or Get
 %token Atom Question_mark Exclamation_mark Read Print
 
@@ -417,6 +417,16 @@ Unary_operator : Unary_plus
                     {
                         $$ = wave_atom_alloc ();
                         wave_atom_set_operator ($$, WAVE_OP_UNARY_FLOOR);
+                    }
+                | Chr
+                    {
+                        $$ = wave_atom_alloc ();
+                        wave_atom_set_operator ($$, WAVE_OP_UNARY_CHR);
+                    }
+                | Code
+                    {
+                        $$ = wave_atom_alloc ();
+                        wave_atom_set_operator ($$, WAVE_OP_UNARY_CODE);
                     }
                ;
 

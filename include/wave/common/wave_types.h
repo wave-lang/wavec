@@ -726,6 +726,14 @@ wave_bool wave_int_greater (wave_int a, wave_int b);
 wave_bool wave_int_lesser (wave_int a, wave_int b);
 
 /**
+ * \brief \c chr operation for wave_int.
+ * \param i wave_int.
+ * \return Character.
+ * \relatesalso wave_int
+ */
+wave_char wave_int_chr (wave_int i);
+
+/**
  * \brief Print a wave_int to a stream.
  * \param stream Stream.
  * \param i Value.

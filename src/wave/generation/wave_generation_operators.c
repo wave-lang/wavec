@@ -44,6 +44,8 @@ static const char * const _operator_enum_strings[] =
     [WAVE_OP_UNARY_EXP               ] = "WAVE_OP_UNARY_EXP",
     [WAVE_OP_UNARY_CEIL              ] = "WAVE_OP_UNARY_CEIL",
     [WAVE_OP_UNARY_FLOOR             ] = "WAVE_OP_UNARY_FLOOR",
+    [WAVE_OP_UNARY_CHR               ] = "WAVE_OP_UNARY_CHR",
+    [WAVE_OP_UNARY_CODE              ] = "WAVE_OP_UNARY_CODE",
     [WAVE_OP_BINARY_PLUS             ] = "WAVE_OP_BINARY_PLUS",
     [WAVE_OP_BINARY_MINUS            ] = "WAVE_OP_BINARY_MINUS",
     [WAVE_OP_BINARY_MIN              ] = "WAVE_OP_BINARY_MIN",
@@ -82,6 +84,8 @@ static const char * const _operator_functions_strings[] =
     [WAVE_OP_UNARY_EXP               ] = "exp",
     [WAVE_OP_UNARY_CEIL              ] = "ceil",
     [WAVE_OP_UNARY_FLOOR             ] = "floor",
+    [WAVE_OP_UNARY_CHR               ] = "chr",
+    [WAVE_OP_UNARY_CODE              ] = "code",
     [WAVE_OP_BINARY_PLUS             ] = "binary_plus",
     [WAVE_OP_BINARY_MINUS            ] = "binary_minus",
     [WAVE_OP_BINARY_MIN              ] = "min",
@@ -180,6 +184,37 @@ static void _print_binary_char_string (FILE * code_file, const wave_int_list * l
     _print_args_binary (code_file, list, c, left, right);
     if (destination == WAVE_ATOM_LITERAL_STRING)
         _print_register_string (code_file, list, c);
+}
+
+static void _chr_for_unary (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, wave_operator op)
+{
+    if (t == WAVE_ATOM_LITERAL_INT)
+    {
+        wave_generate_type_assignement (code_file, indexes, c, WAVE_ATOM_LITERAL_CHAR);
+        wave_generate_content_assignement (code_file, indexes, c, WAVE_ATOM_LITERAL_CHAR);
+        fprintf (code_file, " = wave_%s_%s", wave_generation_atom_type_string (WAVE_ATOM_LITERAL_INT), _operator_functions_strings[op]);
+        fprintf (code_file, " (");
+        _print_arg (code_file, indexes, c, t, -1);
+        fprintf (code_file, ");\n");
+    }
+    else
+        _type_error (code_file);
+
+}
+
+static void _code_for_unary (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, wave_operator op)
+{
+    if (t == WAVE_ATOM_LITERAL_CHAR)
+    {
+        wave_generate_type_assignement (code_file, indexes, c, WAVE_ATOM_LITERAL_INT);
+        wave_generate_content_assignement (code_file, indexes, c, WAVE_ATOM_LITERAL_INT);
+        fprintf (code_file, " = wave_%s_%s", wave_generation_atom_type_string (WAVE_ATOM_LITERAL_CHAR), _operator_functions_strings[op]);
+        fprintf (code_file, " (");
+        _print_arg (code_file, indexes, c, t, -1);
+        fprintf (code_file, ");\n");
+    }
+    else
+        _type_error (code_file);
 }
 
 static void _int_float_for_unary (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, wave_operator op)
@@ -423,6 +458,16 @@ static void _unary_not (FILE * code_file, const wave_collection * collection, wa
     _unary (code_file, collection, op, _bool);
 }
 
+static void _unary_chr (FILE * code_file, const wave_collection * collection, wave_operator op)
+{
+    _unary (code_file, collection, op, _chr_for_unary);
+}
+
+static void _unary_code (FILE * code_file, const wave_collection * collection, wave_operator op)
+{
+    _unary (code_file, collection, op, _code_for_unary);
+}
+
 _def_operator_function (_binary_minus, _binary_int_float)
 _def_operator_function (_binary_times, _binary_int_float)
 _def_operator_function (_binary_divide, _binary_int_float)
@@ -484,6 +529,8 @@ static void (* const _operator_functions[]) (FILE *, const wave_collection *, wa
     [WAVE_OP_UNARY_EXP]                 = _unary_exp,
     [WAVE_OP_UNARY_CEIL]                = _unary_ceil,
     [WAVE_OP_UNARY_FLOOR]               = _unary_floor,
+    [WAVE_OP_UNARY_CHR]                 = _unary_chr,
+    [WAVE_OP_UNARY_CODE]                = _unary_code,
     [WAVE_OP_BINARY_PLUS]               = _binary_plus,
     [WAVE_OP_BINARY_MINUS]              = _binary_minus,
     [WAVE_OP_BINARY_MIN]                = _binary_min,

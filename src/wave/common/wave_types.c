@@ -265,6 +265,11 @@ wave_bool wave_int_lesser (wave_int a, wave_int b)
     return a < b;
 }
 
+wave_char wave_int_chr (wave_int i)
+{
+    return wave_char_from_wave_int (i);
+}
+
 void wave_int_fprint (FILE * stream, wave_int i)
 {
     fprintf (stream, "%d", i);
