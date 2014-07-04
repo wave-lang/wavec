@@ -662,6 +662,7 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
 
                         if(c == NULL){
                             wave_path_free(temp._next_path);
+                            temp._next_path = NULL;
                         }
                         else{
                             if(wave_path_get_move(repeated_path) == WAVE_MOVE_PART){
@@ -674,7 +675,6 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
                             if(rewind_recording != NULL)        // Case where the upper function is recording also. Add then a copy of what whe recorded when the recursive call happened
                                 wave_path_add_path(rewind_recording, wave_path_copy(temp._next_path));
                         }
-                        temp._next_path = NULL;
                     }
                     if(type == WAVE_PATH_REPEAT_INFINITE)
                         c = temp_save;
