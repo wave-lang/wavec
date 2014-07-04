@@ -399,6 +399,14 @@ wave_coordinate * wave_collection_get_list_length (const wave_collection * c);
  */
 wave_int_list * wave_collection_get_full_indexes (const wave_collection * c);
 
+/**
+ * \brief Determine whether the collection, or any underlying collection contains path.
+ * \param c Collection.
+ * \relatesalso wave_collection
+ * \warning \c c must be not \c NULL.
+ */
+bool wave_collection_contains_path (const wave_collection * c);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
 ////////////////////////////////////////////////////////////////////////////////

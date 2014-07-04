@@ -334,6 +334,25 @@ wave_int_list * wave_collection_get_full_indexes (const wave_collection * c)
     return list;
 }
 
+bool wave_collection_contains_path (const wave_collection * c)
+{
+    bool contains = false;
+    wave_collection_type ct = wave_collection_get_type (c);
+    if (ct == WAVE_COLLECTION_ATOM)
+    {
+        wave_atom_type t = wave_atom_get_type (wave_collection_get_atom (c));
+        contains = t == WAVE_ATOM_PATH;
+    }
+    else if (ct != WAVE_COLLECTION_UNKNOWN)
+    {
+        wave_collection * list = wave_collection_get_list (c);
+        for (const wave_collection * current = list; ! contains && current != NULL; current = wave_collection_get_next (current))
+            contains = wave_collection_contains_path (c);
+    }
+
+    return contains;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Setters.
 ////////////////////////////////////////////////////////////////////////////////
