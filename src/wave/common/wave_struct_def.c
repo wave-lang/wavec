@@ -71,6 +71,47 @@ void wave_data_set_string (wave_data * data, wave_string s)
     data->_content._string = s;
 }
 
+wave_int wave_data_get_int (const wave_data * data)
+{
+    return data->_content._int;
+}
+
+wave_float wave_data_get_float (const wave_data * data)
+{
+    wave_float f;
+    if (wave_data_get_type (data) == WAVE_DATA_INT)
+        f = wave_float_from_wave_int (wave_data_get_int (data));
+    else
+        f = data->_content._float;
+
+    return f;
+}
+
+wave_char wave_data_get_char (const wave_data * data)
+{
+    return data->_content._char;
+}
+
+wave_bool wave_data_get_bool (const wave_data * data)
+{
+    return data->_content._bool;
+}
+
+wave_string wave_data_get_string (const wave_data * data)
+{
+    wave_string s;
+    if (wave_data_get_type (data) == WAVE_DATA_CHAR)
+    {
+        s = wave_garbage_alloc (2 * sizeof (wave_char));
+        s[0] = wave_data_get_char (data);
+        s[1] = '\0';
+    }
+    else
+        s = data->_content._string;
+
+    return s;
+}
+
 static wave_int (* const _unary_int_to_int []) (wave_int) =
 {
     [WAVE_OP_UNARY_PLUS] = wave_int_unary_plus,
