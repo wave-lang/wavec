@@ -62,9 +62,24 @@ void * wave_phrase_free (wave_phrase * p)
         if (p->_collection != NULL)
             wave_collection_free (p->_collection);
         free (p);
-        p = NULL;
     }
     return p;
+}
+
+void wave_phrase_clean (wave_phrase * p)
+{
+    if (p != NULL)
+    {
+        wave_phrase * current = p;
+        while (current != NULL)
+        {
+            wave_phrase * next = current->_next_phrase;
+            if (current->_collection != NULL)
+                wave_collection_free (current->_collection);
+            free (current);
+            current = next;
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

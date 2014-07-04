@@ -530,8 +530,6 @@ static void _specific_print (FILE * const code_file, const wave_collection * con
 
 static void _specific_atom (FILE * const code_file, const wave_collection * const collection, wave_operator op)
 {
-    (void) op;
-
     if (wave_collection_has_previous (collection))
     {
         wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
@@ -543,6 +541,48 @@ static void _specific_atom (FILE * const code_file, const wave_collection * cons
         fprintf (code_file, ", %s", _operator_enum_strings[op]);
         fprintf (code_file, ");\n");
         wave_int_list_free (indexes);
+    }
+    else
+        _operand_error (code_file);
+}
+
+static void _specific_stop (FILE * const code_file, const wave_collection * const collection, wave_operator op)
+{
+    (void) op;
+
+    if (wave_collection_has_previous (collection))
+    {
+        wave_collection * parent = wave_collection_get_parent (collection);
+        wave_int_list * indexes = wave_collection_get_full_indexes (parent);
+        wave_coordinate * c = wave_collection_get_coordinate (collection);
+
+        fprintf (code_file, "if (wave_data_get_type ( & ");
+        _print_tab_minus (code_file, indexes, c, -2);
+        fprintf (code_file, ") != WAVE_DATA_BOOL)\n{\nexit (EX_DATAERR);\n}\n");
+
+        fprintf (code_file, "if (wave_data_get_bool ( &");
+        _print_tab_minus (code_file, indexes, c, -2);
+        fprintf (code_file, "))\n{\n");
+
+        wave_collection * parent_parent = wave_collection_get_parent (parent);
+        wave_int_list * parent_indexes = wave_collection_get_full_indexes (parent_parent);
+        wave_coordinate * parent_coordinate = wave_collection_get_coordinate (parent);
+
+        wave_code_generation_fprint_tab_with_init(code_file, parent_indexes, parent_coordinate, "");
+        fprintf (code_file, " = ");
+        _print_tab_minus (code_file, indexes, c, -1);
+        fprintf (code_file, ";\n");
+
+        fprintf (code_file, "}\nelse\n{\n");
+        wave_generate_stack_curly ();
+
+        wave_code_generation_fprint_tab_with_init(code_file, indexes, c, "");
+        fprintf (code_file, " = ");
+        _print_tab_minus (code_file, indexes, c, -1);
+        fprintf (code_file, ";\n");
+
+        wave_int_list_free (indexes);
+        wave_int_list_free (parent_indexes);
     }
     else
         _operand_error (code_file);
@@ -581,7 +621,7 @@ static void (* const _operator_functions[]) (FILE *, const wave_collection *, wa
     [WAVE_OP_BINARY_OR]                 = _binary_or,
     [WAVE_OP_BINARY_GET]                = _binary_get,
     [WAVE_OP_SPECIFIC_ATOM]             = _specific_atom,
-    [WAVE_OP_SPECIFIC_STOP]             = NULL,
+    [WAVE_OP_SPECIFIC_STOP]             = _specific_stop,
     [WAVE_OP_SPECIFIC_CUT]              = NULL,
     [WAVE_OP_SPECIFIC_READ]             = NULL,
     [WAVE_OP_SPECIFIC_PRINT]            = _specific_print,

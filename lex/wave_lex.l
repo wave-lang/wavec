@@ -135,12 +135,12 @@ int main(int argc, char ** argv)
     }
     wave_phrase_init (&p);
     if(yyparse() == 1){
-        wave_phrase_free(p._next_phrase);
+        wave_phrase_clean(p._next_phrase);
         return EXIT_FAILURE;
     }
     wave_phrase_print(&p);
     wave_code_generation_generate(yyout, p._next_phrase);
-    wave_phrase_free(p._next_phrase);
+    wave_phrase_clean(p._next_phrase);
     fclose(yyin);
     if(argc == 2)
         fclose(yyout);
