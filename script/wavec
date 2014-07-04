@@ -1,13 +1,14 @@
 #!/bin/bash
 # Very basic script for wave compiling
 
+# Get the script's path.
 SCRIPT_PATH=$(dirname $0)
 
+# Programs used.
 WAVEPP=wavepp
 WAVE2C=wave2c
 
-WAVE2C="$SCRIPT_PATH/wave2c"
-
+# Test whether the programs can be found. Try in the script's path otherwise.
 if ! command -v "$WAVEPP" > /dev/null 2>&1; then
     WAVEPP="$SCRIPT_PATH/wavepp"
 fi
@@ -16,12 +17,29 @@ if ! command -v "$WAVE2C" > /dev/null 2>&1; then
     WAVE2C="$SCRIPT_PATH/wave2c"
 fi
 
+# Compile the files.
 for WAVE_SRC in $*; do
+    # Compute new names.
     WAVE_PP=${WAVE_SRC/\.wave/}.wave_pp
     C_SRC=${WAVE_PP/\.wave_pp/\.c}
     EXE=${C_SRC/\.c/}
+
+    # Run the preprocessor.
     $WAVEPP "$WAVE_SRC" "$WAVE_PP" &&
+
+    ################################
+    # Insert the type checker here !
+    ################################
+
+    # Run the translator from Wave to C.
     $WAVE2C "$WAVE_PP" "$C_SRC" &&
+
+    # Indent the produced C code, if ``indent'' is available.
+    if command -v indent > /dev/null 2>&1; then
+        indent -bad -bap -bli0 -bls -bs -cs -i4 -l80 -lp -pcs -pmt -saf -sai -saw -sc -ss "$C_SRC"
+    fi
+
+    # Compile the produced C code.
     gcc "$C_SRC" -o "$EXE" -std=c99 -fopenmp -Iinclude -Llib -lm -lwave
 done
 
