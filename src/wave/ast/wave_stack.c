@@ -1,6 +1,6 @@
 /**
- * \file wave_path_stack.c
- * \brief Wave path stack.
+ * \file wave_stack.c
+ * \brief Wave stack.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
  * \author SCHMITT Maxime
  * \date 2014
@@ -28,74 +28,74 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "wave/ast/wave_path_stack.h"
+#include "wave/ast/wave_stack.h"
 
-static wave_path_stack_element * wave_path_stack_element_alloc (void)
+static wave_stack_element * wave_stack_element_alloc (void)
 {
-    wave_path_stack_element * e = malloc (sizeof * e);
+    wave_stack_element * e = malloc (sizeof * e);
     if (e == NULL)
         perror ("malloc");
     else
-        * e = (wave_path_stack_element) { ._path = NULL, ._next = NULL };
+        * e = (wave_stack_element) { ._pointer = NULL, ._next = NULL, };
     return e;
-}
-
-static wave_path_stack_element * wave_path_stack_element_free (wave_path_stack_element * e)
-{
-    if (e != NULL)
-    {
-        free (e);
-        e = NULL;
-    }
-    return NULL;
-}
-static wave_path_stack_element * wave_path_stack_element_get_path (const wave_path_stack_element * e)
-{
-    return e->_path;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
-void * wave_path_stack_alloc (void)
+void * wave_stack_alloc (void)
 {
-    wave_path_stack * stack = malloc (sizeof * stack);
+    wave_stack * stack = malloc (sizeof * stack);
     if (stack == NULL)
         perror ("malloc");
     else
-        * stack = (wave_path_stack) { ._head = NULL; ._tail = NULL };
+        * stack = (wave_stack) { ._head = NULL, ._tail = NULL, };
 
     return stack;
 }
 
-void * wave_path_stack_free (wave_path_stack * s)
+void wave_stack_free (wave_stack * s)
 {
     if (s != NULL)
     {
+        wave_stack_element * e = s->_head;
+        while (e != NULL)
+        {
+            wave_stack_element * next = e->_next;
+            free (e);
+            e = next;
+        }
         free (s);
-        s = NULL;
     }
-
-    return NULL;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Push back your lolly Pop.
 ////////////////////////////////////////////////////////////////////////////////
 
-wave_path * wave_path_stack_pop (wave_path_stack * s)
+void * wave_stack_pop (wave_stack * s)
 {
-    wave_path * p = s->_head->_path;
-    s->_head = s->_head->_next;
-    return p;
+    wave_stack_element * old_head = s->_head;
+    void * pointer = old_head->_pointer;
+    s->_head = old_head->_next;
+    if (s->_head == NULL)
+        s->_tail = NULL;
+    free (old_head);
+    return pointer;
 }
 
-void wave_path_stack_push (wave_path_stack * s, wave_path * p)
+void wave_stack_push (wave_stack * s, void * p)
 {
-    wave_path_stack_element * e = wave_path_stack_element_alloc ();
-    e->_path = p;
-    s->_tail->_next = e;
+    wave_stack_element * e = wave_stack_element_alloc ();
+    e->_pointer = p;
+    if (s->_tail != NULL)
+        s->_tail->_next = e;
+    else
+    {
+        s->_head = e;
+        s->_tail = e;
+    }
     s->_tail = e;
 }
 
@@ -103,17 +103,17 @@ void wave_path_stack_push (wave_path_stack * s, wave_path * p)
 // Getters
 ////////////////////////////////////////////////////////////////////////////////
 
-wave_path * wave_path_stack_head (const wave_path_stack * const s)
+void * wave_stack_head (const wave_stack * const s)
 {
-    return s->_head == NULL ? NULL : s->_head->_path;
+    return s->_head == NULL ? NULL : s->_head->_pointer;
 }
 
-wave_path * wave_path_stack_tail (const wave_path_stack * const s)
+void * wave_stack_tail (const wave_stack * const s)
 {
-    return s->_tail == NULL ? NULL : s->_tail->_path;
+    return s->_tail == NULL ? NULL : s->_tail->_pointer;
 }
 
-bool wave_path_stack_is_empty (const wave_path_stack * const s)
+bool wave_stack_is_empty (const wave_stack * const s)
 {
-    return s->head == NULL;
+    return s->_head == NULL;
 }
