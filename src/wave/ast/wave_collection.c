@@ -381,7 +381,7 @@ void wave_collection_add_collection (wave_collection * const c, wave_collection 
             last = wave_collection_get_next (last);
         last->_next_collection = next;
         next->_previous_collection = last;
-        next->_parent_collection = last->_parent_collection;
+        _wave_collection_set_parent (next, last->_parent_collection);
     }
 }
 
@@ -539,6 +539,11 @@ static inline void  _wave_collection_set_length (wave_collection * c)
         }
         wave_coordinate_set_times (length, repetition, length_sum);
     }
+    else
+    {
+        wave_coordinate_set_constant (length, 1);
+    }
+
     wave_collection_info_set_length (info, length);
 }
 
@@ -778,12 +783,7 @@ bool wave_collection_path_is_valid (wave_collection * c, const wave_path * p)
 }
 
 static void copy_collection_path_time(wave_collection* c){
-    wave_collection* next = wave_collection_get_next(c);
-    wave_collection* previous = wave_collection_get_previous(c);
-    wave_collection* parent = wave_collection_get_parent(c);
-    wave_collection* collection_to_copy = wave_collection_get_repetition_list(c);
-    wave_collection* copy;
-
+    wave_collection* collection_to_copy = wave_collection_get_list (c);
     wave_collection_unroll_path( collection_to_copy );
 
     int size = wave_collection_get_path_size_only_last_record(c, wave_collection_get_repetition_path(c));
@@ -795,31 +795,41 @@ static void copy_collection_path_time(wave_collection* c){
         fprintf(stderr, "The path did not contain any record.\n");
         exit(1);
     }
-    copy = wave_collection_copy( collection_to_copy );
-    for(int i=1; i < size; i++)
-        wave_collection_add_collection(copy, wave_collection_copy( collection_to_copy ));
+///*
+    wave_collection* parent = wave_collection_get_parent (c);
+    wave_collection * copy = wave_collection_copy (collection_to_copy);
+    _wave_collection_set_parent (copy, parent);
 
-    _wave_collection_set_parent(copy, parent);
-    wave_collection_add_collection(copy, next);
+    _duplicate_list (copy, size);
 
-    previous->_next_collection = NULL;
-    wave_collection_add_collection(previous, copy);
+    wave_collection* next = wave_collection_get_next (c);
+    wave_collection_add_collection (copy, next);
+
+    wave_collection* previous = wave_collection_get_previous (c);
+    previous->_next_collection = copy;
+    copy->_previous_collection = previous;
 
     c->_next_collection = NULL;
     wave_collection_free(c);
+//    */
 }
 
-void wave_collection_unroll_path(wave_collection* c){
-    if(c != NULL){
-        wave_collection* collection = wave_collection_get_next(c);
-        wave_collection_type type = wave_collection_get_type(c);
-        if( type == WAVE_COLLECTION_REP_SEQ || type == WAVE_COLLECTION_REP_PAR )
-            copy_collection_path_time(c);
-        else
-            if(type == WAVE_COLLECTION_SEQ || type == WAVE_COLLECTION_PAR ||
-                    type == WAVE_COLLECTION_CYCLIC_SEQ || type == WAVE_COLLECTION_CYCLIC_PAR)
-                wave_collection_unroll_path(wave_collection_get_list(c));
-        wave_collection_unroll_path( collection );
+void wave_collection_unroll_path(wave_collection* c)
+{
+    if (c != NULL)
+    {
+        wave_stack * s = wave_stack_alloc ();
+        wave_stack_push (s, c);
+        while (! wave_stack_is_empty (s))
+        {
+            wave_collection * current = wave_stack_pop (s);
+            wave_collection_type type = wave_collection_get_type (current);
+            if (type == WAVE_COLLECTION_REP_SEQ || type == WAVE_COLLECTION_REP_PAR)
+                copy_collection_path_time (current);
+            else if (type != WAVE_COLLECTION_ATOM && type != WAVE_COLLECTION_UNKNOWN)
+                _add_list_to_stack (wave_collection_get_list (current), s);
+        }
+        wave_stack_free (s);
     }
 }
 
@@ -833,27 +843,30 @@ static void _replace_with_pointed (wave_collection * c, wave_collection * pointe
     pointed->_next_collection = NULL;
     wave_collection* copy = wave_collection_copy( pointed );
     pointed->_next_collection = next_collection;
+
     if(wave_collection_has_previous(c))
         c->_previous_collection->_next_collection = copy;
+
     if(wave_collection_has_next(c))
         c->_next_collection->_previous_collection = copy;
+
+    if (wave_collection_has_parent (c))
+    {
+        if (parent->_inner._list == c)
+            parent->_inner._list = copy;
+    }
+
     copy->_previous_collection = previous;
     copy->_next_collection = next;
     copy->_parent_collection = parent;
 
-    copy->_info = wave_collection_info_copy(c->_info);
 
-    if(wave_collection_get_type(copy) != WAVE_COLLECTION_ATOM)
-        wave_collection_compute_indexes(wave_collection_get_list(copy));
+    copy->_info->_index = c->_info->_index;
+
+    if (wave_collection_get_type (copy) != WAVE_COLLECTION_ATOM)
+        wave_collection_compute_indexes (wave_collection_get_list (copy));
 
     c->_next_collection = NULL;
-    fprintf (stderr, "free: ");
-    fprintf (stderr, "\t");
-    wave_collection_fprint (stderr, c);
-    fprintf (stderr, "\n");
-    fprintf (stderr, "\t");
-    wave_collection_fprint (stderr, pointed);
-    fprintf (stderr, "\n");
     wave_collection_free(c);
 }
 
@@ -861,8 +874,6 @@ static void _remplace_path_if_possible(wave_collection* c){
     wave_collection* pointed = (wave_collection*) wave_collection_get_collection_pointed (c, wave_atom_get_path (wave_collection_get_atom (c)));
     if (pointed != NULL)
     {
-        wave_collection_fprint (stderr, pointed);
-        fprintf (stderr, "Je suis pointé\n");
 
         wave_int_list* me = wave_collection_get_full_indexes (c);
         wave_int_list* him_or_her = wave_collection_get_full_indexes (pointed);
@@ -877,36 +888,38 @@ static void _remplace_path_if_possible(wave_collection* c){
         {
             if (! wave_collection_contains_path (pointed))
             {
-                fprintf (stderr, "OOO: ");
-                wave_collection_fprint (stderr, pointed);
-                fprintf (stderr, "\n");
                 _replace_with_pointed (c, pointed);
             }
         }
+
+        wave_int_list_free (me);
+        wave_int_list_free (him_or_her);
     }
 }
 
 void wave_collection_replace_path(wave_collection* c)
 {
-    if (c != NULL)
+    wave_stack * s = wave_stack_alloc ();
+    wave_stack_push (s, c);
+
+    while (! wave_stack_is_empty (s))
     {
-        for (wave_collection * current = c; current != NULL; current = wave_collection_get_next (current))
+        wave_collection * current = wave_stack_pop (s);
+        wave_collection_type type = wave_collection_get_type (current);
+        if (type == WAVE_COLLECTION_ATOM)
         {
-            wave_collection_type type = wave_collection_get_type (current);
-            if (type == WAVE_COLLECTION_ATOM)
-            {
-                wave_atom* atom = wave_collection_get_atom (current);
-                wave_atom_type atom_type = wave_atom_get_type (atom);
-                if (atom_type == WAVE_ATOM_PATH)
-                    _remplace_path_if_possible (current);
-            }
-            else if (type == WAVE_COLLECTION_SEQ || type == WAVE_COLLECTION_PAR ||
+            wave_atom* atom = wave_collection_get_atom (current);
+            wave_atom_type atom_type = wave_atom_get_type (atom);
+            if (atom_type == WAVE_ATOM_PATH)
+                _remplace_path_if_possible (current);
+        }
+        else if (type == WAVE_COLLECTION_SEQ || type == WAVE_COLLECTION_PAR ||
                     type == WAVE_COLLECTION_CYCLIC_SEQ || type == WAVE_COLLECTION_CYCLIC_PAR)
-            {
-                wave_collection_replace_path (wave_collection_get_list (current));
-            }
+        {
+            _add_list_to_stack (wave_collection_get_list (current), s);
         }
     }
+    wave_stack_free (s);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -80,7 +80,7 @@ void * wave_path_free (wave_path * p)
     if (p != NULL)
     {
         wave_stack * s = wave_stack_alloc ();
-        wave_stack_push (s, p);
+        _add_to_stack (p, s);
         while (! wave_stack_is_empty (s))
         {
             wave_path * current = wave_stack_pop (s);
