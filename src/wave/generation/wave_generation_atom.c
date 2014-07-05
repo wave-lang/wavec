@@ -145,6 +145,25 @@ static void _wave_code_generation_fprint_string(FILE* code_file, const wave_coll
     _wave_generate_with_strings_inside_tm(code_file, collection, WAVE_ATOM_LITERAL_STRING);
 }
 
-static void _wave_code_generation_fprint_path(FILE* code_file, const wave_collection* collection){
-    (void) code_file; (void) collection;
+static void _wave_code_generation_fprint_path(FILE* code_file, const wave_collection* collection)
+{
+//    (void) code_file; (void) collection;
+    wave_path * p = wave_atom_get_path (wave_collection_get_atom (collection));
+    wave_collection * pointed = wave_collection_get_collection_pointed (collection, p);
+    if (pointed != NULL)
+    {
+        wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
+        wave_coordinate * c = wave_collection_get_coordinate (collection);
+        wave_int_list * indexes_pointed = wave_collection_get_full_indexes (wave_collection_get_parent (pointed));
+        wave_coordinate * c_pointed = wave_collection_get_coordinate (pointed);
+
+        wave_code_generation_fprint_tab_with_init(code_file, indexes, c, "");
+        fprintf (code_file, " = ");
+
+        wave_code_generation_fprint_tab_with_init(code_file, indexes_pointed, c_pointed, "");
+        fprintf (code_file, ";\n");
+
+        wave_int_list_free (indexes);
+        wave_int_list_free (indexes_pointed);
+    }
 }
