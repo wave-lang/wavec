@@ -55,13 +55,23 @@ void * wave_path_alloc (void)
     return p;
 }
 
-static inline void _wave_path_free_current (wave_path * p)
+static inline void _add_to_stack (wave_path * p, wave_stack * s)
+{
+    wave_path * current, * next;
+    for (current = p; current != NULL; current = next)
+    {
+        next = current->_next_path;
+        wave_stack_push (s, current);
+    }
+}
+
+static inline void _wave_path_free_current (wave_path * p, wave_stack * s)
 {
     wave_move_type move = wave_path_get_move (p);
     if (move == WAVE_MOVE_PART)
-        wave_path_free (p->_complex_move._part);
+        _add_to_stack (p->_complex_move._part, s);
     else if (move == WAVE_MOVE_REP)
-        wave_path_free (p->_complex_move._repeat._path);
+        _add_to_stack (p->_complex_move._repeat._path, s);
     free (p);
 }
 
@@ -69,13 +79,14 @@ void * wave_path_free (wave_path * p)
 {
     if (p != NULL)
     {
-        wave_path * current, * next;
-        for (current = p; current != NULL; current = next)
+        wave_stack * s = wave_stack_alloc ();
+        wave_stack_push (s, p);
+        while (! wave_stack_is_empty (s))
         {
-            next = current->_next_path;
-            _wave_path_free_current (current);
+            wave_path * current = wave_stack_pop (s);
+            _wave_path_free_current (current, s);
         }
-        p = NULL;
+        wave_stack_free (s);
     }
 
     return NULL;
