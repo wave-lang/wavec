@@ -35,6 +35,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#include "wave/ast/wave_stack.h"
+
 /**
  * \defgroup wave_path_group Wave Path
  * \ingroup wave_ast_group
