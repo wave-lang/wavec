@@ -129,7 +129,7 @@ static inline void _wave_atom_content_fprint_bool (FILE * stream, const wave_ato
     wave_bool_fprint (stream, c->_bool);
 }
 
-/* Symbols used in printing functions for characterss, strings and operators. */
+/* Symbols used in printing functions for characters, strings and operators. */
 static const char _char_delimiter = '\'';
 static const char _string_delimiter = '\"';
 static const char _path_symbol = '@';
