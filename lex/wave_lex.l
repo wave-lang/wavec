@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <sysexits.h>
+#include <string.h>
 #include "wave/common/wave_types.h"
 #include "wave/ast/wave_phrase.h"
 #include "wave/generation/wave_code_generation.h"
@@ -117,8 +119,8 @@ int main(int argc, char ** argv)
 {
     ++argv; --argc;
     if (argc > 2){
-        fprintf(stderr, "Too many arguments\n");
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: too many arguments\n");
+        exit (EX_USAGE);
     }
 
     if (argc >= 1)
@@ -130,7 +132,7 @@ int main(int argc, char ** argv)
             yyin = fopen(argv[0], "r");
             if( yyin == NULL ){
             perror("fopen");
-            return EXIT_FAILURE;
+            exit (EX_OSERR);
             }
         }
     }
@@ -140,14 +142,14 @@ int main(int argc, char ** argv)
         if( yyout == NULL ){
             fclose(yyin);
             perror("fopen");
-            return EXIT_FAILURE;
+            exit (EX_OSERR);
         }
     }
-    
+
     wave_phrase_init (&p);
     if(yyparse() == 1){
         wave_phrase_clean(p._next_phrase);
-        return EXIT_FAILURE;
+        exit (EX_DATAERR);
     }
     wave_code_generation_generate(yyout, p._next_phrase);
     wave_phrase_clean(p._next_phrase);
@@ -155,7 +157,7 @@ int main(int argc, char ** argv)
     if(argc == 2)
         fclose(yyout);
     yylex_destroy();
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 void incline(void){

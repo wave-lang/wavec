@@ -36,6 +36,7 @@ extern int yylval;
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <sysexits.h>
 }
 Integer     [0-9]+
 Float       [0-9]+"."[0-9]*|[0-9]*"."[0-9]+
@@ -131,22 +132,23 @@ int main(int argc, char** argv){
     --argc; ++argv;
     preproc_init(256);
     if( argc > 2 || argc < 1 ){
-        return EXIT_FAILURE;
+        fprintf (stderr, "Error: wrong number of arguments.\n");
+        exit (EX_USAGE);
     }
     yyin = fopen(argv[0], "r");
     if( yyin == NULL )
-        perror_and_quit("fopen");
+        perror_and_quit("fopen", EX_OSERR);
     if( argc == 2 )
         yyout = fopen(argv[1], "w");
     else
         yyout = fopen("pars_out.wave", "w");
     if( yyout == NULL )
-        perror_and_quit("fopen");
+        perror_and_quit("fopen", EX_OSERR);
     BEGIN(PREPROCESSOR);
     yylex();
     fclose( yyin );
     fclose( yyout );
     preproc_clean();
     yylex_destroy();
-    return EXIT_SUCCESS;
+    return 0;
 }
