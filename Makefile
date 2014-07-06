@@ -47,7 +47,7 @@ FLAGS_CC_INCLUDE = -I$(PATH_INCLUDE) -I$(PATH_INCLUDE_YACC) \
 	-I$(PATH_TESTS_INCLUDE) -I$(PATH_INCLUDE_HASH)
 FLAGS_CC_DEBUG = -g
 FLAGS_CC_WARNINGS = -pedantic -Wall -Wextra -Wfloat-equal -Wdouble-promotion \
-	-Wswitch-default -Winit-self -Wshadow -Wbad-function-cast -Wcast-qual \
+	-Wswitch-default -Winit-self -Wshadow -Wbad-function-cast \
 	-Wcast-align -Wconversion -Wlogical-op -Wstrict-prototypes -Wnested-externs
 FLAGS_CC_MISC = -std=gnu99 -O0 -fopenmp
 FLAGS_CC = $(FLAGS_CC_INCLUDE) $(FLAGS_CC_WARNINGS) $(FLAGS_CC_MISC) \
@@ -143,9 +143,9 @@ print_tests: test_ast_print.o libhash.a libwave.a libwaveast.a | bin_dir
 	$(CC) $(FLAGS_CC) -o $(PATH_OBJ)/$@ -c $<
 
 # Wave AST
-wave_path.o: wave_path.c wave_path.h
+wave_path.o: wave_path.c wave_path.h wave_queue.h
 wave_atom.o: wave_atom.c wave_atom.h wave_types.h wave_path.h wave_operator.h
-wave_collection.o: wave_collection.c wave_collection.h wave_atom.h
+wave_collection.o: wave_collection.c wave_collection.h wave_atom.h wave_queue.h
 wave_phrase.o: wave_phrase.c wave_phrase.h wave_collection.h
 wave_int_list.o: wave_int_list.c wave_int_list.h
 wave_coordinate.o: wave_coordinate.c wave_coordinate.h wave_int_list.h
@@ -157,17 +157,22 @@ main.o: main.c wave_path.h wave_atom.h wave_collection.h wave_compiler_version.h
 # Code generation
 wave_headers.o: wave_headers.c wave_headers.h
 wave_code_generation.o: wave_code_generation.c wave_code_generation.h \
-	wave_generation_operators.h wave_generation_common.h
+	wave_generation_operators.h wave_generation_common.h wave_headers.h \
+	wave_generation_atom.h wave_generation_curly.h
 wave_generation_operators.o: wave_generation_operators.c \
-	wave_generation_operators.h wave_generation_common.h
-wave_generation_common.o: wave_generation_common.c wave_generation_common.h
-wave_generation_atom.o: wave_generation_atom.c wave_generation_atom.h
+	wave_generation_operators.h wave_generation_common.h wave_types.h \
+	wave_operator.h wave_collection.h
+wave_generation_common.o: wave_generation_common.c wave_generation_common.h \
+	wave_types.h wave_atom.h wave_int_list.h wave_coordinate.h \
+	wave_generation_curly.h
+wave_generation_atom.o: wave_generation_atom.c wave_generation_atom.h \
+	wave_atom.h wave_collection.h wave_generation_operators.h
 wave_generation_curly.o: wave_generation_curly.c wave_generation_curly.h
 
 # Wave common
 wave_types.o: wave_types.c wave_types.h
 wave_operator.o: wave_operator.c wave_operator.h
-wave_data.o: wave_data.c wave_data.h
+wave_data.o: wave_data.c wave_data.h wave_types.h wave_operator.h wave_garbage.h
 wave_garbage.o: wave_garbage.c wave_garbage.h
 
 # Tests

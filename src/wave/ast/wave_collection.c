@@ -49,7 +49,7 @@ static inline void _add_list_to_queue (wave_collection * c, wave_queue * q)
 
     for (wave_collection * current = c; current != NULL; current = wave_collection_get_next (current))
         wave_queue_push (temp, current);
-        
+
     while (! wave_queue_is_empty (q))
         wave_queue_push (temp, wave_queue_pop (q));
     while (! wave_queue_is_empty (temp))
@@ -358,7 +358,7 @@ bool wave_collection_contains_path (const wave_collection * c)
     if (c != NULL)
     {
         wave_queue * q = wave_queue_alloc ();
-        wave_queue_push (q, c);
+        wave_queue_push (q, (void *) c);
         while (! contains && ! wave_queue_is_empty (q))
         {
             wave_collection * current = wave_queue_pop (q);
@@ -897,7 +897,7 @@ static void _replace_with_pointed (wave_collection * c, wave_collection * pointe
 }
 
 static void _remplace_path_if_possible(wave_collection* c){
-    wave_collection* pointed = (wave_collection*) wave_collection_get_collection_pointed (c, wave_atom_get_path (wave_collection_get_atom (c)));
+    wave_collection* pointed = (wave_collection *) wave_collection_get_collection_pointed (c, wave_atom_get_path (wave_collection_get_atom (c)));
     if (pointed != NULL)
     {
 
