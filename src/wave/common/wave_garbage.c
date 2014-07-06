@@ -64,22 +64,31 @@ void * wave_garbage_alloc (size_t size)
 
 void wave_garbage_register (void * pointer)
 {
-    if (_WAVE_GC._count >= _WAVE_GC._size)
-        _grow_gc ();
-    _WAVE_GC._pointers[_WAVE_GC._count] = pointer;
-    _WAVE_GC._count++;
+    #pragma omp critical
+    {
+        if (_WAVE_GC._count >= _WAVE_GC._size)
+            _grow_gc ();
+        _WAVE_GC._pointers[_WAVE_GC._count] = pointer;
+        _WAVE_GC._count++;
+    }
 }
 
 void wave_garbage_clean (void)
 {
-    for (size_t i = 0; i < _WAVE_GC._count; ++i)
-        free (_WAVE_GC._pointers[i]);
-    _WAVE_GC._count = 0;
+    #pragma omp critical
+    {
+        for (size_t i = 0; i < _WAVE_GC._count; ++i)
+            free (_WAVE_GC._pointers[i]);
+        _WAVE_GC._count = 0;
+    }
 }
 
 void wave_garbage_destroy (void)
 {
-    wave_garbage_clean ();
-    free (_WAVE_GC._pointers);
-    _reset_gc ();
+    #pragma omp critical
+    {
+        wave_garbage_clean ();
+        free (_WAVE_GC._pointers);
+        _reset_gc ();
+    }
 }
