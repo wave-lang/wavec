@@ -512,8 +512,13 @@ static void _binary (FILE * const code_file, const wave_collection * const colle
 ////////////////////////////////////////////////////////////////////////////////
 // Operation functions.
 ////////////////////////////////////////////////////////////////////////////////
+/** \cond Doxygen ignore. */
 
-/* Define all operation functions from a name and a generic function. */
+/**
+ * \brief Define all operation functions from a name and a generic function.
+ * \param function_name Partial function name.
+ * \param generic_function Generic function.
+ */
 #define _def_operator_function(function_name, generic_function) \
     static void function_name (FILE * code_file, const wave_collection * collection, wave_operator op) \
     { \
@@ -595,6 +600,8 @@ static void _binary_get (FILE * code_file, const wave_collection * collection, w
 }
 
 #undef _def_operator_function
+
+/** \endcond Doxygen ignore. */
 
 ////////////////////////////////////////////////////////////////////////////////
 // Specific operators.

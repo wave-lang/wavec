@@ -54,9 +54,10 @@ void wave_code_generation_generate (FILE * output_file, const wave_phrase * phra
 
 /**
  * \brief Generate C source code giving a collection.
- * \param output_file The file where the C code will be written.
+ * \param code_file The file where the C code will be written.
+ * \param alloc_file File for allocations.
  * \param collection The collection to translate into C code.
- * \pre output_file and collection must not be NULL.
+ * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection
  * \note  Collections in phrases must have already been indexed.
  */

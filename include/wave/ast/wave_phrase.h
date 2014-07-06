@@ -84,6 +84,10 @@ void * wave_phrase_alloc (void);
  */
 void * wave_phrase_free (wave_phrase * p);
 
+/**
+ * \brief Clean phrases.
+ * \param p Phrase.
+ */
 void wave_phrase_clean (wave_phrase * p);
 
 ////////////////////////////////////////////////////////////////////////////////

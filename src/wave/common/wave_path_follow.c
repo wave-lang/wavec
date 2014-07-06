@@ -31,6 +31,9 @@
 
 #include "wave/common/wave_path_follow.h"
 
+/**
+ * \brief Path.
+ */
 typedef enum _path_enum {
     PATH_PREVIOUS = 0,
     PATH_NEXT,
@@ -87,6 +90,9 @@ static inline wave_data* _follow_infinite_path(wave_data* data, char direction, 
     path_size = 0;
 }
 
+/**
+ * \brief Path type.
+ */
 typedef enum _path_type{
     PATH_SIMPLE = 0,
     PATH_NUMBER,
@@ -133,7 +139,7 @@ static int _test_next_path_to_follow(wave_data* data, char* where_to_go){
     }
 }
 
-//static 
+//static
 
 wave_data* wave_follow_path(wave_data* data, char* where_to_go, int* size){
     *size = 0;

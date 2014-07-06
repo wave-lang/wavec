@@ -42,8 +42,20 @@ static inline void _wave_collection_set_parent (wave_collection * const c, wave_
 
 static inline void _add_list_to_queue (wave_collection * c, wave_queue * q)
 {
+    /* Temporary workaround to correctly add the collection to the top instead
+     * of the bottom.
+     */
+    wave_queue * temp = wave_queue_alloc ();
+
     for (wave_collection * current = c; current != NULL; current = wave_collection_get_next (current))
-        wave_queue_push (q, current);
+        wave_queue_push (temp, current);
+        
+    while (! wave_queue_is_empty (q))
+        wave_queue_push (temp, wave_queue_pop (q));
+    while (! wave_queue_is_empty (temp))
+        wave_queue_push (q, wave_queue_pop (temp));
+
+    wave_queue_free (temp);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -447,7 +459,7 @@ void wave_collection_set_repetition_path (wave_collection * const c, wave_path *
     c->_inner._repetition._description._path = p;
 }
 
-void _duplicate_list (wave_collection * list, int times)
+static void _duplicate_list (wave_collection * list, int times)
 {
     int copy_number = times - 1;
     wave_collection * copies[copy_number];

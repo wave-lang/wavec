@@ -388,6 +388,7 @@ wave_collection * wave_collection_get_last (wave_collection * c);
  * \relatesalso wave_collection
  * \warning \c c must be not \c NULL.
  * \note It is up to the user to free the resulting wave_coordinate.
+ * \return Length.
  */
 wave_coordinate * wave_collection_get_list_length (const wave_collection * c);
 
@@ -397,6 +398,7 @@ wave_coordinate * wave_collection_get_list_length (const wave_collection * c);
  * \relatesalso wave_collection
  * \warning \c c must be not \c NULL.
  * \note It is up to the user to free the resulting wave_int_list.
+ * \return Full indexes.
  */
 wave_int_list * wave_collection_get_full_indexes (const wave_collection * c);
 
@@ -405,6 +407,8 @@ wave_int_list * wave_collection_get_full_indexes (const wave_collection * c);
  * \param c Collection.
  * \relatesalso wave_collection
  * \warning \c c must be not \c NULL.
+ * \retval true if the collection contains a path.
+ * \retval false otherwise.
  */
 bool wave_collection_contains_path (const wave_collection * c);
 
@@ -509,10 +513,38 @@ void wave_collection_set_repetition_times (wave_collection * c, int times);
  */
 void wave_collection_set_repetition_path (wave_collection * c, wave_path * p);
 
+/**
+ * \brief Set a sequential constant repetition.
+ * \param c Collection.
+ * \param times Times.
+ * \relatesalso wave_collection
+ */
 void wave_collection_set_repetition_seq_times (wave_collection * c, int times);
+
+/**
+ * \brief Set a sequential repetition with a path
+ * \param c Collection.
+ * \param list Repeated list.
+ * \param p Path.
+ * \relatesalso wave_collection
+ */
 void wave_collection_set_repetition_seq_path (wave_collection * c, wave_collection * list, wave_path * p);
+/**
+ * \brief Set a parallel constant repetition.
+ * \param c Collection.
+ * \param times Times.
+ * \relatesalso wave_collection
+ */
 void wave_collection_set_repetition_par_times (wave_collection * c, int times);
+/**
+ * \brief Set a parallel repetition with a path.
+ * \param c Collection.
+ * \param list Repeated list.
+ * \param p Path.
+ * \relatesalso wave_collection
+ */
 void wave_collection_set_repetition_par_path (wave_collection * c, wave_collection * list, wave_path * p);
+
 /**
  * \brief Set cyclic seq list.
  * \param[in,out] c Collection.
@@ -573,12 +605,14 @@ bool wave_collection_path_is_valid (wave_collection * c, const wave_path * p);
  * \brief Print a wave_collection to a stream.
  * \param stream Stream.
  * \param c Collection.
+ * \relatesalso wave_collection
  */
 void wave_collection_fprint (FILE * stream, const wave_collection * c);
 
 /**
  * \brief Print a wave_collection to \c stdout.
  * \param c Collection.
+ * \relatesalso wave_collection
  */
 void wave_collection_print (const wave_collection * c);
 
@@ -586,14 +620,16 @@ void wave_collection_print (const wave_collection * c);
  * \brief Print a collection's full indexes to a stream.
  * \param stream Stream.
  * \param c Collection.
+ * \relatesalso wave_collection
  */
 void wave_collection_fprint_full_indexes (FILE * stream, const wave_collection * c);
 
-/*
+/**
  * \brief Get the size of the last recorded path of the collection.
  * \param c The collection to start with.
  * \param path The path to follow.
  * \return The size of the last recorded path.
+ * \relatesalso wave_collection
  */
 int wave_collection_get_path_size_only_last_record(const wave_collection* c, const wave_path* path);
 
@@ -602,6 +638,7 @@ int wave_collection_get_path_size_only_last_record(const wave_collection* c, con
  * \param c The collection to start with.
  * \param path The path to follow.
  * \return The size of the path followed.
+ * \relatesalso wave_collection
  */
 int wave_collection_get_path_size(const wave_collection* c, const wave_path* path);
 
@@ -610,11 +647,22 @@ int wave_collection_get_path_size(const wave_collection* c, const wave_path* pat
  * \param c The collection to start with.
  * \param path The path to follow.
  * \return The collection at the end of the path.
+ * \relatesalso wave_collection
  */
 const wave_collection* wave_collection_get_collection_pointed(const wave_collection* c, const wave_path* path);
 
+/**
+ * \brief Expand repetitions that depend on paths.
+ * \param c Collection.
+ * \relatesalso wave_collection
+ */
 void wave_collection_unroll_path(wave_collection* c);
 
+/**
+ * \brief Replace paths that can be replaced.
+ * \param c Collection.
+ * \relatesalso wave_collection
+ */
 void wave_collection_replace_path(wave_collection* c);
 
 #endif /* __WAVE_COLLECTION_H__ */

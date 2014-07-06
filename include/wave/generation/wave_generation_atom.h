@@ -38,6 +38,7 @@
 /**
  * \brief Generate C source code giving an atom.
  * \param code_file The file where the C code will be written.
+ * \param alloc_file File for allocations.
  * \param collection The atom to translate into C code.
  * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection

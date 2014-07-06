@@ -638,6 +638,7 @@ static inline void _binary_operation_parallels (const wave_data * const left, co
 ////////////////////////////////////////////////////////////////////////////////
 // Static utilities for printing.
 ////////////////////////////////////////////////////////////////////////////////
+/** \cond Doxygen ignore. */
 
 /**
  * \brief Macro to save the hassle to write the simple printers.
@@ -664,9 +665,6 @@ _def_data_printer_simple (bool)
  * \brief Macro to save the hassle to write the char / string printers.
  * \param data_type Data type.
  * \param delimiter Delimiter (most likely single or double quotes).
- *
- * The function will print the data's content while surrounding it with
- * the `delimiter` string.
  */
 #define _def_data_printer_char_string(data_type, delimiter) \
     static void _data_ ## data_type ## _fprint (FILE * const stream, const wave_data * const data) \
@@ -675,6 +673,10 @@ _def_data_printer_simple (bool)
         wave_ ## data_type ## _fprint (stream, data->_content._ ## data_type); \
         fprintf (stream, "%c", delimiter); \
     }
+/*
+ * The function will print the data's content while surrounding it with
+ * the `delimiter` string.
+ */
 
 /* Create:
  * - _data_char_fprint
@@ -684,6 +686,8 @@ _def_data_printer_char_string (char, '\'')
 _def_data_printer_char_string (string, '\"')
 
 #undef _def_data_printer_char_string
+
+/** \endcond Doxygen ignore. */
 
 /**
  * \brief Print a collection to a stream.

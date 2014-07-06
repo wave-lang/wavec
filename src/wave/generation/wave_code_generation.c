@@ -106,6 +106,7 @@ static void wave_code_generation_print_sub_info (FILE * const code_file, const w
 /**
  * \brief Generate C source code giving a sequential collection.
  * \param code_file The file where the C code will be written.
+ * \param alloc_file File for allocations.
  * \param collection The sequential collection to translate into C code.
  * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection
@@ -121,6 +122,7 @@ static void wave_code_generation_collection_seq(FILE* code_file, FILE * alloc_fi
 /**
  * \brief Generate C source code giving a collection.
  * \param code_file The file where the C code will be written.
+ * \param alloc_file File for allocations.
  * \param collection The parallel collection to translate into C code.
  * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection
@@ -136,6 +138,7 @@ static void wave_code_generation_collection_par(FILE* code_file, FILE * alloc_fi
 /**
  * \brief Generate C source code giving a sequential repeated collection.
  * \param code_file The file where the C code will be written.
+ * \param alloc_file File for allocations.
  * \param collection The cyclic collection to translate into C code.
  * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection
@@ -153,6 +156,7 @@ static void wave_code_generation_collection_rep_seq(FILE* code_file, FILE * allo
 /**
  * \brief Generate C source code giving a parallel repeated collection.
  * \param code_file The file where the C code will be written.
+ * \param alloc_file File for allocations.
  * \param collection The cyclic collection to translate into C code.
  * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection
@@ -174,6 +178,7 @@ static void wave_code_generation_collection_rep_par(FILE* code_file, FILE * allo
 /**
  * \brief Generate C source code giving a sequential cyclic collection.
  * \param code_file The file where the C code will be written.
+ * \param alloc_file File for allocations.
  * \param collection The cyclic collection to translate into C code.
  * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection
@@ -188,6 +193,7 @@ static void wave_code_generation_collection_cyclic_seq(FILE* code_file, FILE * a
 /**
  * \brief Generate C source code giving a parallel cyclic collection.
  * \param code_file The file where the C code will be written.
+ * \param alloc_file File for allocations.
  * \param collection The cyclic collection to translate into C code.
  * \pre code_file and collection must not be NULL.
  * \relatesalso wave_collection
