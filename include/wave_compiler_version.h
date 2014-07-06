@@ -39,11 +39,11 @@ static const unsigned int WAVE_COMPILER_VERSION_MAJOR = 0;
 /**
  * \brief Wave compiler minor version.
  */
-static const unsigned int WAVE_COMPILER_VERSION_MINOR = 3;
+static const unsigned int WAVE_COMPILER_VERSION_MINOR = 4;
 
 /**
  * \brief Wave compiler patch version.
  */
-static const unsigned int WAVE_COMPILER_VERSION_PATCH = 5;
+static const unsigned int WAVE_COMPILER_VERSION_PATCH = 0;
 
 #endif /* __WAVE_COMPILER_VERSION_H__ */
