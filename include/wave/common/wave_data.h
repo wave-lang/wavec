@@ -1,6 +1,6 @@
 /**
- * \file wave_struct_def.h
- * \brief Wave struct def.
+ * \file wave_data.h
+ * \brief Wave data.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
  * \author SCHMITT Maxime
  * \date 2014
@@ -28,8 +28,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef __WAVE_STRUCT_DEF_H__
-#define __WAVE_STRUCT_DEF_H__
+#ifndef __WAVE_DATA_H__
+#define __WAVE_DATA_H__
 
 #include "sysexits.h"
 
@@ -125,4 +125,4 @@ static inline int wave_data_get_collection_size(wave_data* data){
 
 void wave_data_fprint (FILE * stream, const wave_data * data);
 
-#endif // ( __WAVE8STRUCT_DEF_H__ )
+#endif /* __WAVE_DATA_H__ */

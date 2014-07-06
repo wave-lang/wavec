@@ -31,7 +31,7 @@
 #ifndef __WAVE_PATH_FOLLOW_H
 #define __WAVE_PATH_FOLLOW_H
 
-#include "wave/common/wave_struct_def.h"
+#include "wave/common/wave_data.h"
 #include <ctype.h>
 
 wave_data* wave_follow_path(wave_data* data, char* where_to_go, int* size);

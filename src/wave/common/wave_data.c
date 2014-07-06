@@ -1,6 +1,6 @@
 /**
- * \file wave_struct_def.c
- * \brief Wave struct def.
+ * \file wave_data.c
+ * \brief Wave data.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
  * \author SCHMITT Maxime
  * \date 2014
@@ -28,7 +28,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "wave/common/wave_struct_def.h"
+#include "wave/common/wave_data.h"
 
 static inline bool _is_constant (wave_data_type t)
 {
