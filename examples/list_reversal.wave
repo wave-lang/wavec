@@ -1,7 +1,10 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % List reversal (author: Thomas Kuntz)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Macros.
 Let last be u p d [s*]. % access to the last element
-
 Let reverse be (@last{;@[p*] [r] u p d s* r}#last).
 
-(1;2;3;4);reverse.
+% Reverse (1;2;3;4).
+((1;2;3;4);reverse);print.

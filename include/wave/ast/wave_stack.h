@@ -1,6 +1,6 @@
 /**
- * \file wave_path_stack.h
- * \brief Wave path stack.
+ * \file wave_stack.h
+ * \brief Wave stack.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
  * \author SCHMITT Maxime
  * \date 2014
@@ -28,54 +28,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef __WAVE_PATH_STACK_H__
-#define __WAVE_PATH_STACK_H__
+#ifndef __WAVE_STACK_H__
+#define __WAVE_STACK_H__
 
-#include <stdblib.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-
-#include "wave/ast/wave_path.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Wave path stack element.
+ * \brief Wave stack element.
  */
-typedef struct wave_path_stack_element
+typedef struct wave_stack_element
 {
-    wave_path * _path;                          /**<- Path. */
-    struct wave_path_stack_element * _next;     /**<- Next element. */
-} wave_path_stack_element;
+    void * _pointer;                            /**<- . */
+    struct wave_stack_element * _next;     /**<- Next element. */
+} wave_stack_element;
 
 /**
- * \brief Wave path stack.
+ * \brief Wave  stack.
  */
-typedef struct wave_path_stack
+typedef struct wave_stack
 {
-    wave_path_stack_element * _head;        /**<- Head of the stack. */
-    wave_path_stack_element * _tail;        /**<- Tail of the stack. */
-} wave_path_stack;
+    wave_stack_element * _head;        /**<- Head of the stack. */
+    wave_stack_element * _tail;        /**<- Tail of the stack. */
+} wave_stack;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Alloc a wave_path_stack.
- * \return wave_path_stack.
- * \relatesalso wave_path_stack
+ * \brief Alloc a wave_stack.
+ * \return wave_stack.
+ * \relatesalso wave_stack
  */
-void * wave_path_stack_alloc (void);
+void * wave_stack_alloc (void);
 
 /**
- * \brief Free a wave_path_stack.
- * \param s Wave path stack.
- * \relatesalso wave_path_stack
+ * \brief Free a wave_stack.
+ * \param s Wave stack.
+ * \relatesalso wave_stack
  */
-void * wave_path_stack_free (wave_path_stack * s);
+void wave_stack_free (wave_stack * s);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Push back your lolly Pop.
@@ -83,21 +81,21 @@ void * wave_path_stack_free (wave_path_stack * s);
 
 /**
  * \brief Pop.
- * \param s Wave path stack.
- * \return wave_path.
- * \relatesalso wave_path_stack
+ * \param s Wave  stack.
+ * \return wave.
+ * \relatesalso wave_stack
  * \warning \c s must be not \c NULL.
  */
-wave_path * wave_path_stack_pop (wave_path_stack * s);
+void * wave_stack_pop (wave_stack * s);
 
 /**
  * \brief Push.
  * \param s Stack.
- * \param p Path.
- * \relatesalso wave_path_stack
+ * \param p Pointer.
+ * \relatesalso wave_stack
  * \warning \c s must be not \c NULL.
  */
-void wave_path_stack_push (wave_path_stack * s, wave_path * p);
+void wave_stack_push (wave_stack * s, void * p);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Getters
@@ -106,29 +104,29 @@ void wave_path_stack_push (wave_path_stack * s, wave_path * p);
 /**
  * \brief Head.
  * \param s Stack.
- * \return wave_path
- * \relatesalso wave_path_stack
+ * \return pointer.
+ * \relatesalso wave_stack
  * \warning \c s must be not \c NULL.
  */
-wave_path * wave_path_stack_head (const wave_path_stack * s);
+void * wave_stack_head (const wave_stack * s);
 
 /**
  * \brief Tail.
  * \param s Stack.
- * \return wave_path
- * \relatesalso wave_path_stack
+ * \return pointer.
+ * \relatesalso wave_stack
  * \warning \c s must be not \c NULL.
  */
-wave_path * wave_path_stack_tail (const wave_path_stack * s);
+void * wave_stack_tail (const wave_stack * s);
 
 /**
  * \brief Determine whether the stack is empty.
  * \param s Stack
  * \retval true if the stack is empty.
  * \retval false otherwise.
- * \relatesalso wave_path_stack
+ * \relatesalso wave_stack
  * \warning \c s must be not \c NULL.
  */
-bool wave_path_stack_is_empty (const wave_path_stack * s);
+bool wave_stack_is_empty (const wave_stack * s);
 
-#endif /* __WAVE_PATH_STACK_H__ */
+#endif /* __WAVE_STACK_H__ */

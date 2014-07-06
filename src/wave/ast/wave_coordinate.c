@@ -48,10 +48,35 @@ static inline void _wave_coordinate_free_var (wave_coordinate * const c)
     wave_int_list_free (c->_content._var);
 }
 
+static inline bool _is_binary (wave_coordinate * c)
+{
+    return c->_type == WAVE_COORD_PLUS || c->_type == WAVE_COORD_TIMES;
+}
+
+static inline void _stack_binary (wave_stack * s, wave_coordinate * c)
+{
+    wave_stack_push (s, c->_content._binary._left);
+    wave_stack_push (s, c->_content._binary._right);
+}
+
 void wave_coordinate_clean (wave_coordinate * const c)
 {
-    if (c->_type == WAVE_COORD_PLUS || c->_type == WAVE_COORD_TIMES)
-        _wave_coordinate_free_binary (c);
+    if (_is_binary (c))
+    {
+        wave_stack * s = wave_stack_alloc ();
+        _stack_binary (s, c);
+        wave_stack_push (s, c);
+        while (! wave_stack_is_empty (s))
+        {
+            wave_coordinate * current = wave_stack_pop (s);
+            if (_is_binary (current))
+                _stack_binary (s, current);
+            else if (c->_type == WAVE_COORD_VAR)
+                _wave_coordinate_free_var (current);
+            free (current);
+        }
+        wave_stack_free (s);
+    }
     else if (c->_type == WAVE_COORD_VAR)
         _wave_coordinate_free_var (c);
 }

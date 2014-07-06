@@ -52,7 +52,6 @@ Boolean     True|False
 }
 <PREPROCESSOR,Definition,Naming,Be,MacroDefinition>[ \t]
 <PREPROCESSOR>"Let "+                                   {
-    printf("Let ligne %u\n", nb_rows);
     let_row = nb_rows;
     BEGIN(Naming);
 }
@@ -80,7 +79,6 @@ Boolean     True|False
         return 1;
     }
     preproc_new_identifier(yytext);
-    printf("Name found : %s\n", yytext);
     BEGIN(Be);
 }
 <Be>[^ \n]*" "be                                          {
@@ -88,11 +86,9 @@ Boolean     True|False
     return 1;
 }
 <Be>" "+be[ ]+                                          {
-    printf("Found the be\n");
     BEGIN(MacroDefinition);
 }
 <Be>" "+be[\n]                                          {
-    printf("Found the be\n");
     ++nb_rows;
     BEGIN(MacroDefinition);
 }
