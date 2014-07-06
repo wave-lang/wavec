@@ -118,8 +118,8 @@ atom                                    return Atom;
 int main(int argc, char ** argv)
 {
     ++argv; --argc;
-    if (argc > 2){
-        fprintf(stderr, "Error: too many arguments\n");
+    if (argc == 0 || argc > 2){
+        fprintf(stderr, "Error: wrong number of arguments\n");
         exit (EX_USAGE);
     }
 
