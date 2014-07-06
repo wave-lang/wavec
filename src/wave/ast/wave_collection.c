@@ -40,10 +40,10 @@ static inline void _wave_collection_set_parent (wave_collection * const c, wave_
     }
 }
 
-static inline void _add_list_to_stack (wave_collection * c, wave_stack * s)
+static inline void _add_list_to_queue (wave_collection * c, wave_queue * q)
 {
     for (wave_collection * current = c; current != NULL; current = wave_collection_get_next (current))
-        wave_stack_push (s, current);
+        wave_queue_push (q, current);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -345,11 +345,11 @@ bool wave_collection_contains_path (const wave_collection * c)
     bool contains = false;
     if (c != NULL)
     {
-        wave_stack * s = wave_stack_alloc ();
-        wave_stack_push (s, c);
-        while (! contains && ! wave_stack_is_empty (s))
+        wave_queue * q = wave_queue_alloc ();
+        wave_queue_push (q, c);
+        while (! contains && ! wave_queue_is_empty (q))
         {
-            wave_collection * current = wave_stack_pop (s);
+            wave_collection * current = wave_queue_pop (q);
             wave_collection_type ct = wave_collection_get_type (current);
             if (ct == WAVE_COLLECTION_ATOM)
             {
@@ -359,10 +359,10 @@ bool wave_collection_contains_path (const wave_collection * c)
             else if (ct != WAVE_COLLECTION_UNKNOWN)
             {
                 wave_collection * list = wave_collection_get_list (current);
-                _add_list_to_stack (list, s);
+                _add_list_to_queue (list, q);
             }
         }
-        wave_stack_free (s);
+        wave_queue_free (q);
     }
 
     return contains;
@@ -832,18 +832,18 @@ void wave_collection_unroll_path(wave_collection* c)
 {
     if (c != NULL)
     {
-        wave_stack * s = wave_stack_alloc ();
-        wave_stack_push (s, c);
-        while (! wave_stack_is_empty (s))
+        wave_queue * q = wave_queue_alloc ();
+        wave_queue_push (q, c);
+        while (! wave_queue_is_empty (q))
         {
-            wave_collection * current = wave_stack_pop (s);
+            wave_collection * current = wave_queue_pop (q);
             wave_collection_type type = wave_collection_get_type (current);
             if (type == WAVE_COLLECTION_REP_SEQ || type == WAVE_COLLECTION_REP_PAR)
                 copy_collection_path_time (current);
             else if (type != WAVE_COLLECTION_ATOM && type != WAVE_COLLECTION_UNKNOWN)
-                _add_list_to_stack (wave_collection_get_list (current), s);
+                _add_list_to_queue (wave_collection_get_list (current), q);
         }
-        wave_stack_free (s);
+        wave_queue_free (q);
     }
 }
 
@@ -913,12 +913,12 @@ static void _remplace_path_if_possible(wave_collection* c){
 
 void wave_collection_replace_path(wave_collection* c)
 {
-    wave_stack * s = wave_stack_alloc ();
-    wave_stack_push (s, c);
+    wave_queue * q = wave_queue_alloc ();
+    wave_queue_push (q, c);
 
-    while (! wave_stack_is_empty (s))
+    while (! wave_queue_is_empty (q))
     {
-        wave_collection * current = wave_stack_pop (s);
+        wave_collection * current = wave_queue_pop (q);
         wave_collection_type type = wave_collection_get_type (current);
         if (type == WAVE_COLLECTION_ATOM)
         {
@@ -930,10 +930,10 @@ void wave_collection_replace_path(wave_collection* c)
         else if (type == WAVE_COLLECTION_SEQ || type == WAVE_COLLECTION_PAR ||
                     type == WAVE_COLLECTION_CYCLIC_SEQ || type == WAVE_COLLECTION_CYCLIC_PAR)
         {
-            _add_list_to_stack (wave_collection_get_list (current), s);
+            _add_list_to_queue (wave_collection_get_list (current), q);
         }
     }
-    wave_stack_free (s);
+    wave_queue_free (q);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

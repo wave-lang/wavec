@@ -35,7 +35,7 @@
 #include <stdio.h>
 
 #include "wave/ast/wave_int_list.h"
-#include "wave/ast/wave_stack.h"
+#include "wave/ast/wave_queue.h"
 
 
 /**

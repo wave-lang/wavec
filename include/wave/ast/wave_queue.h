@@ -1,6 +1,6 @@
 /**
- * \file wave_stack.h
- * \brief Wave stack.
+ * \file wave_queue.h
+ * \brief Wave queue.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
  * \author SCHMITT Maxime
  * \date 2014
@@ -28,8 +28,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef __WAVE_STACK_H__
-#define __WAVE_STACK_H__
+#ifndef __WAVE_QUEUE_H__
+#define __WAVE_QUEUE_H__
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -40,40 +40,40 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Wave stack element.
+ * \brief Wave queue element.
  */
-typedef struct wave_stack_element
+typedef struct wave_queue_element
 {
-    void * _pointer;                            /**<- . */
-    struct wave_stack_element * _next;     /**<- Next element. */
-} wave_stack_element;
+    void * _pointer;                       /**<- Pointer. */
+    struct wave_queue_element * _next;     /**<- Next element. */
+} wave_queue_element;
 
 /**
- * \brief Wave  stack.
+ * \brief Wave queue.
  */
-typedef struct wave_stack
+typedef struct wave_queue
 {
-    wave_stack_element * _head;        /**<- Head of the stack. */
-    wave_stack_element * _tail;        /**<- Tail of the stack. */
-} wave_stack;
+    wave_queue_element * _head;        /**<- Head of the queue. */
+    wave_queue_element * _tail;        /**<- Tail of the queue. */
+} wave_queue;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Alloc a wave_stack.
- * \return wave_stack.
- * \relatesalso wave_stack
+ * \brief Allocate a wave_queue.
+ * \return wave_queue.
+ * \relatesalso wave_queue
  */
-void * wave_stack_alloc (void);
+void * wave_queue_alloc (void);
 
 /**
- * \brief Free a wave_stack.
+ * \brief Free a wave_queue.
  * \param s Wave stack.
- * \relatesalso wave_stack
+ * \relatesalso wave_queue
  */
-void wave_stack_free (wave_stack * s);
+void wave_queue_free (wave_queue * s);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Push back your lolly Pop.
@@ -81,21 +81,21 @@ void wave_stack_free (wave_stack * s);
 
 /**
  * \brief Pop.
- * \param s Wave  stack.
- * \return wave.
- * \relatesalso wave_stack
- * \warning \c s must be not \c NULL.
+ * \param q Wave queue.
+ * \return Pointer.
+ * \relatesalso wave_queue
+ * \warning \c q must be not \c NULL.
  */
-void * wave_stack_pop (wave_stack * s);
+void * wave_queue_pop (wave_queue * q);
 
 /**
  * \brief Push.
- * \param s Stack.
+ * \param q Queue
  * \param p Pointer.
- * \relatesalso wave_stack
- * \warning \c s must be not \c NULL.
+ * \relatesalso wave_queue
+ * \warning \c q must be not \c NULL.
  */
-void wave_stack_push (wave_stack * s, void * p);
+void wave_queue_push (wave_queue * q, void * p);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Getters
@@ -103,30 +103,30 @@ void wave_stack_push (wave_stack * s, void * p);
 
 /**
  * \brief Head.
- * \param s Stack.
+ * \param q Queue.
  * \return pointer.
- * \relatesalso wave_stack
- * \warning \c s must be not \c NULL.
+ * \relatesalso wave_queue
+ * \warning \c q must be not \c NULL.
  */
-void * wave_stack_head (const wave_stack * s);
+void * wave_queue_head (const wave_queue * q);
 
 /**
  * \brief Tail.
- * \param s Stack.
+ * \param q Queue.
  * \return pointer.
- * \relatesalso wave_stack
- * \warning \c s must be not \c NULL.
+ * \relatesalso wave_queue
+ * \warning \c q must be not \c NULL.
  */
-void * wave_stack_tail (const wave_stack * s);
+void * wave_queue_tail (const wave_queue * q);
 
 /**
- * \brief Determine whether the stack is empty.
- * \param s Stack
+ * \brief Determine whether the queue is empty.
+ * \param q Queue.
  * \retval true if the stack is empty.
  * \retval false otherwise.
- * \relatesalso wave_stack
- * \warning \c s must be not \c NULL.
+ * \relatesalso wave_queue
+ * \warning \c q must be not \c NULL.
  */
-bool wave_stack_is_empty (const wave_stack * s);
+bool wave_queue_is_empty (const wave_queue * q);
 
-#endif /* __WAVE_STACK_H__ */
+#endif /* __wave_queue_H__ */

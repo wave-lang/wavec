@@ -36,7 +36,7 @@
 #include <stdbool.h>
 
 #include "wave/ast/wave_atom.h"
-#include "wave/ast/wave_stack.h"
+#include "wave/ast/wave_queue.h"
 #include "wave/ast/wave_collection_info.h"
 
 /**

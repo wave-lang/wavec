@@ -47,10 +47,10 @@ static inline bool _both_are_constants (const wave_coordinate * left, const wave
     return t_left == WAVE_COORD_CONSTANT && t_right == WAVE_COORD_CONSTANT;
 }
 
-static inline void _stack_binary (wave_stack * s, wave_coordinate * c)
+static inline void _queue_binary (wave_queue * q, wave_coordinate * c)
 {
-    wave_stack_push (s, c->_content._binary._left);
-    wave_stack_push (s, c->_content._binary._right);
+    wave_queue_push (q, c->_content._binary._left);
+    wave_queue_push (q, c->_content._binary._right);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -192,19 +192,19 @@ void wave_coordinate_clean (wave_coordinate * const c)
 {
     if (_is_binary (c))
     {
-        wave_stack * s = wave_stack_alloc ();
-        _stack_binary (s, c);
-        wave_stack_push (s, c);
-        while (! wave_stack_is_empty (s))
+        wave_queue * q = wave_queue_alloc ();
+        _queue_binary (q, c);
+        wave_queue_push (q, c);
+        while (! wave_queue_is_empty (q))
         {
-            wave_coordinate * current = wave_stack_pop (s);
+            wave_coordinate * current = wave_queue_pop (q);
             if (_is_binary (current))
-                _stack_binary (s, current);
+                _queue_binary (q, current);
             else if (c->_type == WAVE_COORD_VAR)
                 _wave_coordinate_free_var (current);
             free (current);
         }
-        wave_stack_free (s);
+        wave_queue_free (q);
     }
     else if (c->_type == WAVE_COORD_VAR)
         _wave_coordinate_free_var (c);
