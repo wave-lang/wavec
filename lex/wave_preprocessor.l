@@ -141,7 +141,7 @@ int main(int argc, char** argv){
     if( argc == 2 )
         yyout = fopen(argv[1], "w");
     else
-        yyout = fopen("pars_out.wave", "w");
+        yyout = fopen("wavepp_out.wpp", "w");
     if( yyout == NULL )
         perror_and_quit("fopen", EX_OSERR);
     BEGIN(PREPROCESSOR);

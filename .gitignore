@@ -37,11 +37,13 @@ y.*.*
 wave_yacc.*
 wave_preprocessor.c
 src/wave/lex/wave_lex.c
-parse_out.wave
 
 ## Wave compiler executables
 wave2c
 wavepp
+
+# Wave intermediary files
+*.wpp
 
 ## Examples
 examples/*.c
