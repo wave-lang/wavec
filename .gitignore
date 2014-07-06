@@ -1,11 +1,11 @@
-# Misc.
+## Misc.
 *.old
 *~
 
-# Vim files
+## Vim files
 *.swp
 
-# C
+## C
 *.[ao]
 *.lib
 *.ko
@@ -14,23 +14,23 @@
 *.so.*
 *.dylib
 
-# Tags
+## Tags
 tags
 .tags
 
-# Various dirs.
+## Various dirs.
 doc/
 obj/
 bin/
 bytecode/
 
-# Executables
+## Executables
 a.out
 *.exe
 *.out
 *.app
 
-# Lex and Yacc files.
+## Lex and Yacc files.
 y.*
 y.*.*
 *.yy.cc
@@ -39,6 +39,20 @@ wave_preprocessor.c
 src/wave/lex/wave_lex.c
 parse_out.wave
 
-# Wave compiler executables
+## Wave compiler executables
 wave2c
 wavepp
+
+## Examples
+examples/*.c
+examples/*.wave_pp
+examples/a.out
+# Examples binaries
+examples/fibonacci
+examples/gcd
+examples/list_reversal
+examples/pascal_triangle
+examples/recursion
+examples/tree_rotation
+examples/vector_addition
+
