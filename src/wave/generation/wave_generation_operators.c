@@ -30,6 +30,13 @@
  */
 #include "wave/generation/wave_generation_operators.h"
 
+////////////////////////////////////////////////////////////////////////////////
+// Static tabs.
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \brief Tab of the string representations of the operator enum.
+ */
 static const char * const _operator_enum_strings[] =
 {
     [WAVE_OP_UNARY_PLUS              ] = "WAVE_OP_UNARY_PLUS",
@@ -70,6 +77,9 @@ static const char * const _operator_enum_strings[] =
     [WAVE_OP_UNKNOWN                 ] = "WAVE_OP_UNKNOWN",
 };
 
+/**
+ * \brief Tab of the string representations of the operator functions.
+ */
 static const char * const _operator_functions_strings[] =
 {
     [WAVE_OP_UNARY_PLUS              ] = "unary_plus",
@@ -110,17 +120,31 @@ static const char * const _operator_functions_strings[] =
     [WAVE_OP_UNKNOWN                 ] = "unknown",
 };
 
-static inline void _type_error (FILE * code_file)
+////////////////////////////////////////////////////////////////////////////////
+// Static functions for errors.
+////////////////////////////////////////////////////////////////////////////////
+
+static inline void _type_error (FILE * const code_file)
 {
     wave_code_generate_error (code_file, "trying to use an operator on non valid types.", "EX_DATAERR");
 }
 
-static inline void _operand_error (FILE * code_file)
+static inline void _operand_error (FILE * const code_file)
 {
     wave_code_generate_error (code_file, "no operand supplied to the operator.", "EX_DATAERR");
 }
 
-static inline void _print_tab_minus (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, int shift)
+static void _unknown_error (FILE * const code_file, const wave_collection * collection, wave_operator op)
+{
+    (void) collection; (void) op;
+    wave_code_generate_error_unknown (code_file);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Static functions for args or tab printing.
+////////////////////////////////////////////////////////////////////////////////
+
+static inline void _print_tab_minus (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, int shift)
 {
     wave_coordinate * minus = wave_coordinate_alloc ();
     wave_coordinate_set_constant  (minus, shift);
@@ -131,35 +155,13 @@ static inline void _print_tab_minus (FILE * code_file, const wave_int_list * lis
     wave_coordinate_free (shifted);
 }
 
-static void _print_register_string (FILE * code_file, const wave_int_list * indexes, const wave_coordinate * c)
-{
-    fprintf (code_file, "wave_garbage_register (");
-    wave_generate_content_assignement (code_file, indexes, c, WAVE_ATOM_LITERAL_STRING);
-    fprintf (code_file, ");\n");
-}
-
-static inline void _print_operator_prelude (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, wave_operator op)
-{
-    wave_generate_type_assignement (code_file, list, c, t);
-    wave_generate_content_assignement (code_file, list, c, t);
-    fprintf (code_file, " = wave_%s_%s", wave_generation_atom_type_string (t), _operator_functions_strings[op]);
-}
-
-static inline void _print_arg (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, int shift)
+static inline void _print_arg (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type t, int shift)
 {
     _print_tab_minus (code_file, list, c, shift);
     fprintf (code_file, "._content._%s", wave_generation_atom_type_string (t));
 }
 
-static void _print_unary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type t, wave_operator op)
-{
-    _print_operator_prelude (code_file, list, c, t, op);
-    fprintf (code_file, " (");
-    _print_arg (code_file, list, c, t, -1);
-    fprintf (code_file, ");\n");
-}
-
-static void _print_args_binary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type left, wave_atom_type right)
+static void _print_args_binary (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type left, wave_atom_type right)
 {
     _print_arg (code_file, list, c, left, -2);
     fprintf (code_file, ", ");
@@ -167,7 +169,37 @@ static void _print_args_binary (FILE * code_file, const wave_int_list * list, co
     fprintf (code_file, ");\n");
 }
 
-static void _print_dynamic_unary (FILE * code_file, wave_int_list * indexes, wave_coordinate * c, wave_operator op)
+static void _print_register_string (FILE * const code_file, const wave_int_list * const indexes, const wave_coordinate * const c)
+{
+    fprintf (code_file, "wave_garbage_register (");
+    wave_generate_content_assignement (code_file, indexes, c, WAVE_ATOM_LITERAL_STRING);
+    fprintf (code_file, ");\n");
+}
+
+static inline void _print_operator_prelude (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type t, wave_operator op)
+{
+    wave_generate_type_assignement (code_file, list, c, t);
+    wave_generate_content_assignement (code_file, list, c, t);
+
+    /* The actual functions are named following the convention:
+     * wave_<type>_<operation>
+     * Thus functions names can be found from the type.
+     */
+    fprintf (code_file, " = wave_%s_%s", wave_generation_atom_type_string (t), _operator_functions_strings[op]);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Static functions for dynamic operations.
+////////////////////////////////////////////////////////////////////////////////
+
+/* These functions are used when the type of at least one of the operands is
+ * unknown.
+ * The wave_data_unary() and wave_data_binary() functions determine at runtime
+ * how to compute the requested operation.
+ * See wave/common/wave_data.h.
+ */
+
+static void _print_dynamic_unary (FILE * const code_file, const wave_int_list * const indexes, const wave_coordinate * const c, wave_operator op)
 {
     fprintf (code_file, "wave_data_unary (& ");
     _print_tab_minus (code_file, indexes, c, -1);
@@ -176,7 +208,7 @@ static void _print_dynamic_unary (FILE * code_file, wave_int_list * indexes, wav
     fprintf (code_file, ", %s);\n", _operator_enum_strings[op]);
 }
 
-static void _print_dynamic_binary (FILE * code_file, wave_int_list * indexes, wave_coordinate * c, wave_operator op)
+static void _print_dynamic_binary (FILE * const code_file, const wave_int_list * const indexes, const wave_coordinate * const c, wave_operator op)
 {
     fprintf (code_file, "wave_data_binary (& ");
     _print_tab_minus (code_file, indexes, c, -2);
@@ -187,7 +219,21 @@ static void _print_dynamic_binary (FILE * code_file, wave_int_list * indexes, wa
     fprintf (code_file, ", %s);\n", _operator_enum_strings[op]);
 }
 
-static void _print_binary (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type destination, wave_atom_type left, wave_atom_type right, wave_operator op)
+////////////////////////////////////////////////////////////////////////////////
+// Static functions for known types operations.
+////////////////////////////////////////////////////////////////////////////////
+
+/* Used for most unary operations. */
+static void _print_unary (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type t, wave_operator op)
+{
+    _print_operator_prelude (code_file, list, c, t, op);
+    fprintf (code_file, " (");
+    _print_arg (code_file, list, c, t, -1);
+    fprintf (code_file, ");\n");
+}
+
+/* Used for binary operations where both operands are of the same type. */
+static void _print_binary (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type destination, wave_atom_type left, wave_atom_type right, wave_operator op)
 {
     _print_operator_prelude (code_file, list, c, destination, op);
     fprintf (code_file, " (");
@@ -196,7 +242,10 @@ static void _print_binary (FILE * code_file, const wave_int_list * list, const w
         _print_register_string (code_file, list, c);
 }
 
-static void _print_binary_char_string (FILE * code_file, const wave_int_list * list, const wave_coordinate * c, wave_atom_type destination, wave_atom_type left, wave_atom_type right, wave_operator op)
+/* Used for binary operations where one of the operand is a char while the other
+ * one is a string.
+ */
+static void _print_binary_char_string (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type destination, wave_atom_type left, wave_atom_type right, wave_operator op)
 {
     _print_operator_prelude (code_file, list, c, destination, op);
     fprintf (code_file, "_char_%s", left == WAVE_ATOM_LITERAL_CHAR ? "left" : "right");
@@ -206,7 +255,22 @@ static void _print_binary_char_string (FILE * code_file, const wave_int_list * l
         _print_register_string (code_file, list, c);
 }
 
-static void _chr_for_unary (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, wave_operator op)
+static void _print_char_plus (FILE * const code_file, const wave_int_list * const indexes, const wave_coordinate * const c)
+{
+    wave_generate_type_assignement (code_file, indexes, c, WAVE_ATOM_LITERAL_STRING);
+    wave_generate_content_assignement (code_file, indexes, c, WAVE_ATOM_LITERAL_STRING);
+    fprintf (code_file, " = wave_%s_%s", wave_generation_atom_type_string (WAVE_ATOM_LITERAL_CHAR), _operator_functions_strings[WAVE_OP_BINARY_PLUS]);
+    fprintf (code_file, " (");
+    _print_args_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_CHAR, WAVE_ATOM_LITERAL_CHAR);
+    _print_register_string (code_file, indexes, c);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Specialized functions intended to be passed as a parameter to _unary().
+////////////////////////////////////////////////////////////////////////////////
+
+/* Specialized function for the ``chr`` operator. */
+static void _chr_for_unary (FILE * const code_file, const wave_coordinate * const c, wave_atom_type t, const wave_int_list * const indexes, wave_operator op)
 {
     if (t == WAVE_ATOM_LITERAL_INT)
     {
@@ -219,11 +283,10 @@ static void _chr_for_unary (FILE * code_file, const wave_coordinate * c, wave_at
     }
     else
         _print_dynamic_unary (code_file, indexes, c, op);
-        //_type_error (code_file);
-
 }
 
-static void _code_for_unary (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, wave_operator op)
+/* Specialized function for the ``code`` operator. */
+static void _code_for_unary (FILE * const code_file, const wave_coordinate * const c, wave_atom_type t, const wave_int_list * const indexes, wave_operator op)
 {
     if (t == WAVE_ATOM_LITERAL_CHAR)
     {
@@ -236,28 +299,38 @@ static void _code_for_unary (FILE * code_file, const wave_coordinate * c, wave_a
     }
     else
         _print_dynamic_unary (code_file, indexes, c, op);
-        //_type_error (code_file);
 }
 
-static void _int_float_for_unary (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, wave_operator op)
+/* Specialized function for unary operations that are valid for bot int and
+ * float values.
+ */
+static void _int_float_for_unary (FILE * const code_file, const wave_coordinate * const c, wave_atom_type t, const wave_int_list * const indexes, wave_operator op)
 {
     if (t == WAVE_ATOM_LITERAL_INT || t == WAVE_ATOM_LITERAL_FLOAT)
         _print_unary (code_file, indexes, c, t, op);
     else
         _print_dynamic_unary (code_file, indexes, c, op);
-        //_type_error (code_file);
 }
 
-static void _bool (FILE * code_file, const wave_coordinate * c, wave_atom_type t, wave_int_list * indexes, wave_operator op)
+/* Specialized function valid only for bool values. */
+static void _bool (FILE * const code_file, const wave_coordinate * const c, wave_atom_type t, const wave_int_list * const indexes, wave_operator op)
 {
     if (t == WAVE_ATOM_LITERAL_BOOL)
         _print_unary (code_file, indexes, c, t, op);
     else
         _print_dynamic_unary (code_file, indexes, c, op);
-        //_type_error (code_file);
 }
 
-static void _unary (FILE * code_file, const wave_collection * collection, wave_operator op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type, wave_int_list *, wave_operator))
+////////////////////////////////////////////////////////////////////////////////
+//  _unary().
+////////////////////////////////////////////////////////////////////////////////
+
+/* Checks whether the type of the operand is known and is fit (ie, the operand
+ * holds a constant).
+ * If the operand is a constant, use the specialized function passed as ``fun``.
+ * Otherwise, try with the dynamic unary function.
+ */
+static void _unary (FILE * const code_file, const wave_collection * const collection, wave_operator op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type, const wave_int_list *, wave_operator))
 {
     if (wave_collection_has_previous (collection))
     {
@@ -278,14 +351,20 @@ static void _unary (FILE * code_file, const wave_collection * collection, wave_o
             _print_dynamic_unary (code_file, indexes, c, op);
         else
             _print_dynamic_unary (code_file, indexes, c, op);
-            //_type_error (code_file);
         wave_int_list_free (indexes);
     }
     else
         _operand_error (code_file);
 }
 
-static void _int_float_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, wave_operator op)
+////////////////////////////////////////////////////////////////////////////////
+// Specialized functions intended to be passed as a parameter to _binary().
+////////////////////////////////////////////////////////////////////////////////
+
+/* Specialized function for binary operations that are valid for both int and
+ * float values.
+ */
+static void _int_float_for_binary (FILE * const code_file, const wave_coordinate * const c, wave_atom_type left, wave_atom_type right, const wave_int_list * const indexes, wave_operator op)
 {
     if (left == right)
     {
@@ -294,7 +373,6 @@ static void _int_float_for_binary (FILE * code_file, const wave_coordinate * c, 
         else if (left == WAVE_ATOM_LITERAL_FLOAT)
             _print_binary (code_file, indexes, c, left, left, right, op);
         else
-            //_type_error (code_file);
             _print_dynamic_binary (code_file, indexes, c, op);
     }
     else
@@ -305,11 +383,11 @@ static void _int_float_for_binary (FILE * code_file, const wave_coordinate * c, 
             _print_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_FLOAT, left, right, op);
         else
             _print_dynamic_binary (code_file, indexes, c, op);
-            //_type_error (code_file);
     }
 }
 
-static void _all_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, wave_operator op)
+/* Specialized function for binary operations that are valid for all types. */
+static void _all_for_binary (FILE * const code_file, const wave_coordinate * const c, wave_atom_type left, wave_atom_type right, const wave_int_list * const indexes, wave_operator op)
 {
     if (left == right)
         _print_binary (code_file, indexes, c, left, left, right, op);
@@ -323,30 +401,20 @@ static void _all_for_binary (FILE * code_file, const wave_coordinate * c, wave_a
             _print_binary_char_string (code_file, indexes, c, WAVE_ATOM_LITERAL_STRING, left, right, op);
         else
             _print_dynamic_binary (code_file, indexes, c, op);
-            //_type_error (code_file);
     }
 }
 
-static void _print_char_plus (FILE * code_file, const wave_int_list * indexes, const wave_coordinate * c)
-{
-    wave_generate_type_assignement (code_file, indexes, c, WAVE_ATOM_LITERAL_STRING);
-    wave_generate_content_assignement (code_file, indexes, c, WAVE_ATOM_LITERAL_STRING);
-    fprintf (code_file, " = wave_%s_%s", wave_generation_atom_type_string (WAVE_ATOM_LITERAL_CHAR), _operator_functions_strings[WAVE_OP_BINARY_PLUS]);
-    fprintf (code_file, " (");
-    _print_args_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_CHAR, WAVE_ATOM_LITERAL_CHAR);
-    _print_register_string (code_file, indexes, c);
-}
-
-static void _get_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, wave_operator op)
+/* Specialized function for the ``get`` operation. */
+static void _get_for_binary (FILE * const code_file, const wave_coordinate * const c, wave_atom_type left, wave_atom_type right, const wave_int_list * const indexes, wave_operator op)
 {
     if (left == WAVE_ATOM_LITERAL_STRING && right == WAVE_ATOM_LITERAL_INT)
         _print_binary (code_file, indexes, c, WAVE_ATOM_LITERAL_CHAR, left, right, op);
     else
         _print_dynamic_binary (code_file, indexes, c, op);
-        //_type_error (code_file);
 }
 
-static void _plus_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, wave_operator op)
+/* Specialized function for the ``plus`` operation. */
+static void _plus_for_binary (FILE * const code_file, const wave_coordinate * const c, wave_atom_type left, wave_atom_type right, const wave_int_list * const indexes, wave_operator op)
 {
     if (left != WAVE_ATOM_LITERAL_BOOL && right != WAVE_ATOM_LITERAL_BOOL)
     {
@@ -367,15 +435,14 @@ static void _plus_for_binary (FILE * code_file, const wave_coordinate * c, wave_
                 _print_binary_char_string (code_file, indexes, c, WAVE_ATOM_LITERAL_STRING, left, right, op);
             else
                 _print_dynamic_binary (code_file, indexes, c, op);
-                //_type_error (code_file);
         }
     }
     else
         _print_dynamic_binary (code_file, indexes, c, op);
-        //_type_error (code_file);
 }
 
-static void _bool_for_binary (FILE * code_file, const wave_coordinate * c, wave_atom_type left, wave_atom_type right, wave_int_list * indexes, wave_operator op)
+/* Specialized function for binary operations valid only on bool values. */
+static void _bool_for_binary (FILE * const code_file, const wave_coordinate * const c, wave_atom_type left, wave_atom_type right, const wave_int_list * const indexes, wave_operator op)
 {
     if (left == WAVE_ATOM_LITERAL_BOOL && right == WAVE_ATOM_LITERAL_BOOL)
         _print_binary (code_file, indexes, c, left, left, right, op);
@@ -383,7 +450,16 @@ static void _bool_for_binary (FILE * code_file, const wave_coordinate * c, wave_
         _type_error (code_file);
 }
 
-static void _binary (FILE * code_file, const wave_collection * collection, wave_operator op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type,  wave_atom_type, wave_int_list *, wave_operator))
+////////////////////////////////////////////////////////////////////////////////
+// _binary().
+////////////////////////////////////////////////////////////////////////////////
+
+/* Checks whether the types of the operands are known and fit (ie, the operands
+ * hold constants).
+ * If thes operands are constants, use the specialized function passed as ``fun``.
+ * Otherwise, try with the dynamic binary function.
+ */
+static void _binary (FILE * const code_file, const wave_collection * const collection, wave_operator op, void (* fun) (FILE *, const wave_coordinate *, wave_atom_type,  wave_atom_type, const wave_int_list *, wave_operator))
 {
     if (wave_collection_has_previous (collection) && wave_collection_has_previous (wave_collection_get_previous (collection)))
     {
@@ -415,7 +491,6 @@ static void _binary (FILE * code_file, const wave_collection * collection, wave_
                 _print_dynamic_binary (code_file, indexes, c, op);
             else
                 _print_dynamic_binary (code_file, indexes, c, op);
-                //_type_error (code_file);
         }
         else if (tc_left == WAVE_COLLECTION_ATOM && tc_right == WAVE_COLLECTION_PAR)
         {
@@ -425,17 +500,20 @@ static void _binary (FILE * code_file, const wave_collection * collection, wave_
                 _print_dynamic_binary (code_file, indexes, c, op);
             else
                 _print_dynamic_binary (code_file, indexes, c, op);
-                //_type_error (code_file);
         }
         else
             _print_dynamic_binary (code_file, indexes, c, op);
-            //_type_error (code_file);
         wave_int_list_free (indexes);
     }
     else
         _operand_error (code_file);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Operation functions.
+////////////////////////////////////////////////////////////////////////////////
+
+/* Define all operation functions from a name and a generic function. */
 #define _def_operator_function(function_name, generic_function) \
     static void function_name (FILE * code_file, const wave_collection * collection, wave_operator op) \
     { \
@@ -516,13 +594,11 @@ static void _binary_get (FILE * code_file, const wave_collection * collection, w
     _binary (code_file, collection, op, _get_for_binary);
 }
 
-static void _unknown_error (FILE * code_file, const wave_collection * collection, wave_operator op)
-{
-    (void) collection; (void) op;
-    wave_code_generate_error_unknown (code_file);
-}
-
 #undef _def_operator_function
+
+////////////////////////////////////////////////////////////////////////////////
+// Specific operators.
+////////////////////////////////////////////////////////////////////////////////
 
 static void _specific_print (FILE * const code_file, const wave_collection * const collection, wave_operator op)
 {
@@ -633,6 +709,10 @@ static void _specific_cut (FILE * const code_file, const wave_collection * const
         _operand_error (code_file);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Operators tab.
+////////////////////////////////////////////////////////////////////////////////
+
 static void (* const _operator_functions[]) (FILE *, const wave_collection *, wave_operator) =
 {
     [WAVE_OP_UNARY_PLUS]                = _unary_plus,
@@ -672,6 +752,10 @@ static void (* const _operator_functions[]) (FILE *, const wave_collection *, wa
     [WAVE_OP_SPECIFIC_PRINT]            = _specific_print,
     [WAVE_OP_UNKNOWN]                   = _unknown_error,
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// Printing.
+////////////////////////////////////////////////////////////////////////////////
 
 void wave_code_generation_fprint_operator (FILE * code_file, const wave_collection * collection)
 {
