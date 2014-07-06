@@ -85,10 +85,7 @@ void wave_garbage_clean (void)
 
 void wave_garbage_destroy (void)
 {
-    #pragma omp critical
-    {
-        wave_garbage_clean ();
-        free (_WAVE_GC._pointers);
-        _reset_gc ();
-    }
+    wave_garbage_clean ();
+    free (_WAVE_GC._pointers);
+    _reset_gc ();
 }
