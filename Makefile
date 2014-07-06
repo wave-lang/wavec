@@ -162,6 +162,7 @@ wave_generation_operators.o: wave_generation_operators.c \
 	wave_generation_operators.h wave_generation_common.h
 wave_generation_common.o: wave_generation_common.c wave_generation_common.h
 wave_generation_atom.o: wave_generation_atom.c wave_generation_atom.h
+wave_generation_curly.o: wave_generation_curly.c wave_generation_curly.h
 
 # Wave common
 wave_types.o: wave_types.c wave_types.h
@@ -187,7 +188,7 @@ libwaveast.a: wave_operator.o wave_path.o wave_atom.o \
 	wave_collection.o wave_phrase.o wave_int_list.o wave_coordinate.o \
 	wave_code_generation.o wave_generation_operators.o wave_headers.o \
 	wave_generation_common.o wave_collection_info.o wave_generation_atom.o \
-	wave_queue.o | lib_dir
+	wave_queue.o wave_generation_curly.o | lib_dir
 	ar crvs $(PATH_LIB)/libwaveast.a \
 		$(PATH_OBJ)/wave_operator.o $(PATH_OBJ)/wave_path.o \
 		$(PATH_OBJ)/wave_atom.o $(PATH_OBJ)/wave_collection.o \
@@ -195,7 +196,8 @@ libwaveast.a: wave_operator.o wave_path.o wave_atom.o \
 		$(PATH_OBJ)/wave_coordinate.o $(PATH_OBJ)/wave_collection_info.o \
 		$(PATH_OBJ)/wave_code_generation.o $(PATH_OBJ)/wave_headers.o \
 		$(PATH_OBJ)/wave_generation_operators.o $(PATH_OBJ)/wave_generation_common.o \
-		$(PATH_OBJ)/wave_generation_atom.o $(PATH_OBJ)/wave_queue.o
+		$(PATH_OBJ)/wave_generation_atom.o $(PATH_OBJ)/wave_queue.o \
+		$(PATH_OBJ)/wave_generation_curly.o
 
 # Unit tests lib
 libwavetests.a: test_wave_path.o test_wave_atom.o test_wave_collection.o | lib_dir

@@ -35,29 +35,61 @@
 #include "wave/ast/wave_atom.h"
 #include "wave/ast/wave_int_list.h"
 #include "wave/ast/wave_coordinate.h"
+#include "wave/generation/wave_generation_curly.h"
 
+/**
+ * \brief Generate an error.
+ * \param file File.
+ * \param error_message Message.
+ * \param error_code Code.
+ */
 void wave_code_generate_error (FILE * file, const char * error_message, const char * error_code);
 
+/**
+ * \brief Generate an unknown error.
+ * \param file File.
+ */
 void wave_code_generate_error_unknown (FILE * file);
 
+/**
+ * \brief Generate a tab.
+ * \param file File.
+ * \param list Index list.
+ * \param coord Coordinate.
+ * \param struct_field Struct field.
+ */
 void wave_code_generation_fprint_tab_with_init(FILE* file, const wave_int_list* list, const wave_coordinate * coord ,const char* struct_field);
 
+/**
+ * \brief Generate content assignement.
+ * \param code_file File.
+ * \param list Index list.
+ * \param c Coordinate.
+ * \param t Type.
+ */
 void wave_generate_content_assignement (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type t);
 
+/**
+ * \brief Generate content assignement.
+ * \param code_file File.
+ * \param list Index list.
+ * \param c Coordinate.
+ * \param t Type.
+ */
 void wave_generate_type_assignement (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type t);
 
+/**
+ * \brief Get the string representation of an atom type.
+ * \param t Type.
+ * \return String representation of the atom type.
+ */
 const char * wave_generation_atom_type_string (wave_atom_type t);
 
+/**
+ * \brief Get the string representation of an a data.
+ * \param t Type.
+ * \return String representation of the data.
+ */
 const char * wave_generation_atom_type_data_string (wave_atom_type t);
-
-void fprintf_closing_curly (FILE * stream, unsigned long long int number);
-
-void wave_generate_stack_curly (void);
-
-void wave_generate_flush_curly (FILE * stream);
-
-unsigned long long int wave_generate_backup_curly (void);
-
-void wave_generate_restore_curly (unsigned long long int count);
 
 #endif /* __WAVE_GENERATION_COMMON_H__ */
