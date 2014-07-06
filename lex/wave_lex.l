@@ -116,15 +116,25 @@ atom                                    return Atom;
 int main(int argc, char ** argv)
 {
     ++argv; --argc;
-    if( argc < 1 || argc > 2 ){
-        fprintf(stderr, "No input file \n");
+    if (argc > 2){
+        fprintf(stderr, "Too many arguments\n");
         return EXIT_FAILURE;
     }
-    yyin = fopen(argv[0], "r");
-    if( yyin == NULL ){
-        perror("fopen");
-        return EXIT_FAILURE;
+
+    if (argc >= 1)
+    {
+        if (strlen (argv[0]) == 1 && argv[0][0] == '-')
+            yyin = stdin;
+        else
+        {
+            yyin = fopen(argv[0], "r");
+            if( yyin == NULL ){
+            perror("fopen");
+            return EXIT_FAILURE;
+            }
+        }
     }
+
     if( argc == 2 ){
         yyout = fopen(argv[1], "w");
         if( yyout == NULL ){
@@ -133,12 +143,12 @@ int main(int argc, char ** argv)
             return EXIT_FAILURE;
         }
     }
+    
     wave_phrase_init (&p);
     if(yyparse() == 1){
         wave_phrase_clean(p._next_phrase);
         return EXIT_FAILURE;
     }
-    wave_phrase_print(&p);
     wave_code_generation_generate(yyout, p._next_phrase);
     wave_phrase_clean(p._next_phrase);
     fclose(yyin);
