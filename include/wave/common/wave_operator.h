@@ -37,7 +37,7 @@
 
 /**
  * \brief Wave operators.
- * \ingroup wave_ast_group
+ * \ingroup lib_wave_group
  */
 typedef enum wave_operator
 {
@@ -79,12 +79,44 @@ typedef enum wave_operator
     WAVE_OP_UNKNOWN,                    /**< Unknown. */
 } wave_operator;
 
+////////////////////////////////////////////////////////////////////////////////
+// Category testing.
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \brief Determine whether an operator is a test operator.
+ * \param op Operator.
+ * \retval true if the operator is a test.
+ * \retval false otherwise.
+ * \sa wave_operator
+ */
 bool wave_operator_is_test (wave_operator op);
 
+/**
+ * \brief Determine whether an operator is an unary operator.
+ * \param op Operator.
+ * \retval true if the operator is an unary operator.
+ * \retval false otherwise.
+ * \sa wave_operator
+ */
 bool wave_operator_is_unary (wave_operator op);
 
+/**
+ * \brief Determine whether an operator is a binary operator.
+ * \param op Operator.
+ * \retval true if the operator is a binary operator.
+ * \retval false otherwise.
+ * \sa wave_operator
+ */
 bool wave_operator_is_binary (wave_operator op);
 
+/**
+ * \brief Determine whether an operator is a specific operator.
+ * \param op Operator.
+ * \retval true if the operator is a specific operator.
+ * \retval false otherwise.
+ * \sa wave_operator
+ */
 bool wave_operator_is_specific (wave_operator op);
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -35,8 +35,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+////////////////////////////////////////////////////////////////////////////////
+// Struct, Typedef.
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * \brief Basic garbage collector.
+ * \ingroup lib_wave_group
  *
  * wave_garbage_collector is a very basic garbage collector for Wave programs.
  * One can either:
@@ -57,15 +62,20 @@
  */
 typedef struct wave_garbage_collector
 {
-    size_t _size;                 /*< Current size of the GC. */
-    size_t _count;                /*< Count of currently registered pointers. */
-    void ** _pointers;            /*< Registered pointers. */
+    size_t _size;                 /**< Current size of the GC. */
+    size_t _count;                /**< Count of currently registered pointers. */
+    void ** _pointers;            /**< Registered pointers. */
 } wave_garbage_collector;
+
+////////////////////////////////////////////////////////////////////////////////
+// Allocation, etc.
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Allocate memory and directly register it.
  * \param size Size requested.
- * \return A pointer to the new memory.
+ * \return A pointer to the new memory or \c NULL in case of failure.
+ * \note This function may set \c errno to \c ENOMEM.
  * \warning Do not free this memory ! It will be freed on a call to
  * wave_garbage_clean() or wave_garbage_destroy().
  *
@@ -81,6 +91,7 @@ void * wave_garbage_alloc (size_t size);
 /**
  * \brief Register a pointer in the GC
  * \param pointer Pointer to register.
+ * \note This function may set \c errno to \c ENOMEM.
  * \warning Do not free this memory ! It will be freed on a call to
  * wave_garbage_clean() or wave_garbage_destroy().
  *
@@ -88,6 +99,10 @@ void * wave_garbage_alloc (size_t size);
  * (and it is very strongly advised not to).
  */
 void wave_garbage_register (void * pointer);
+
+////////////////////////////////////////////////////////////////////////////////
+// Cleaning, destroying.
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * \brief Clean and free the registered memory.

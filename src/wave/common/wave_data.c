@@ -91,7 +91,9 @@ static inline void _operator_type_error (const wave_data * const left, const wav
 // Static utilities for operations checking.
 ////////////////////////////////////////////////////////////////////////////////
 
-/* Tab of valid operations for wave_int values. */
+/**
+ * \brief Tab of valid operations for wave_int values.
+ */
 static const wave_operator _int_defined [] =
 {
     WAVE_OP_UNARY_PLUS, WAVE_OP_UNARY_MINUS, WAVE_OP_UNARY_INCREMENT,
@@ -107,7 +109,9 @@ static const wave_operator _int_defined [] =
     WAVE_OP_UNKNOWN,
 };
 
-/* Tab of valid operations for wave_float values. */
+/**
+ * \brief Tab of valid operations for wave_float values.
+ */
 static const wave_operator _float_defined [] =
 {
     WAVE_OP_UNARY_PLUS, WAVE_OP_UNARY_MINUS, WAVE_OP_UNARY_INCREMENT,
@@ -122,7 +126,9 @@ static const wave_operator _float_defined [] =
     WAVE_OP_UNKNOWN,
 };
 
-/* Tab of valid operations for wave_char values. */
+/**
+ * \brief Tab of valid operations for wave_char values.
+ */
 static const wave_operator _char_defined [] =
 {
     WAVE_OP_UNARY_CODE,
@@ -133,7 +139,9 @@ static const wave_operator _char_defined [] =
     WAVE_OP_UNKNOWN,
 };
 
-/* Tab of valid operations for wave_string values. */
+/**
+ * \brief Tab of valid operations for wave_string values.
+ */
 static const wave_operator _string_defined [] =
 {
     WAVE_OP_BINARY_PLUS, WAVE_OP_BINARY_MIN, WAVE_OP_BINARY_MAX,
@@ -143,7 +151,9 @@ static const wave_operator _string_defined [] =
     WAVE_OP_UNKNOWN,
 };
 
-/* Tab of valid operations for wave_bool values. */
+/**
+ * \brief Tab of valid operations for wave_bool values.
+ */
 static const wave_operator _bool_defined [] =
 {
     WAVE_OP_UNARY_NOT, WAVE_OP_BINARY_AND, WAVE_OP_BINARY_OR,
@@ -153,7 +163,9 @@ static const wave_operator _bool_defined [] =
     WAVE_OP_UNKNOWN,
 };
 
-/* Tab of tabs of valid operations. */
+/**
+ * \brief Tab of tabs of valid operations.
+ */
 static const wave_operator * _defined_operators [] =
 {
     [WAVE_DATA_INT] = _int_defined,
@@ -164,7 +176,11 @@ static const wave_operator * _defined_operators [] =
     NULL,
 };
 
-/* Scan through a WAVE_OP_UNKNOWN terminated tab and search an operation. */
+/**
+ * \brief Scan through a WAVE_OP_UNKNOWN terminated tab and search an operation.
+ * \param tab Tab.
+ * \param op Operation.
+ */
 static bool _is_defined_tab (const wave_operator tab [], wave_operator op)
 {
     bool found = false;
@@ -175,7 +191,11 @@ static bool _is_defined_tab (const wave_operator tab [], wave_operator op)
     return found;
 }
 
-/* Scan through the correct WAVE_OP_UNKNOWN terminated tab and search an operation. */
+/**
+ * \brief Scan through the correct WAVE_OP_UNKNOWN terminated tab and search an operation.
+ * \param t Data type.
+ * \param op Operation.
+ */
 static bool _is_defined (wave_data_type t, wave_operator op)
 {
     return _is_defined_tab (_defined_operators[t], op);
@@ -185,7 +205,9 @@ static bool _is_defined (wave_data_type t, wave_operator op)
 // Static utilities for unary operations.
 ////////////////////////////////////////////////////////////////////////////////
 
-/* Tab of existing unary functions of type `wave_int -> wave_int`. */
+/**
+ * \brief Tab of existing unary functions of type `wave_int -> wave_int`.
+ */
 static wave_int (* const _unary_int_to_int []) (wave_int) =
 {
     [WAVE_OP_UNARY_PLUS] = wave_int_unary_plus,
@@ -194,7 +216,9 @@ static wave_int (* const _unary_int_to_int []) (wave_int) =
     [WAVE_OP_UNARY_DECREMENT] = wave_int_decrement,
 };
 
-/* Tab of existing unary functions of type `wave_float -> wave_float`. */
+/**
+ * \brief Tab of existing unary functions of type `wave_float -> wave_float`.
+ */
 static wave_float (* const _unary_float_to_float []) (wave_float) =
 {
     [WAVE_OP_UNARY_PLUS] = wave_float_unary_plus,
@@ -210,7 +234,9 @@ static wave_float (* const _unary_float_to_float []) (wave_float) =
     [WAVE_OP_UNARY_FLOOR] = wave_float_floor,
 };
 
-/* Tab of existing unary functions of type `wave_int -> wave_float`. */
+/**
+ * \brief Tab of existing unary functions of type `wave_int -> wave_float`.
+ */
 static wave_float (* const _unary_int_to_float []) (wave_int) =
 {
     [WAVE_OP_UNARY_SQRT] = wave_int_sqrt,
@@ -222,7 +248,9 @@ static wave_float (* const _unary_int_to_float []) (wave_int) =
     [WAVE_OP_UNARY_FLOOR] = wave_int_floor,
 };
 
-/* Map an unary operation on a parallel collection. */
+/**
+ * \brief Map an unary operation on a parallel collection.
+ */
 static void _map_unary (const wave_data * const operand, wave_data * const result, wave_operator op)
 {
     size_t size = operand->_content._collection._size;
@@ -275,7 +303,9 @@ static inline void _unary_constant (wave_data_type operand_type, const wave_data
 // Static utilities for binary operations.
 ////////////////////////////////////////////////////////////////////////////////
 
-/* Tab of binary `(wave_int, wave_int) -> wave_int` functions. */
+/**
+ * \brief Tab of binary `(wave_int, wave_int) -> wave_int` functions.
+ */
 static wave_int (* const _binary_int []) (wave_int, wave_int) =
 {
     [WAVE_OP_BINARY_PLUS] = wave_int_binary_plus,
@@ -287,7 +317,9 @@ static wave_int (* const _binary_int []) (wave_int, wave_int) =
     [WAVE_OP_BINARY_MOD] = wave_int_mod,
 };
 
-/* Tab of binary `(wave_int, wave_int) -> wave_bool` functions. */
+/**
+ * \brief Tab of binary `(wave_int, wave_int) -> wave_bool` functions.
+ */
 static wave_bool (* const _binary_int_to_bool []) (wave_int, wave_int) =
 {
     [WAVE_OP_BINARY_EQUALS] = wave_int_equals,
@@ -298,7 +330,9 @@ static wave_bool (* const _binary_int_to_bool []) (wave_int, wave_int) =
     [WAVE_OP_BINARY_LESSER] = wave_int_lesser,
 };
 
-/* Tab of binary `(wave_float, wave_float) -> wave_float` functions. */
+/**
+ * \brief Tab of binary `(wave_float, wave_float) -> wave_float` functions.
+ */
 static wave_float (* const _binary_float []) (wave_float, wave_float) =
 {
     [WAVE_OP_BINARY_PLUS] = wave_float_binary_plus,
@@ -310,7 +344,9 @@ static wave_float (* const _binary_float []) (wave_float, wave_float) =
     [WAVE_OP_BINARY_MOD] = wave_float_mod,
 };
 
-/* Tab of binary `(wave_float, wave_float) -> wave_bool` functions. */
+/**
+ * \brief Tab of binary `(wave_float, wave_float) -> wave_bool` functions.
+ */
 static wave_bool (* const _binary_float_to_bool []) (wave_float, wave_float) =
 {
     [WAVE_OP_BINARY_EQUALS] = wave_float_equals,
@@ -321,14 +357,18 @@ static wave_bool (* const _binary_float_to_bool []) (wave_float, wave_float) =
     [WAVE_OP_BINARY_LESSER] = wave_float_lesser,
 };
 
-/* Tab of binary `(wave_char, wave_char) -> wave_char` functions. */
+/**
+ * \brief Tab of binary `(wave_char, wave_char) -> wave_char` functions.
+ */
 static wave_char (* const _binary_char []) (wave_char, wave_char) =
 {
     [WAVE_OP_BINARY_MIN] = wave_char_min,
     [WAVE_OP_BINARY_MAX] = wave_char_max,
 };
 
-/* Tab of binary `(wave_float, wave_float) -> wave_bool` functions. */
+/**
+ * \brief Tab of binary `(wave_float, wave_float) -> wave_bool` functions.
+ */
 static wave_bool (* const _binary_char_to_bool []) (wave_char, wave_char) =
 {
     [WAVE_OP_BINARY_EQUALS] = wave_char_equals,
@@ -339,7 +379,9 @@ static wave_bool (* const _binary_char_to_bool []) (wave_char, wave_char) =
     [WAVE_OP_BINARY_LESSER] = wave_char_lesser,
 };
 
-/* Tab of binary `(wave_string, wave_string) -> wave_string` functions. */
+/**
+ * \brief Tab of binary `(wave_string, wave_string) -> wave_string` functions.
+ */
 static wave_string (* const _binary_string []) (const_wave_string, const_wave_string) =
 {
     [WAVE_OP_BINARY_PLUS] = wave_string_binary_plus,
@@ -347,7 +389,9 @@ static wave_string (* const _binary_string []) (const_wave_string, const_wave_st
     [WAVE_OP_BINARY_MAX] = wave_string_max,
 };
 
-/* Tab of binary `(wave_string, wave_string) -> wave_bool` functions. */
+/**
+ * \brief Tab of binary `(wave_string, wave_string) -> wave_bool` functions.
+ */
 static wave_bool (* const _binary_string_to_bool []) (const_wave_string, const_wave_string) =
 {
     [WAVE_OP_BINARY_EQUALS] = wave_string_equals,
@@ -358,7 +402,9 @@ static wave_bool (* const _binary_string_to_bool []) (const_wave_string, const_w
     [WAVE_OP_BINARY_LESSER] = wave_string_lesser,
 };
 
-/* Tab of binary `(wave_bool, wave_bool) -> wave_bool` functions. */
+/**
+ * \brief Tab of binary `(wave_bool, wave_bool) -> wave_bool` functions.
+ */
 static wave_bool (* const _binary_bool []) (wave_bool, wave_bool) =
 {
     [WAVE_OP_BINARY_AND] = wave_bool_and,

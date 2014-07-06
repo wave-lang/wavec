@@ -37,12 +37,24 @@
 #include "wave/common/wave_operator.h"
 #include "wave/common/wave_garbage.h"
 
+/**
+ * \defgroup lib_wave_group Lib Wave
+ *
+ * \c libwave is a C library which contains necessary functions and types for
+ * Wave programs. Indeed, Wave programs are compiled to C and thus require
+ * a few more utilities in order to properly be compiled.
+ */
+
+/**
+ * \defgroup wave_data_group Wave Data
+ * \ingroup lib_wave_group
+ */
 ////////////////////////////////////////////////////////////////////////////////
 // Enums, Structs, Typedefs.
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \class wave_data_type
+ * \ingroup wave_data_group
  * \brief Used inside the \c wave_data structure to know wich data is being stored inside.
  * \sa wave_types_group
  */
@@ -61,7 +73,10 @@ typedef enum wave_data_type
 
 /**
  * \brief Storage of wave data.
+ * \ingroup wave_data_group
  * \sa wave_types_group
+ *
+ * wave_data is used in Wave programs to store a program's data.
  */
 typedef struct wave_data
 {
@@ -79,7 +94,7 @@ typedef struct wave_data
             size_t _size;                  /**< The size of the stored collection. */
         } _collection;                     /**< The stored collection and its size. */
     } _content;                            /**< The union to store multiple data values */
-    size_t _index;
+    size_t _index;                         /**< THe index. */
     struct wave_data * _up;                /**< The upper wave_data */
 } wave_data;
 
@@ -171,7 +186,7 @@ void wave_data_set_int (wave_data * data, wave_int i);
 /**
  * \brief Store a floating point value inside a data.
  * \param data Storage.
- * \param i Floating point value.
+ * \param f Floating point value.
  * \relatesalso wave_data
  * \warning \c data must be not \c NULL.
  */
@@ -180,7 +195,7 @@ void wave_data_set_float (wave_data * data, wave_float f);
 /**
  * \brief Store a character value inside a data.
  * \param data Storage.
- * \param i Character value.
+ * \param c Character value.
  * \relatesalso wave_data
  * \warning \c data must be not \c NULL.
  */
@@ -189,7 +204,7 @@ void wave_data_set_char (wave_data * data, wave_char c);
 /**
  * \brief Store a boolean value inside a data.
  * \param data Storage.
- * \param i Boolean value.
+ * \param b Boolean value.
  * \relatesalso wave_data
  * \warning \c data must be not \c NULL.
  */
@@ -198,7 +213,7 @@ void wave_data_set_bool (wave_data * data, wave_bool b);
 /**
  * \brief Store a string value inside a data.
  * \param data Storage.
- * \param i String value.
+ * \param s String value.
  * \relatesalso wave_data
  * \warning \c data must be not \c NULL.
  */

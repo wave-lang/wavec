@@ -47,6 +47,7 @@
 
 /**
  * \defgroup wave_types_group Wave Types
+ * \ingroup lib_wave_group
  * # List of wave types
  * - wave_int
  * - wave_char
@@ -1098,10 +1099,11 @@ wave_int wave_char_code (wave_char c);
  * \brief Get the nth wave_char of a wave_string.
  * \param s String.
  * \param n N.
+ * \return The nth wave_char of \c s.
  * \relatesalso wave_string
  * \warning This function assumes the wave_string has at least \c n wave_char !
  */
-wave_char wave_char_get (const_wave_string s, wave_int i);
+wave_char wave_char_get (const_wave_string s, wave_int n);
 
 /**
  * \brief Print a wave_char to a stream.
@@ -1464,6 +1466,7 @@ wave_string wave_string_duplicate (const_wave_string s);
  * \brief Get the nth wave_char of a wave_string.
  * \param s String.
  * \param n N.
+ * \return The nth wave_char of \c s.
  * \relatesalso wave_string
  * \warning This function assumes the wave_string has at least \c n wave_char !
  */
