@@ -1,12 +1,16 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Pascal’s triangle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Macros.
 Let up      be u [p*] u p d r.
 Let up_left be u p [p*] u p d r.
 Let last    be u p d [s*].
 
 Let pascal_triangle be (1||1){;(1{||(@up_left;@up;+;!)}#last||1)}.
 
-pascal_triangle 5.
+% Compute the triangle.
+(pascal_triangle 5);print.
 
 % (1||1);
 % (1||2||1);
