@@ -6,7 +6,7 @@ Compiler for the [Wave][WAVE] language.
 Downloading
 -----------
 ```bash
-$ git clone --recursive <git repository>
+$ git clone --recursive https://github.com/wave-lang/wavec.git
 ```
 
 Building requirements
