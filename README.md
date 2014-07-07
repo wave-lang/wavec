@@ -69,6 +69,9 @@ $ make uninstall
 Using the compiler
 ------------------
 ### Basics
+If you install the tools, you can directly run ```wavec```, ```wavepp``` and
+```wave2c```, otherwise, you must run the executables from ```bin```.
+
 To use the compiler:
 ```bash
 $ wavec my_file.wave
@@ -107,6 +110,39 @@ $ wavepp my_file.w | wave2c - my_file.c
 Or, for nice results:
 ```bash
 $ wavepp my_file.w | wave2c - | indent -bad -bap -bli0 -bls -bs -cs -i4 -l80 -lp -pcs -pmt -saf -sai -saw -sc -ss -o my_file.c
+```
+
+### Compiling the resulting C file
+The resulting C files are written in C99. They require the ```libwave```, and rely on ```math.h``` and ```OpenMP```.
+```bash
+$ gcc -std=c99 -02 my_file.c -lm -lwave -fopenmp
+```
+If you did not install the tools, it might be necessary to specify the location
+of the headers and the library:
+```bash
+$ gcc -std=c99 -O2 -Iinclude my_file.c -Llib -lm -lwave -fopenmp
+```
+
+Documentation
+-------------
+### Users
+If you installed the compiling tools, the manpages should be available in your ```MANPATH```:
+```bash
+$ man wavepp
+$ man wave2c
+$ man wavec
+```
+Otherwise:
+```bash
+$ man man/wavepp.1
+$ man man/wave2c.1
+$ man man/wavec.1
+```
+
+### Developpers
+Please first install ```doxygen``` and ```graphviz```. Then run:
+```bash
+$ make doc
 ```
 
 License
