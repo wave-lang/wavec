@@ -3,6 +3,12 @@ Wave Compiler
 
 Compiler for the [Wave][WAVE] language.
 
+Downloading
+-----------
+```bash
+$ git clone --recursive <git repository>
+```
+
 Building requirements
 ---------------------
 #### Minimal requirements
@@ -117,7 +123,7 @@ $ wavepp my_file.w | wave2c - | indent -bad -bap -bli0 -bls -bs -cs -i4 -l80 -lp
 ### Compiling the resulting C file
 The resulting C files are written in C99. They require the ```libwave```, and rely on ```math.h``` and ```OpenMP```.
 ```bash
-$ gcc -std=c99 -02 my_file.c -lm -lwave -fopenmp
+$ gcc -std=c99 -O2 my_file.c -lm -lwave -fopenmp
 ```
 If you did not install the tools, it might be necessary to specify the location
 of the headers and the library:
