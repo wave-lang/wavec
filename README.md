@@ -131,6 +131,20 @@ of the headers and the library:
 $ gcc -std=c99 -O2 -Iinclude my_file.c -Llib -lm -lwave -fopenmp
 ```
 
+Examples
+--------
+A few examples are available in the ```examples``` directory.
+If you installed the tools, you can change directories and compile any example:
+```bash
+$ cd examples
+$ wavec your_example_of_choice.wave [other_examples.wave]
+```
+
+Otherwise, you need to stay at the directory of the project:
+```bash
+$ bin/wavec examples/your_example_of_choice.wave [other_examples.wave]
+```
+
 Documentation
 -------------
 ### Users
