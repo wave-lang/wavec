@@ -23,9 +23,6 @@ for WAVE_SRC in $*; do
     WAVE_PP=$(echo "$WAVE_SRC" | sed 's/\.wave$//;s/\.w$//').wpp
     C_SRC=$(echo "$WAVE_PP" | sed 's/\.wpp$/\.c/')
     EXE=$(echo "$C_SRC" | sed 's/\.c$//')
-    echo $WAVE_PP
-    echo $C_SRC
-    echo $EXE
 
     # Run the preprocessor.
     $WAVEPP "$WAVE_SRC" "$WAVE_PP" &&
