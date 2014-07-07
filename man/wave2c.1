@@ -1,4 +1,4 @@
-.TH WAVE2C "1" "july 2014" "wave2c 0.5.0" "wave2c manual"
+.TH WAVE2C "1" "july 2014" "wave2c 0.5.1" "wave2c manual"
 .SH NAME
 wave2c - A preprocessed Wave code to C code translator
 
@@ -47,10 +47,19 @@ To directly produce C code from raw Wave code:
 .SH SEE ALSO
 \fBwavepp\fR, \fBwavec\fR
 
+.SH UNSUPPORTED OR EXPERIMENTAL WAVE LANG FEATURES
+Experimental support:
+    - paths
+    - cut operator
+    - stop operator
+
+Not implemented yet:
+    - read operator
+    - infinite cycles
+
 .SH BUGS
-The compiler still is in its early stages. The support of paths, the cut
-operator and the stop operator is extremely experimental. Also, the read operator
-is not implemented yet.
+The compiler still is in its early stages hence the high probability to
+encounter bugs.
 
 .SH AUTHORS
 See the \fBAUTHORS\fR in the source ditribution. Éric Violard <\fBeric.violard@inria.fr\fR> is the author of the

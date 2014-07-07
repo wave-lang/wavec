@@ -620,9 +620,6 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
     int size = 0;
     const wave_path* internal_recorded_path = recorded_path;
 
-    // Debug
-    fprintf (stderr, "\tpath: "); wave_path_fprint (stderr, p); fprintf (stderr, "\n");
-
     while(c != NULL && p != NULL){
         wave_move_type wmt = wave_path_get_move(p);
         switch(wmt){
@@ -762,12 +759,6 @@ static int wave_follow_collection_with_extra_bonus(const wave_collection* c, con
                 fprintf(stderr, "A path or not a path ... that is the question\n");
                 exit(1);
                 break;
-        }
-
-        // Debug
-        if (c!=NULL)
-        {
-            fprintf (stderr, "\t\t%d: ", wmt); wave_collection_fprint (stderr, c); fprintf (stderr, "\n");
         }
 
         p = wave_path_get_next(p);
