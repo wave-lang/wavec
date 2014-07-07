@@ -47,9 +47,9 @@ PATH_SCRIPT = script
 FLAGS_CC_INCLUDE = -I$(PATH_INCLUDE) -I$(PATH_INCLUDE_YACC) \
 	-I$(PATH_TESTS_INCLUDE) -I$(PATH_INCLUDE_HASH)
 FLAGS_CC_DEBUG = -g
-FLAGS_CC_WARNINGS = -pedantic -Wall -Wextra -Wfloat-equal -Wdouble-promotion \
-	-Wswitch-default -Winit-self -Wshadow -Wbad-function-cast \
-	-Wcast-align -Wconversion -Wlogical-op -Wstrict-prototypes -Wnested-externs
+FLAGS_CC_WARNINGS = -pedantic -Wall -Wextra -Wfloat-equal -Wswitch-default \
+	-Winit-self -Wshadow -Wbad-function-cast -Wcast-align -Wconversion \
+	-Wlogical-op -Wstrict-prototypes -Wnested-externs
 FLAGS_CC_MISC = -std=gnu99 -O0 -fopenmp
 FLAGS_CC = $(FLAGS_CC_INCLUDE) $(FLAGS_CC_WARNINGS) $(FLAGS_CC_MISC) \
 	$(FLAGS_CC_DEBUG)
