@@ -1,0 +1,38 @@
+.TH WAVEC "1" "july 2014" "wavec 0.4.0" "wavec manual"
+.SH NAME
+wavec - A Wave compiler
+
+.SH SYNOPSIS
+.B wavec
+.I [INPUT...]
+.SH DESCRIPTION
+This program compiles Wave files into binaries.
+.P
+For more information on the Wave language, please
+visit <\fBhttp://wave.gforge.inria.fr\fR>.
+
+.SH USAGE
+This program compiles Wave files into binaries. All intermediary files are kept.
+The names of the files depend on the name of the original file.
+If the file is "\fIfile.w\fR" or "\fIfile.wave\fR", the preprocessed file will be "\fIfile.wpp\fR" and the
+C file will be "\fIfile.c\fR"
+
+.SH EXAMPLES
+To compile a Wave file:
+    $ \fBwavec\fR input.w
+
+To compile several Wave files:
+    $ \fBwavec\fR input_1.w input_2.w
+
+.SH SEE ALSO
+\fBwavepp\fR, \fBwave2c\fR
+
+.SH BUGS
+No known bugs yet.
+
+.SH AUTHORS
+See the \fBAUTHORS\fR in the source ditribution. Éric Violard <\fBeric.violard@inria.fr\fR> is the author of the
+Wave language.
+
+.SH LICENSE
+This work is licensed under the MIT terms. See the \fBCOPYING\fR file in the source distribution.

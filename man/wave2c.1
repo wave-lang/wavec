@@ -1,0 +1,60 @@
+.TH WAVE2C "1" "july 2014" "wave2c 0.4.0" "wave2c manual"
+.SH NAME
+wave2c - A preprocessed Wave code to C code translator
+
+.SH SYNOPSIS
+.B wave2c
+.I INPUT [OUTPUT]
+.SH DESCRIPTION
+This program compiles preprocessed Wave code into C code. To produce preprocessed
+Wave code, use \fBwavepp\fR.
+.P
+For more information on the Wave language, please
+visit <\fBhttp://wave.gforge.inria.fr\fR>.
+
+.SH USAGE
+This program expects 1 or 2 arguments. The first argument is the input file, while
+the seconde argument is the output.
+.P
+If the first argument is '-', the program will read from standard input.
+.P
+If the second argument is omitted, the program will output to the standard output.
+
+.SH COMPILING THE C FILES
+The resulting C files rely on the \fBlibwave\fR, <\fBmath.h\fR> and \fBOpenMP\fR.
+Also, the C dialect used is C99. Thus, to compile the resulting C files:
+    $ \fBwave2\fR input.wpp output.c
+    $ \fBgcc\fR -std=c99 -O2 output.c -lm -lwave -fopenmp
+
+.SH EXAMPLES
+To compile a preprocessed file into a C file:
+    $ \fBwave2c\fR input.wpp output.c
+
+To write the resulting C code to stdout:
+    $ \fBwave2c\fR input.wpp
+
+To read the Wave code from stdin:
+    $ \fBwave2c\fR -
+    $ \fBwave2c\fR - output.c
+
+To indent the C code using GNU \fBindent\fR:
+    $ \fBwave2c\fR input.wpp | \fBindent\fR -o output.c
+
+To directly produce C code from raw Wave code:
+    $ \fBwavepp\fR input.w | \fBwave2c\fR - ouput.c
+    $ \fBwavepp\fR input.w | \fBwave2c\fR - | \fBindent\fR -o output.c
+
+.SH SEE ALSO
+\fBwavepp\fR, \fBwavec\fR
+
+.SH BUGS
+The compiler still is in its early stages. The support of paths, the cut
+operator and the stop operator is extremely experimental. Also, the read operator
+is not implemented yet.
+
+.SH AUTHORS
+See the \fBAUTHORS\fR in the source ditribution. Éric Violard <\fBeric.violard@inria.fr\fR> is the author of the
+Wave language.
+
+.SH LICENSE
+This work is licensed under the MIT terms. See the \fBCOPYING\fR file in the source distribution.

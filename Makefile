@@ -14,6 +14,7 @@ PATH_OBJ = obj
 PATH_DOC = doc
 PATH_LIB = lib
 PATH_BIN = bin
+PATH_MAN = man
 PATH_TESTS = tests
 PATH_INCLUDE = include
 PATH_TESTS_SRC = $(PATH_TESTS)/$(PATH_SRC)
@@ -235,16 +236,25 @@ yacc_dir:
 ################################################################################
 
 install: main
+	@mkdir -p /usr/local/include
+	@mkdir -p /usr/local/lib
+	@mkdir -p /usr/local/bin
+	@mkdir -p /usr/local/share/man/man1
 	@cp -R $(PATH_INCLUDE)/wave /usr/local/include/wave
 	@cp $(PATH_LIB)/libwave.a /usr/local/lib/libwave.a
 	@cp $(PATH_BIN)/wave2c /usr/local/bin/wave2c
 	@cp $(PATH_BIN)/wavepp /usr/local/bin/wavepp
 	@cp $(PATH_BIN)/wavec /usr/local/bin/wavec
+	@cp $(PATH_MAN)/wavepp.1 /usr/local/share/man/man1/wavepp.1
+	@cp $(PATH_MAN)/wave2c.1 /usr/local/share/man/man1/wave2c.1
+	@cp $(PATH_MAN)/wavec.1 /usr/local/share/man/man1/wavec.1
 
 uninstall:
 	@rm -rf /usr/local/include/wave
 	@rm -f /usr/local/lib/libwave.a
 	@rm -f /usr/local/bin/wave2c /usr/local/bin/wavepp /usr/local/bin/wavec
+	@rm -f /usr/local/share/man/man1/wavec.1 /usr/local/share/man/man1/wave2c.1 \
+		/usr/local/share/man/man1/wavepp.1
 
 ################################################################################
 # Cleaning
