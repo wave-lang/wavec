@@ -30,87 +30,9 @@
  */
 #include "wave/generation/wave_generation_atom.h"
 
-/**
- * \brief Generate C source code giving an integer atom.
- * \param code_file The file where the C code will be written.
- * \param collection The collection containing the value.
- * \pre code_file and collection must not be NULL.
- * \relatesalso wave_atom
- * \relatesalso wave_collection_info
- */
-static void _wave_code_generation_fprint_int(FILE* code_file, const wave_collection* collection);
-
-/**
- * \brief Generate C source code giving an float atom.
- * \param code_file The file where the C code will be written.
- * \param collection The collection containing the value.
- * \pre code_file and collection must not be NULL.
- * \relatesalso wave_atom
- * \relatesalso wave_collection_info
- */
-static void _wave_code_generation_fprint_float(FILE* code_file, const wave_collection* collection);
-
-/**
- * \brief Generate C source code giving an bool atom.
- * \param code_file The file where the C code will be written.
- * \param collection The collection containing the value.
- * \pre code_file and collection must not be NULL.
- * \relatesalso wave_atom
- * \relatesalso wave_collection_info
- */
-static void _wave_code_generation_fprint_bool(FILE* code_file, const wave_collection* collection);
-
-/**
- * \brief Generate C source code giving an char atom.
- * \param code_file The file where the C code will be written.
- * \param collection The collection containing the value.
- * \pre code_file and collection must not be NULL.
- * \relatesalso wave_atom
- * \relatesalso wave_collection_info
- */
-static void _wave_code_generation_fprint_char(FILE* code_file, const wave_collection* collection);
-
-/**
- * \brief Generate C source code giving an string atom.
- * \param code_file The file where the C code will be written.
- * \param collection The collection containing the value.
- * \pre code_file and collection must not be NULL.
- * \relatesalso wave_atom
- * \relatesalso wave_collection_info
- */
-static void _wave_code_generation_fprint_string(FILE* code_file, const wave_collection* collection);
-
-/**
- * \brief Generate C source code giving an path atom.
- * \param code_file The file where the C code will be written.
- * \param collection The collection containing the value.
- * \pre code_file and collection must not be NULL.
- * \relatesalso wave_atom
- * \relatesalso wave_collection_info
- */
-static void _wave_code_generation_fprint_path(FILE* code_file, const wave_collection* collection);
-
-/**
- * \brief An array for the atome print switch.
- */
-static void (* _wave_code_generation_atom []) (FILE*, const wave_collection* collection) =
-{
-    [WAVE_ATOM_LITERAL_INT]     = _wave_code_generation_fprint_int,
-    [WAVE_ATOM_LITERAL_FLOAT]   = _wave_code_generation_fprint_float,
-    [WAVE_ATOM_LITERAL_BOOL]    = _wave_code_generation_fprint_bool,
-    [WAVE_ATOM_LITERAL_CHAR]    = _wave_code_generation_fprint_char,
-    [WAVE_ATOM_LITERAL_STRING]  = _wave_code_generation_fprint_string,
-    [WAVE_ATOM_OPERATOR]        = wave_code_generation_fprint_operator,
-    [WAVE_ATOM_PATH]            = _wave_code_generation_fprint_path,
-    [WAVE_ATOM_UNKNOWN]         = NULL,
-};
-
-void wave_code_generation_atom(FILE* code_file, FILE * alloc_file, const wave_collection* collection){
-    (void) alloc_file;
-    wave_atom* atom = wave_collection_get_atom(collection);
-    wave_atom_type atom_type = wave_atom_get_type(atom);
-    _wave_code_generation_atom[ atom_type ](code_file, collection);
-}
+////////////////////////////////////////////////////////////////////////////////
+// Static utilities.
+////////////////////////////////////////////////////////////////////////////////
 
 static inline void _wave_generate_with_strings_inside_tm(FILE* const code_file, const wave_collection* const collection, wave_atom_type t){
     wave_coordinate* collection_coordinate = wave_collection_get_coordinate(collection);
@@ -125,31 +47,83 @@ static inline void _wave_generate_with_strings_inside_tm(FILE* const code_file, 
     wave_int_list_free (collection_index_list);
 }
 
-static void _wave_code_generation_fprint_int(FILE* code_file, const wave_collection* collection){
+/**
+ * \brief Generate C source code giving an integer atom.
+ * \param code_file The file where the C code will be written.
+ * \param collection The collection containing the value.
+ * \pre code_file and collection must not be NULL.
+ * \relatesalso wave_atom
+ * \relatesalso wave_collection_info
+ */
+static void _wave_code_generation_fprint_int(FILE* code_file, const wave_collection* collection)
+{
     _wave_generate_with_strings_inside_tm(code_file, collection, WAVE_ATOM_LITERAL_INT);
 }
 
-static void _wave_code_generation_fprint_float(FILE* code_file, const wave_collection* collection){
+/**
+ * \brief Generate C source code giving an float atom.
+ * \param code_file The file where the C code will be written.
+ * \param collection The collection containing the value.
+ * \pre code_file and collection must not be NULL.
+ * \relatesalso wave_atom
+ * \relatesalso wave_collection_info
+ */
+static void _wave_code_generation_fprint_float(FILE* code_file, const wave_collection* collection)
+{
     _wave_generate_with_strings_inside_tm(code_file, collection, WAVE_ATOM_LITERAL_FLOAT);
 }
 
-static void _wave_code_generation_fprint_bool(FILE* code_file, const wave_collection* collection){
+/**
+ * \brief Generate C source code giving an bool atom.
+ * \param code_file The file where the C code will be written.
+ * \param collection The collection containing the value.
+ * \pre code_file and collection must not be NULL.
+ * \relatesalso wave_atom
+ * \relatesalso wave_collection_info
+ */
+static void _wave_code_generation_fprint_bool(FILE* code_file, const wave_collection* collection)
+{
     _wave_generate_with_strings_inside_tm(code_file, collection, WAVE_ATOM_LITERAL_BOOL);
 }
 
-static void _wave_code_generation_fprint_char(FILE* code_file, const wave_collection* collection){
+/**
+ * \brief Generate C source code giving an char atom.
+ * \param code_file The file where the C code will be written.
+ * \param collection The collection containing the value.
+ * \pre code_file and collection must not be NULL.
+ * \relatesalso wave_atom
+ * \relatesalso wave_collection_info
+ */
+static void _wave_code_generation_fprint_char(FILE* code_file, const wave_collection* collection)
+{
     _wave_generate_with_strings_inside_tm(code_file, collection, WAVE_ATOM_LITERAL_CHAR);
 }
 
-static void _wave_code_generation_fprint_string(FILE* code_file, const wave_collection* collection){
+/**
+ * \brief Generate C source code giving an string atom.
+ * \param code_file The file where the C code will be written.
+ * \param collection The collection containing the value.
+ * \pre code_file and collection must not be NULL.
+ * \relatesalso wave_atom
+ * \relatesalso wave_collection_info
+ */
+static void _wave_code_generation_fprint_string(FILE* code_file, const wave_collection* collection)
+{
     _wave_generate_with_strings_inside_tm(code_file, collection, WAVE_ATOM_LITERAL_STRING);
 }
 
+/**
+ * \brief Generate C source code giving an path atom.
+ * \param code_file The file where the C code will be written.
+ * \param collection The collection containing the value.
+ * \pre code_file and collection must not be NULL.
+ * \relatesalso wave_atom
+ * \relatesalso wave_collection_info
+ */
 static void _wave_code_generation_fprint_path(FILE* code_file, const wave_collection* collection)
 {
-//    (void) code_file; (void) collection;
     wave_path * p = wave_atom_get_path (wave_collection_get_atom (collection));
-    wave_collection * pointed = wave_collection_get_collection_pointed (collection, p);
+    const wave_collection * pointed = wave_collection_get_collection_pointed (collection, p);
     if (pointed != NULL)
     {
         wave_int_list * indexes = wave_collection_get_full_indexes (wave_collection_get_parent(collection));
@@ -166,4 +140,30 @@ static void _wave_code_generation_fprint_path(FILE* code_file, const wave_collec
         wave_int_list_free (indexes);
         wave_int_list_free (indexes_pointed);
     }
+}
+
+/**
+ * \brief An array for the atom print switch.
+ */
+static void (* const _wave_code_generation_atom []) (FILE*, const wave_collection* collection) =
+{
+    [WAVE_ATOM_LITERAL_INT]     = _wave_code_generation_fprint_int,
+    [WAVE_ATOM_LITERAL_FLOAT]   = _wave_code_generation_fprint_float,
+    [WAVE_ATOM_LITERAL_BOOL]    = _wave_code_generation_fprint_bool,
+    [WAVE_ATOM_LITERAL_CHAR]    = _wave_code_generation_fprint_char,
+    [WAVE_ATOM_LITERAL_STRING]  = _wave_code_generation_fprint_string,
+    [WAVE_ATOM_OPERATOR]        = wave_code_generation_fprint_operator,
+    [WAVE_ATOM_PATH]            = _wave_code_generation_fprint_path,
+    [WAVE_ATOM_UNKNOWN]         = NULL,
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Atom generation.
+////////////////////////////////////////////////////////////////////////////////
+
+void wave_code_generation_atom(FILE* code_file, FILE * alloc_file, const wave_collection* collection){
+    (void) alloc_file;
+    wave_atom * atom = wave_collection_get_atom(collection);
+    wave_atom_type atom_type = wave_atom_get_type(atom);
+    _wave_code_generation_atom[atom_type] (code_file, collection);
 }

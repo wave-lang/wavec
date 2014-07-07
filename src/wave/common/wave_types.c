@@ -552,32 +552,7 @@ wave_bool wave_string_lesser (const_wave_string a, const_wave_string b)
     return wave_string_compare (a, b) < 0;
 }
 
-#define _wave_string_char_op(return_type, function_name) \
-    return_type function_name ## _char_left (wave_char a, const_wave_string b) \
-    { \
-        wave_char a_string[2] = { a, '\0' }; \
-        return function_name (a_string, b); \
-    } \
-    \
-    return_type function_name ## _char_right (const_wave_string a, wave_char b) \
-    { \
-        wave_char b_string[2] = { b, '\0' }; \
-        return function_name (a, b_string); \
-    }
-
-_wave_string_char_op (wave_string, wave_string_binary_plus)
-_wave_string_char_op (wave_string, wave_string_min)
-_wave_string_char_op (wave_string, wave_string_max)
-_wave_string_char_op (wave_bool, wave_string_equals)
-_wave_string_char_op (wave_bool, wave_string_differs)
-_wave_string_char_op (wave_bool, wave_string_lesser_or_equals)
-_wave_string_char_op (wave_bool, wave_string_greater_or_equals)
-_wave_string_char_op (wave_bool, wave_string_lesser)
-_wave_string_char_op (wave_bool, wave_string_greater)
-
-#undef _wave_string_char_op
-
-void wave_string_fprint (FILE * const stream, const_wave_string s)
+void wave_string_fprint (FILE * stream, const_wave_string s)
 {
     fprintf (stream, "%s", s);
 }
@@ -630,3 +605,32 @@ wave_char wave_string_nth (const_wave_string s, wave_int n)
 {
     return s[n];
 }
+
+/** \cond Doxygen ignore. */
+
+#define _wave_string_char_op(return_type, function_name) \
+    return_type function_name ## _char_left (wave_char a, const_wave_string b) \
+    { \
+        wave_char a_string[2] = { a, '\0' }; \
+        return function_name (a_string, b); \
+    } \
+    \
+    return_type function_name ## _char_right (const_wave_string a, wave_char b) \
+    { \
+        wave_char b_string[2] = { b, '\0' }; \
+        return function_name (a, b_string); \
+    }
+
+_wave_string_char_op (wave_string, wave_string_binary_plus)
+_wave_string_char_op (wave_string, wave_string_min)
+_wave_string_char_op (wave_string, wave_string_max)
+_wave_string_char_op (wave_bool, wave_string_equals)
+_wave_string_char_op (wave_bool, wave_string_differs)
+_wave_string_char_op (wave_bool, wave_string_lesser_or_equals)
+_wave_string_char_op (wave_bool, wave_string_greater_or_equals)
+_wave_string_char_op (wave_bool, wave_string_lesser)
+_wave_string_char_op (wave_bool, wave_string_greater)
+
+#undef _wave_string_char_op
+
+/** \endcond Doxygen ignore. */

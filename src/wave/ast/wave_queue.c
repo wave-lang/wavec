@@ -1,6 +1,6 @@
 /**
- * \file wave_stack.c
- * \brief Wave stack.
+ * \file wave_queue.c
+ * \brief Wave queue.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
  * \author SCHMITT Maxime
  * \date 2014
@@ -28,15 +28,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "wave/ast/wave_stack.h"
+#include "wave/ast/wave_queue.h"
 
-static wave_stack_element * wave_stack_element_alloc (void)
+static wave_queue_element * wave_queue_element_alloc (void)
 {
-    wave_stack_element * e = malloc (sizeof * e);
+    wave_queue_element * e = malloc (sizeof * e);
     if (e == NULL)
         perror ("malloc");
     else
-        * e = (wave_stack_element) { ._pointer = NULL, ._next = NULL, };
+        * e = (wave_queue_element) { ._pointer = NULL, ._next = NULL, };
     return e;
 }
 
@@ -44,29 +44,29 @@ static wave_stack_element * wave_stack_element_alloc (void)
 // Allocation, free.
 ////////////////////////////////////////////////////////////////////////////////
 
-void * wave_stack_alloc (void)
+void * wave_queue_alloc (void)
 {
-    wave_stack * stack = malloc (sizeof * stack);
-    if (stack == NULL)
+    wave_queue * queue = malloc (sizeof * queue);
+    if (queue == NULL)
         perror ("malloc");
     else
-        * stack = (wave_stack) { ._head = NULL, ._tail = NULL, };
+        * queue = (wave_queue) { ._head = NULL, ._tail = NULL, };
 
-    return stack;
+    return queue;
 }
 
-void wave_stack_free (wave_stack * s)
+void wave_queue_free (wave_queue * q)
 {
-    if (s != NULL)
+    if (q != NULL)
     {
-        wave_stack_element * e = s->_head;
+        wave_queue_element * e = q->_head;
         while (e != NULL)
         {
-            wave_stack_element * next = e->_next;
+            wave_queue_element * next = e->_next;
             free (e);
             e = next;
         }
-        free (s);
+        free (q);
     }
 }
 
@@ -74,46 +74,46 @@ void wave_stack_free (wave_stack * s)
 // Push back your lolly Pop.
 ////////////////////////////////////////////////////////////////////////////////
 
-void * wave_stack_pop (wave_stack * s)
+void * wave_queue_pop (wave_queue * const q)
 {
-    wave_stack_element * old_head = s->_head;
+    wave_queue_element * old_head = q->_head;
     void * pointer = old_head->_pointer;
-    s->_head = old_head->_next;
-    if (s->_head == NULL)
-        s->_tail = NULL;
+    q->_head = old_head->_next;
+    if (q->_head == NULL)
+        q->_tail = NULL;
     free (old_head);
     return pointer;
 }
 
-void wave_stack_push (wave_stack * s, void * p)
+void wave_queue_push (wave_queue * const q, void * const p)
 {
-    wave_stack_element * e = wave_stack_element_alloc ();
+    wave_queue_element * e = wave_queue_element_alloc ();
     e->_pointer = p;
-    if (s->_tail != NULL)
-        s->_tail->_next = e;
+    if (q->_tail != NULL)
+        q->_tail->_next = e;
     else
     {
-        s->_head = e;
-        s->_tail = e;
+        q->_head = e;
+        q->_tail = e;
     }
-    s->_tail = e;
+    q->_tail = e;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Getters
 ////////////////////////////////////////////////////////////////////////////////
 
-void * wave_stack_head (const wave_stack * const s)
+void * wave_queue_head (const wave_queue * const q)
 {
-    return s->_head == NULL ? NULL : s->_head->_pointer;
+    return q->_head == NULL ? NULL : q->_head->_pointer;
 }
 
-void * wave_stack_tail (const wave_stack * const s)
+void * wave_queue_tail (const wave_queue * const q)
 {
-    return s->_tail == NULL ? NULL : s->_tail->_pointer;
+    return q->_tail == NULL ? NULL : q->_tail->_pointer;
 }
 
-bool wave_stack_is_empty (const wave_stack * const s)
+bool wave_queue_is_empty (const wave_queue * const q)
 {
-    return s->_head == NULL;
+    return q->_head == NULL;
 }

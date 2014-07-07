@@ -1,6 +1,6 @@
 /**
- * \file wave_generation_atom.h
- * \brief Wave code generation for operators.
+ * \file wave_generation_curly.h
+ * \brief Wave code generation, curly.
  * \author RAZANAJATO RANAIVOARIVONY Harenome
  * \author SCHMITT Maxime
  * \date 2014
@@ -28,21 +28,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef __WAVE_GENERATION_ATOM_H__
-#define __WAVE_GENERATION_ATOM_H__
-
-#include "wave/ast/wave_atom.h"
-#include "wave/ast/wave_collection.h"
-#include "wave/generation/wave_generation_operators.h"
+#include "wave/generation/wave_generation_curly.h"
 
 /**
- * \brief Generate C source code giving an atom.
- * \param code_file The file where the C code will be written.
- * \param alloc_file File for allocations.
- * \param collection The atom to translate into C code.
- * \pre code_file and collection must not be NULL.
- * \relatesalso wave_collection
+ * \brief Curly “stack”.
  */
-void wave_code_generation_atom(FILE* code_file, FILE * alloc_file, const wave_collection* collection);
+static unsigned long long int _curly_count = 0;
 
-#endif /* __WAVE_GENERATION_ATOM_H__ */
+void fprintf_closing_curly (FILE * stream, unsigned long long int number)
+{
+    for (unsigned long long int i = 0; i < number; ++i)
+        fprintf (stream, "}\n");
+}
+
+void wave_generate_stack_curly (void)
+{
+    _curly_count++;
+}
+
+void wave_generate_flush_curly (FILE * stream)
+{
+    fprintf_closing_curly (stream, _curly_count);
+    _curly_count = 0;
+}
+
+unsigned long long int wave_generate_backup_curly (void)
+{
+    return _curly_count;
+}
+
+void wave_generate_restore_curly (unsigned long long int count)
+{
+    _curly_count = count;
+}

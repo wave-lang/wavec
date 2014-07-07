@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $# -eq 1 ]]; then
-    rm -f $1/*.c $1/*.wave_pp $1/*.c~
+    rm -f $1/*.c $1/*.wpp $1/*.c~
     rm -f "$1/fibonacci" "$1/gcd" "$1/list_reversal" "$1/pascal_triangle"
     rm -f "$1/tree_rotation" "$1/vector_addition"
 else

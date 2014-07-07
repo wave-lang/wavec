@@ -30,13 +30,26 @@
  */
 #include "wave/common/wave_garbage.h"
 
+////////////////////////////////////////////////////////////////////////////////
+// Static utilities.
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \brief Arbitrary step.
+ */
 static const size_t _WAVE_GC_SIZE_STEP = 128;
 
+/**
+ * \brief The garbage collector.
+ */
 static struct wave_garbage_collector _WAVE_GC =
 {
     ._size = 0, ._count = 0, ._pointers = NULL,
 };
 
+/**
+ * \brief Reset the garbage collector.
+ */
 static inline void _reset_gc (void)
 {
     _WAVE_GC._size = 0;
@@ -44,6 +57,9 @@ static inline void _reset_gc (void)
     _WAVE_GC._pointers = NULL;
 }
 
+/**
+ * \brief Grow the garbage collector.
+ */
 static inline void _grow_gc (void)
 {
     size_t new_size = _WAVE_GC._size + _WAVE_GC_SIZE_STEP;
@@ -54,6 +70,10 @@ static inline void _grow_gc (void)
         _WAVE_GC._size = new_size;
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Allocation, etc.
+////////////////////////////////////////////////////////////////////////////////
 
 void * wave_garbage_alloc (size_t size)
 {
@@ -72,6 +92,10 @@ void wave_garbage_register (void * pointer)
         _WAVE_GC._count++;
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Cleaning, destroying.
+////////////////////////////////////////////////////////////////////////////////
 
 void wave_garbage_clean (void)
 {

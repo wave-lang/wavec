@@ -50,10 +50,11 @@ char* preproc_concat_two_strings(const char* str1, const char* str2);
 /**
  * \brief Execute perror with the message passing in argument and quit.
  * \param message The phrase to print with perror.
+ * \param code Exit code.
  */
-static inline void perror_and_quit(const char* message){
+static inline void perror_and_quit(const char* message, int code){
     perror(message);
-    exit(errno);
+    exit(code);
 }
 
 /**

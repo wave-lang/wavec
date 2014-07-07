@@ -1,0 +1,41 @@
+.TH WAVEPP "1" "july 2014" "wavepp 0.4.0" "wavepp manual"
+.SH NAME
+wavepp - A Wave preprocessor
+
+.SH SYNOPSIS
+.B wave2c
+.I INPUT [OUTPUT]
+.SH DESCRIPTION
+This program preprocesses Wave code. The resulting code can be compiled into C code using \fBwave2c\fR.
+.P
+For more information on the Wave language, please
+visit <\fBhttp://wave.gforge.inria.fr\fR>.
+
+.SH USAGE
+This program expects 1 or 2 arguments. The first argument is the input file, while
+the second argument is the output.
+.P
+If the second argument is omitted, the program will output to the standard output.
+
+.SH EXAMPLES
+To preprocess a Wave file:
+    $ \fBwavepp\fR input.w output.wpp
+
+To write the resulting code to stdout:
+    $ \fBwavepp\fR input.wpp
+
+To directly produce C code from raw Wave code:
+    $ \fBwavepp\fR input.w | \fBwave2c\fR - ouput.c
+
+.SH SEE ALSO
+\fBwave2c\fR, \fBwavec\fR
+
+.SH BUGS
+No known bugs yet.
+
+.SH AUTHORS
+See the \fBAUTHORS\fR in the source ditribution. Éric Violard <\fBeric.violard@inria.fr\fR> is the author of the
+Wave language.
+
+.SH LICENSE
+This work is licensed under the MIT terms. See the \fBCOPYING\fR file in the source distribution.

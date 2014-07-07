@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <sysexits.h>
+#include <string.h>
 #include "wave/common/wave_types.h"
 #include "wave/ast/wave_phrase.h"
 #include "wave/generation/wave_code_generation.h"
@@ -116,36 +118,46 @@ atom                                    return Atom;
 int main(int argc, char ** argv)
 {
     ++argv; --argc;
-    if( argc < 1 || argc > 2 ){
-        fprintf(stderr, "No input file \n");
-        return EXIT_FAILURE;
+    if (argc == 0 || argc > 2){
+        fprintf(stderr, "Error: wrong number of arguments\n");
+        exit (EX_USAGE);
     }
-    yyin = fopen(argv[0], "r");
-    if( yyin == NULL ){
-        perror("fopen");
-        return EXIT_FAILURE;
+
+    if (argc >= 1)
+    {
+        if (strlen (argv[0]) == 1 && argv[0][0] == '-')
+            yyin = stdin;
+        else
+        {
+            yyin = fopen(argv[0], "r");
+            if( yyin == NULL ){
+            perror("fopen");
+            exit (EX_OSERR);
+            }
+        }
     }
+
     if( argc == 2 ){
         yyout = fopen(argv[1], "w");
         if( yyout == NULL ){
             fclose(yyin);
             perror("fopen");
-            return EXIT_FAILURE;
+            exit (EX_OSERR);
         }
     }
+
     wave_phrase_init (&p);
     if(yyparse() == 1){
         wave_phrase_clean(p._next_phrase);
-        return EXIT_FAILURE;
+        exit (EX_DATAERR);
     }
-    wave_phrase_print(&p);
     wave_code_generation_generate(yyout, p._next_phrase);
     wave_phrase_clean(p._next_phrase);
     fclose(yyin);
     if(argc == 2)
         fclose(yyout);
     yylex_destroy();
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 void incline(void){

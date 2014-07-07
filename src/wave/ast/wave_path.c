@@ -31,6 +31,148 @@
 #include "wave/ast/wave_path.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+// Static utilities.
+////////////////////////////////////////////////////////////////////////////////
+
+static inline void _add_to_queue (wave_path * p, wave_queue * q)
+{
+    wave_path * current, * next;
+    for (current = p; current != NULL; current = next)
+    {
+        next = current->_next_path;
+        wave_queue_push (q, current);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Static utilities for freeing.
+////////////////////////////////////////////////////////////////////////////////
+
+static inline void _wave_path_free_current (wave_path * p, wave_queue * q)
+{
+    wave_move_type move = wave_path_get_move (p);
+    if (move == WAVE_MOVE_PART)
+        _add_to_queue (p->_complex_move._part, q);
+    else if (move == WAVE_MOVE_REP)
+        _add_to_queue (p->_complex_move._repeat._path, q);
+    free (p);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Static utilities for copying.
+////////////////////////////////////////////////////////////////////////////////
+
+static inline void _copy_move (const wave_path * const original, wave_path * const copy)
+{
+    copy->_move = original->_move;
+}
+
+static inline void _copy_part (const wave_path * const original, wave_path * const copy)
+{
+    copy->_complex_move._part = wave_path_copy (original->_complex_move._part);
+}
+
+static inline void _copy_repeat (const wave_path * const original, wave_path * const copy)
+{
+    copy->_complex_move._repeat._type = original->_complex_move._repeat._type;
+    copy->_complex_move._repeat._number = original->_complex_move._repeat._number;
+    copy->_complex_move._repeat._path = wave_path_copy (original->_complex_move._repeat._path);
+}
+
+static inline void _copy_current (const wave_path * const original, wave_path * const copy)
+{
+    wave_move_type t = wave_path_get_move (original);
+    _copy_move (original, copy);
+    if (t == WAVE_MOVE_PART)
+        _copy_part (original, copy);
+    else if (t == WAVE_MOVE_REP)
+        _copy_repeat (original, copy);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Static utilities for printing.
+////////////////////////////////////////////////////////////////////////////////
+
+static inline void _wave_path_fprint_char_move (FILE * stream, char c)
+{
+    fprintf (stream, "%c", c);
+}
+
+/* _wave_path_fprint_{up,down,pre,suc,rewind}:
+ * The functions need to be of type "(FILE *, const wave_path *) -> void", even
+ * though the "p" parameter is not used, hence the use of the "(void) p;" line.
+ * (In order to suppress the -Wunused-parameter warning. The warning can be
+ * useful, but not using the "p" parameter is deliberate here.)
+ */
+static inline void _wave_path_fprint_up (FILE * stream, const wave_path * p)
+{
+    (void) p;
+    _wave_path_fprint_char_move (stream, 'u');
+}
+
+static inline void _wave_path_fprint_down (FILE * stream, const wave_path * p)
+{
+    (void) p;
+    _wave_path_fprint_char_move (stream, 'd');
+}
+
+static inline void _wave_path_fprint_pre (FILE * stream, const wave_path * p)
+{
+    (void) p;
+    _wave_path_fprint_char_move (stream, 'p');
+}
+
+static inline void _wave_path_fprint_suc (FILE * stream, const wave_path * p)
+{
+    (void) p;
+    _wave_path_fprint_char_move (stream, 's');
+}
+
+static inline void _wave_path_fprint_rewind (FILE * stream, const wave_path * p)
+{
+    (void) p;
+    _wave_path_fprint_char_move (stream, 'r');
+}
+
+static inline void _wave_path_fprint_part (FILE * stream, const wave_path * p)
+{
+    fprintf (stream, "[");
+    wave_path_fprint (stream, p->_complex_move._part);
+    fprintf (stream, "]");
+}
+
+static inline void _wave_path_fprint_rep (FILE * stream, const wave_path * p)
+{
+    fprintf (stream, "(");
+    wave_path_fprint (stream, p->_complex_move._repeat._path);
+    if (p->_complex_move._repeat._type == WAVE_PATH_REPEAT_CONSTANT)
+        fprintf (stream, ") %d", p->_complex_move._repeat._number);
+    else
+        fprintf (stream, ") *");
+}
+
+static void (* const _wave_path_fprint_functions []) (FILE * , const wave_path *) =
+{
+    [WAVE_MOVE_UP]          = _wave_path_fprint_up,
+    [WAVE_MOVE_DOWN]        = _wave_path_fprint_down,
+    [WAVE_MOVE_PRE]         = _wave_path_fprint_pre,
+    [WAVE_MOVE_SUC]         = _wave_path_fprint_suc,
+    [WAVE_MOVE_REWIND]      = _wave_path_fprint_rewind,
+    [WAVE_MOVE_PART]        = _wave_path_fprint_part,
+    [WAVE_MOVE_REP]         = _wave_path_fprint_rep,
+    [WAVE_MOVE_UNKNOWN]     = NULL,
+};
+
+static void _wave_path_print_current (FILE * stream, const wave_path * p)
+{
+    wave_move_type m = wave_path_get_move (p);
+    if (m >= 0 && m < WAVE_MOVE_UNKNOWN)
+        _wave_path_fprint_functions [m] (stream, p);
+    if (wave_path_has_next (p))
+        fprintf (stream, " ");
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Initialization.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -55,68 +197,21 @@ void * wave_path_alloc (void)
     return p;
 }
 
-static inline void _add_to_stack (wave_path * p, wave_stack * s)
-{
-    wave_path * current, * next;
-    for (current = p; current != NULL; current = next)
-    {
-        next = current->_next_path;
-        wave_stack_push (s, current);
-    }
-}
-
-static inline void _wave_path_free_current (wave_path * p, wave_stack * s)
-{
-    wave_move_type move = wave_path_get_move (p);
-    if (move == WAVE_MOVE_PART)
-        _add_to_stack (p->_complex_move._part, s);
-    else if (move == WAVE_MOVE_REP)
-        _add_to_stack (p->_complex_move._repeat._path, s);
-    free (p);
-}
-
 void * wave_path_free (wave_path * p)
 {
     if (p != NULL)
     {
-        wave_stack * s = wave_stack_alloc ();
-        _add_to_stack (p, s);
-        while (! wave_stack_is_empty (s))
+        wave_queue * q = wave_queue_alloc ();
+        _add_to_queue (p, q);
+        while (! wave_queue_is_empty (q))
         {
-            wave_path * current = wave_stack_pop (s);
-            _wave_path_free_current (current, s);
+            wave_path * current = wave_queue_pop (q);
+            _wave_path_free_current (current, q);
         }
-        wave_stack_free (s);
+        wave_queue_free (q);
     }
 
     return NULL;
-}
-
-static inline void _copy_move (const wave_path * const original, wave_path * const copy)
-{
-    copy->_move = original->_move;
-}
-
-static inline void _copy_part (const wave_path * const original, wave_path * const copy)
-{
-    copy->_complex_move._part = wave_path_copy (original->_complex_move._part);
-}
-
-static inline void _copy_repeat (const wave_path * const original, wave_path * const copy)
-{
-    copy->_complex_move._repeat._type = original->_complex_move._repeat._type;
-    copy->_complex_move._repeat._number = original->_complex_move._repeat._number;
-    copy->_complex_move._repeat._path = wave_path_copy (original->_complex_move._repeat._path);
-}
-
-static inline void _copy (const wave_path * const original, wave_path * const copy)
-{
-    wave_move_type t = wave_path_get_move (original);
-    _copy_move (original, copy);
-    if (t == WAVE_MOVE_PART)
-        _copy_part (original, copy);
-    else if (t == WAVE_MOVE_REP)
-        _copy_repeat (original, copy);
 }
 
 void * wave_path_copy (const wave_path * p)
@@ -125,11 +220,11 @@ void * wave_path_copy (const wave_path * p)
     if (p != NULL)
     {
         copy = wave_path_alloc ();
-        _copy (p, copy);
+        _copy_current (p, copy);
         for (wave_path * current = wave_path_get_next (p); current != NULL; current = wave_path_get_next (current))
         {
             wave_path * current_copy = wave_path_alloc ();
-            _copy (current, current_copy);
+            _copy_current (current, current_copy);
             wave_path_add_path (copy, current_copy);
         }
     }
@@ -225,85 +320,6 @@ void wave_path_set_repeat_path (wave_path * const p, wave_path * const repeat)
 ////////////////////////////////////////////////////////////////////////////////
 // Printing.
 ////////////////////////////////////////////////////////////////////////////////
-
-static inline void _wave_path_fprint_char_move (FILE * stream, char c)
-{
-    fprintf (stream, "%c", c);
-}
-
-/* _wave_path_fprint_{up,down,pre,suc,rewind}:
- * The functions need to be of type "(FILE *, const wave_path *) -> void", even
- * though the "p" parameter is not used, hence the use of the "(void) p;" line.
- * (In order to suppress the -Wunused-parameter warning. The warning can be
- * useful, but not using the "p" parameter is deliberate here.)
- */
-static inline void _wave_path_fprint_up (FILE * stream, const wave_path * p)
-{
-    (void) p;
-    _wave_path_fprint_char_move (stream, 'u');
-}
-
-static inline void _wave_path_fprint_down (FILE * stream, const wave_path * p)
-{
-    (void) p;
-    _wave_path_fprint_char_move (stream, 'd');
-}
-
-static inline void _wave_path_fprint_pre (FILE * stream, const wave_path * p)
-{
-    (void) p;
-    _wave_path_fprint_char_move (stream, 'p');
-}
-
-static inline void _wave_path_fprint_suc (FILE * stream, const wave_path * p)
-{
-    (void) p;
-    _wave_path_fprint_char_move (stream, 's');
-}
-
-static inline void _wave_path_fprint_rewind (FILE * stream, const wave_path * p)
-{
-    (void) p;
-    _wave_path_fprint_char_move (stream, 'r');
-}
-
-static inline void _wave_path_fprint_part (FILE * stream, const wave_path * p)
-{
-    fprintf (stream, "[");
-    wave_path_fprint (stream, p->_complex_move._part);
-    fprintf (stream, "]");
-}
-
-static inline void _wave_path_fprint_rep (FILE * stream, const wave_path * p)
-{
-    fprintf (stream, "(");
-    wave_path_fprint (stream, p->_complex_move._repeat._path);
-    if (p->_complex_move._repeat._type == WAVE_PATH_REPEAT_CONSTANT)
-        fprintf (stream, ") %d", p->_complex_move._repeat._number);
-    else
-        fprintf (stream, ") *");
-}
-
-static void (* const _wave_path_fprint_functions []) (FILE * , const wave_path *) =
-{
-    [WAVE_MOVE_UP]          = _wave_path_fprint_up,
-    [WAVE_MOVE_DOWN]        = _wave_path_fprint_down,
-    [WAVE_MOVE_PRE]         = _wave_path_fprint_pre,
-    [WAVE_MOVE_SUC]         = _wave_path_fprint_suc,
-    [WAVE_MOVE_REWIND]      = _wave_path_fprint_rewind,
-    [WAVE_MOVE_PART]        = _wave_path_fprint_part,
-    [WAVE_MOVE_REP]         = _wave_path_fprint_rep,
-    [WAVE_MOVE_UNKNOWN]     = NULL,
-};
-
-static void _wave_path_print_current (FILE * stream, const wave_path * p)
-{
-    wave_move_type m = wave_path_get_move (p);
-    if (m >= 0 && m < WAVE_MOVE_UNKNOWN)
-        _wave_path_fprint_functions [m] (stream, p);
-    if (wave_path_has_next (p))
-        fprintf (stream, " ");
-}
 
 void wave_path_fprint (FILE * stream, const wave_path * p)
 {

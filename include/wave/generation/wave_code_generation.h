@@ -31,6 +31,7 @@
 #ifndef __WAVE_CODE_GENERATION_H
 #define __WAVE_CODE_GENERATION_H
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -39,69 +40,7 @@
 #include "wave/generation/wave_headers.h"
 #include "wave/generation/wave_generation_common.h"
 #include "wave/generation/wave_generation_atom.h"
-
-/**
- * \brief Generate C source code giving a collection.
- * \param output_file The file where the C code will be written.
- * \param collection The collection to translate into C code.
- * \pre output_file and collection must not be NULL.
- * \relatesalso wave_collection
- * \note  Collections in phrases must have already been indexed.
- */
-void wave_code_generation_collection(FILE* code_file, FILE * alloc_file, const wave_collection* collection);
-
-static inline void file_cat (FILE * destination, FILE * source)
-{
-    bool end = false;
-    char buffer[2048];
-
-    while (! end)
-    {
-        int count = 0;
-        fscanf (source, "%2047c%n", buffer, & count);
-        end = count == 0;
-
-        if (! end)
-        {
-            buffer[count] = '\0';
-            fprintf (destination, "%s", buffer);
-        }
-    }
-}
-
-static inline void _current_phrase (FILE * output, wave_phrase * p, unsigned int phrase_count)
-{
-    fprintf (output, "void phrase_%d (void)\n{\n", phrase_count);
-    FILE * code_file = tmpfile ();
-    FILE * alloc_file = tmpfile ();
-
-    wave_collection* collection = wave_phrase_get_collection(p);
-
-    wave_collection_unroll_path(collection);
-
-    wave_collection_compute_indexes(collection);
-
-    wave_collection_replace_path(collection);
-
-    wave_collection_compute_length_and_coords(collection);
-
-    // Debug
-    fprintf (stderr, "Collection right before code generation:\n\t"); wave_collection_fprint (stderr, collection); fprintf (stderr, "\n\n");
-
-    wave_code_generation_collection(code_file, alloc_file, collection);
-
-    fseek (alloc_file, 0, SEEK_SET);
-    fseek (code_file, 0, SEEK_SET);
-
-    file_cat (output, alloc_file);
-    file_cat (output, code_file);
-
-    fprintf (output, "wave_garbage_clean ();\n");
-
-    fclose (code_file);
-    fclose (alloc_file);
-    fprintf (output, "}\n");
-}
+#include "wave/generation/wave_generation_curly.h"
 
 /**
  * \brief Generate C source code giving a wave AST.
@@ -111,18 +50,17 @@ static inline void _current_phrase (FILE * output, wave_phrase * p, unsigned int
  * \relatesalso wave_phrase
  * \note  Collections in phrases must have already been indexed.
  */
-static inline void wave_code_generation_generate(FILE* output_file, wave_phrase* phrases){
-    wave_code_generation_fprintf_headers (output_file);
-    unsigned int count = 0;
-    do{
-        _current_phrase (output_file, phrases, count++);
-    }
-    while( wave_phrase_has_next(phrases) && ( phrases = wave_phrase_get_next(phrases) ) );
-    fprintf (output_file, "int main(void)\n{\n");
-    for (unsigned int i = 0; i < count; ++i)
-        fprintf (output_file, "phrase_%d ();\n", i);
-    fprintf (output_file, "wave_garbage_destroy ();\n");
-    fprintf (output_file, "return 0;\n}\n");
-}
+void wave_code_generation_generate (FILE * output_file, const wave_phrase * phrases);
+
+/**
+ * \brief Generate C source code giving a collection.
+ * \param code_file The file where the C code will be written.
+ * \param alloc_file File for allocations.
+ * \param collection The collection to translate into C code.
+ * \pre code_file and collection must not be NULL.
+ * \relatesalso wave_collection
+ * \note  Collections in phrases must have already been indexed.
+ */
+void wave_code_generation_collection (FILE * const code_file, FILE * const alloc_file, const wave_collection * collection);
 
 #endif // ( __WAVE_CODE_GENERATION_H )

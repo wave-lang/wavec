@@ -14,6 +14,7 @@ PATH_OBJ = obj
 PATH_DOC = doc
 PATH_LIB = lib
 PATH_BIN = bin
+PATH_MAN = man
 PATH_TESTS = tests
 PATH_INCLUDE = include
 PATH_TESTS_SRC = $(PATH_TESTS)/$(PATH_SRC)
@@ -47,7 +48,7 @@ FLAGS_CC_INCLUDE = -I$(PATH_INCLUDE) -I$(PATH_INCLUDE_YACC) \
 	-I$(PATH_TESTS_INCLUDE) -I$(PATH_INCLUDE_HASH)
 FLAGS_CC_DEBUG = -g
 FLAGS_CC_WARNINGS = -pedantic -Wall -Wextra -Wfloat-equal -Wdouble-promotion \
-	-Wswitch-default -Winit-self -Wshadow -Wbad-function-cast -Wcast-qual \
+	-Wswitch-default -Winit-self -Wshadow -Wbad-function-cast \
 	-Wcast-align -Wconversion -Wlogical-op -Wstrict-prototypes -Wnested-externs
 FLAGS_CC_MISC = -std=gnu99 -O0 -fopenmp
 FLAGS_CC = $(FLAGS_CC_INCLUDE) $(FLAGS_CC_WARNINGS) $(FLAGS_CC_MISC) \
@@ -143,30 +144,36 @@ print_tests: test_ast_print.o libhash.a libwave.a libwaveast.a | bin_dir
 	$(CC) $(FLAGS_CC) -o $(PATH_OBJ)/$@ -c $<
 
 # Wave AST
-wave_path.o: wave_path.c wave_path.h
+wave_path.o: wave_path.c wave_path.h wave_queue.h
 wave_atom.o: wave_atom.c wave_atom.h wave_types.h wave_path.h wave_operator.h
-wave_collection.o: wave_collection.c wave_collection.h wave_atom.h
+wave_collection.o: wave_collection.c wave_collection.h wave_atom.h wave_queue.h
 wave_phrase.o: wave_phrase.c wave_phrase.h wave_collection.h
 wave_int_list.o: wave_int_list.c wave_int_list.h
 wave_coordinate.o: wave_coordinate.c wave_coordinate.h wave_int_list.h
 wave_collection_info.o: wave_collection_info.c wave_collection_info.h \
 	wave_int_list.h wave_coordinate.h
-wave_stack.o: wave_stack.c wave_stack.h
+wave_queue.o: wave_queue.c wave_queue.h
 main.o: main.c wave_path.h wave_atom.h wave_collection.h wave_compiler_version.h
 
 # Code generation
 wave_headers.o: wave_headers.c wave_headers.h
 wave_code_generation.o: wave_code_generation.c wave_code_generation.h \
-	wave_generation_operators.h wave_generation_common.h
+	wave_generation_operators.h wave_generation_common.h wave_headers.h \
+	wave_generation_atom.h wave_generation_curly.h
 wave_generation_operators.o: wave_generation_operators.c \
-	wave_generation_operators.h wave_generation_common.h
-wave_generation_common.o: wave_generation_common.c wave_generation_common.h
-wave_generation_atom.o: wave_generation_atom.c wave_generation_atom.h
+	wave_generation_operators.h wave_generation_common.h wave_types.h \
+	wave_operator.h wave_collection.h
+wave_generation_common.o: wave_generation_common.c wave_generation_common.h \
+	wave_types.h wave_atom.h wave_int_list.h wave_coordinate.h \
+	wave_generation_curly.h
+wave_generation_atom.o: wave_generation_atom.c wave_generation_atom.h \
+	wave_atom.h wave_collection.h wave_generation_operators.h
+wave_generation_curly.o: wave_generation_curly.c wave_generation_curly.h
 
 # Wave common
 wave_types.o: wave_types.c wave_types.h
 wave_operator.o: wave_operator.c wave_operator.h
-wave_struct_def.o: wave_struct_def.c wave_struct_def.h
+wave_data.o: wave_data.c wave_data.h wave_types.h wave_operator.h wave_garbage.h
 wave_garbage.o: wave_garbage.c wave_garbage.h
 
 # Tests
@@ -177,9 +184,9 @@ test_wave_collection.o: test_wave_collection.c test_wave_collection.h wave_colle
 unit_tests.o: unit_tests.c wave_test_suites.h
 
 # Wave common lib
-libwave.a: wave_types.o wave_operator.o wave_struct_def.o wave_garbage.o | lib_dir
+libwave.a: wave_types.o wave_operator.o wave_data.o wave_garbage.o | lib_dir
 	ar crvs $(PATH_LIB)/libwave.a $(PATH_OBJ)/wave_types.o \
-		$(PATH_OBJ)/wave_operator.o $(PATH_OBJ)/wave_struct_def.o \
+		$(PATH_OBJ)/wave_operator.o $(PATH_OBJ)/wave_data.o \
 		$(PATH_OBJ)/wave_garbage.o
 
 # Compiler lib
@@ -187,7 +194,7 @@ libwaveast.a: wave_operator.o wave_path.o wave_atom.o \
 	wave_collection.o wave_phrase.o wave_int_list.o wave_coordinate.o \
 	wave_code_generation.o wave_generation_operators.o wave_headers.o \
 	wave_generation_common.o wave_collection_info.o wave_generation_atom.o \
-	wave_stack.o | lib_dir
+	wave_queue.o wave_generation_curly.o | lib_dir
 	ar crvs $(PATH_LIB)/libwaveast.a \
 		$(PATH_OBJ)/wave_operator.o $(PATH_OBJ)/wave_path.o \
 		$(PATH_OBJ)/wave_atom.o $(PATH_OBJ)/wave_collection.o \
@@ -195,7 +202,8 @@ libwaveast.a: wave_operator.o wave_path.o wave_atom.o \
 		$(PATH_OBJ)/wave_coordinate.o $(PATH_OBJ)/wave_collection_info.o \
 		$(PATH_OBJ)/wave_code_generation.o $(PATH_OBJ)/wave_headers.o \
 		$(PATH_OBJ)/wave_generation_operators.o $(PATH_OBJ)/wave_generation_common.o \
-		$(PATH_OBJ)/wave_generation_atom.o $(PATH_OBJ)/wave_stack.o
+		$(PATH_OBJ)/wave_generation_atom.o $(PATH_OBJ)/wave_queue.o \
+		$(PATH_OBJ)/wave_generation_curly.o
 
 # Unit tests lib
 libwavetests.a: test_wave_path.o test_wave_atom.o test_wave_collection.o | lib_dir
@@ -228,16 +236,25 @@ yacc_dir:
 ################################################################################
 
 install: main
+	@mkdir -p /usr/local/include
+	@mkdir -p /usr/local/lib
+	@mkdir -p /usr/local/bin
+	@mkdir -p /usr/local/share/man/man1
 	@cp -R $(PATH_INCLUDE)/wave /usr/local/include/wave
 	@cp $(PATH_LIB)/libwave.a /usr/local/lib/libwave.a
 	@cp $(PATH_BIN)/wave2c /usr/local/bin/wave2c
 	@cp $(PATH_BIN)/wavepp /usr/local/bin/wavepp
 	@cp $(PATH_BIN)/wavec /usr/local/bin/wavec
+	@cp $(PATH_MAN)/wavepp.1 /usr/local/share/man/man1/wavepp.1
+	@cp $(PATH_MAN)/wave2c.1 /usr/local/share/man/man1/wave2c.1
+	@cp $(PATH_MAN)/wavec.1 /usr/local/share/man/man1/wavec.1
 
 uninstall:
 	@rm -rf /usr/local/include/wave
 	@rm -f /usr/local/lib/libwave.a
 	@rm -f /usr/local/bin/wave2c /usr/local/bin/wavepp /usr/local/bin/wavec
+	@rm -f /usr/local/share/man/man1/wavec.1 /usr/local/share/man/man1/wave2c.1 \
+		/usr/local/share/man/man1/wavepp.1
 
 ################################################################################
 # Cleaning

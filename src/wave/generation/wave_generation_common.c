@@ -31,9 +31,14 @@
  */
 #include "wave/generation/wave_generation_common.h"
 
-static unsigned long long int _curly_count = 0;
+////////////////////////////////////////////////////////////////////////////////
+// Static utilities.
+////////////////////////////////////////////////////////////////////////////////
 
-const char * const _atom_type_strings[] =
+/**
+ * \brief Tab of string representations of atom types.
+ */
+static const char * const _atom_type_strings[] =
 {
     [WAVE_ATOM_LITERAL_INT] = "int",
     [WAVE_ATOM_LITERAL_FLOAT] = "float",
@@ -45,6 +50,9 @@ const char * const _atom_type_strings[] =
     [WAVE_ATOM_UNKNOWN] = "",
 };
 
+/**
+ * \brief Tab of string representations of data types.
+ */
 static const char * const _atom_type_data_strings[] =
 {
     [WAVE_ATOM_LITERAL_INT] = "WAVE_DATA_INT",
@@ -54,7 +62,7 @@ static const char * const _atom_type_data_strings[] =
     [WAVE_ATOM_LITERAL_STRING] = "WAVE_DATA_STRING",
 };
 
-void wave_code_generate_error (FILE * file, const char * error_message, const char * error_code)
+void wave_code_generate_error (FILE * const file, const char * const error_message, const char * const error_code)
 {
     fprintf
     (
@@ -65,28 +73,29 @@ void wave_code_generate_error (FILE * file, const char * error_message, const ch
     );
 }
 
-void wave_code_generate_error_unknown (FILE * file)
+void wave_code_generate_error_unknown (FILE * const file)
 {
     wave_code_generate_error (file, "an unknown error has occured.", "EX_SOFTWARE");
 }
 
-void wave_code_generation_fprint_tab_with_init(FILE* file, const wave_int_list* list, const wave_coordinate * coord ,const char* struct_field){
-    fprintf(file, "wave_tab");
-    wave_int_list_code_fprint(file, list);
-    fprintf(file, "[");
-    wave_coordinate_fprint(file, coord);
-    fprintf(file, "]%s", struct_field);
+void wave_code_generation_fprint_tab_with_init (FILE * const file, const wave_int_list * const list, const wave_coordinate * const coord, const char * const struct_field)
+{
+    fprintf (file, "wave_tab");
+    wave_int_list_code_fprint (file, list);
+    fprintf (file, "[");
+    wave_coordinate_fprint (file, coord);
+    fprintf (file, "]%s", struct_field);
 }
 
 void wave_generate_content_assignement (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type t)
 {
-    wave_code_generation_fprint_tab_with_init(code_file, list, c, "._content.");
+    wave_code_generation_fprint_tab_with_init (code_file, list, c, "._content.");
     fprintf (code_file, "_%s", wave_generation_atom_type_string (t));
 }
 
 void wave_generate_type_assignement (FILE * const code_file, const wave_int_list * const list, const wave_coordinate * const c, wave_atom_type t)
 {
-    wave_code_generation_fprint_tab_with_init(code_file, list, c, "._type = ");
+    wave_code_generation_fprint_tab_with_init (code_file, list, c, "._type = ");
     fprintf (code_file, "%s;\n", _atom_type_data_strings[t]);
 }
 
@@ -98,31 +107,4 @@ const char * wave_generation_atom_type_string (wave_atom_type t)
 const char * wave_generation_atom_type_data_string (wave_atom_type t)
 {
     return _atom_type_data_strings[t];
-}
-
-void fprintf_closing_curly (FILE * stream, unsigned long long int number)
-{
-    for (unsigned long long int i = 0; i < number; ++i)
-        fprintf (stream, "}\n");
-}
-
-void wave_generate_stack_curly (void)
-{
-    _curly_count++;
-}
-
-void wave_generate_flush_curly (FILE * stream)
-{
-    fprintf_closing_curly (stream, _curly_count);
-    _curly_count = 0;
-}
-
-unsigned long long int wave_generate_backup_curly (void)
-{
-    return _curly_count;
-}
-
-void wave_generate_restore_curly (unsigned long long int count)
-{
-    _curly_count = count;
 }

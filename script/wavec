@@ -20,9 +20,12 @@ fi
 # Compile the files.
 for WAVE_SRC in $*; do
     # Compute new names.
-    WAVE_PP=${WAVE_SRC/\.wave/}.wave_pp
-    C_SRC=${WAVE_PP/\.wave_pp/\.c}
-    EXE=${C_SRC/\.c/}
+    WAVE_PP=$(echo "$WAVE_SRC" | sed 's/\.wave$//;s/\.w$//').wpp
+    C_SRC=$(echo "$WAVE_PP" | sed 's/\.wpp$/\.c/')
+    EXE=$(echo "$C_SRC" | sed 's/\.c$//')
+    echo $WAVE_PP
+    echo $C_SRC
+    echo $EXE
 
     # Run the preprocessor.
     $WAVEPP "$WAVE_SRC" "$WAVE_PP" &&
@@ -40,7 +43,7 @@ for WAVE_SRC in $*; do
     fi
 
     # Compile the produced C code.
-    gcc "$C_SRC" -o "$EXE" -std=c99 -fopenmp -Iinclude -Llib -lm -lwave
+    gcc "$C_SRC" -o "$EXE" -O2 -std=c99 -fopenmp -Iinclude -Llib -lm -lwave
 done
 
 exit 0
