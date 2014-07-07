@@ -49,6 +49,7 @@ $ make
 ```
 
 Among the files and directories created, you will find a ```bin``` directory which will contain:
+
 - ```wavepp```: the preprocessor
 - ```wave2c```: the Wave to C translator
 - ```wavec```: the Wave compiler.
@@ -78,6 +79,7 @@ $ wavec my_file.wave
 ```
 
 This will produce several files:
+
 - ```my_file.wpp```: the preprocessed file.
 - ```my_file.c```: the C intermediary file.
 - ```my_file```: the executable.
