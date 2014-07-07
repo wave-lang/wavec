@@ -95,7 +95,7 @@ The preprocessing is done with ```wavepp```
 ```bash
 $ wavepp my_file.wave [my_file.wpp]
 ```
-If no destination file is supplied, it defaults to ```wavepp_out.wpp```.
+If no destination file is supplied, the result will be output to stdout.
 
 ### Converting a preprocessed file to C
 Once a file has been preprocessed, it can be converted to C using ```wave2c```
