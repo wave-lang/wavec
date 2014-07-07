@@ -145,6 +145,11 @@ Otherwise, you need to stay at the directory of the project:
 $ bin/wavec examples/your_example_of_choice.wave [other_examples.wave]
 ```
 
+If you wish to clean up the examples directory, you can run the ```clean-examples``` script:
+```bash
+$ script/clean-examples examples
+```
+
 Documentation
 -------------
 ### Users

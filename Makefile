@@ -283,7 +283,12 @@ clean-doc: clean_doc
 clean_doc:
 	@rm -rf $(PATH_DOC)
 
+cleanexamples: clean_examples
+clean-examples: clean_examples
+clean_examples:
+	@script/clean-examples examples
+
 cleanall: clean_all
 clean-all: clean_all
-clean_all: clean clean_doc clean_hash
+clean_all: clean clean_doc clean_hash clean_examples
 	@echo "Super clean."
