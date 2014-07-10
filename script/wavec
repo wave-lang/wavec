@@ -17,6 +17,7 @@ if ! command -v "$WAVE2C" > /dev/null 2>&1; then
     WAVE2C="$SCRIPT_PATH/wave2c"
 fi
 
+
 # Compile the files.
 for WAVE_SRC in $*; do
     # Compute new names.
@@ -25,22 +26,29 @@ for WAVE_SRC in $*; do
     EXE=$(echo "$C_SRC" | sed 's/\.c$//')
 
     # Run the preprocessor.
-    $WAVEPP "$WAVE_SRC" "$WAVE_PP" &&
+    $WAVEPP "$WAVE_SRC" "$WAVE_PP"
+    LAST_STATUS=$?
 
     ################################
     # Insert the type checker here !
     ################################
 
     # Run the translator from Wave to C.
-    $WAVE2C "$WAVE_PP" "$C_SRC" &&
+    if [[ $LAST_STATUS -eq 0 ]]; then
+        $WAVE2C "$WAVE_PP" "$C_SRC"
+        LAST_STATUS=$?
+    fi
 
     # Indent the produced C code, if ``indent'' is available.
-    if command -v indent > /dev/null 2>&1; then
+    if [[ $LAST_STATUS -eq 0 ]] && command -v indent > /dev/null 2>&1; then
         indent -bad -bap -bli0 -bls -bs -cs -i4 -l80 -lp -pcs -pmt -saf -sai -saw -sc -ss "$C_SRC"
+        LAST_STATUS=$?
     fi
 
     # Compile the produced C code.
-    gcc "$C_SRC" -o "$EXE" -O2 -std=c99 -fopenmp -Iinclude -Llib -lwave -lm
+    if [[ $LAST_STATUS -eq 0 ]]; then
+        gcc "$C_SRC" -o "$EXE" -O2 -std=c99 -fopenmp -Iinclude -Llib -lwave -lm
+    fi
 done
 
 exit 0
