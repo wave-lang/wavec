@@ -24,7 +24,7 @@ Building requirements
 ### Ubuntu
 #### Ubuntu minimal requirements
 ```bash
-$ apt-get install build-essential byacc flex
+$ apt-get install build-essential bison flex
 ```
 
 #### Ubuntu optionnal requirements
