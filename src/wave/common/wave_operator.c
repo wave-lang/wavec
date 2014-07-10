@@ -88,7 +88,7 @@ bool wave_operator_is_test (wave_operator op)
 
 bool wave_operator_is_unary (wave_operator op)
 {
-    return op >= WAVE_OP_UNARY_PLUS && op <= WAVE_OP_UNARY_CODE;
+    return op <= WAVE_OP_UNARY_CODE;
 }
 
 bool wave_operator_is_binary (wave_operator op)
@@ -107,7 +107,7 @@ bool wave_operator_is_specific (wave_operator op)
 
 void wave_operator_fprint (FILE * stream, wave_operator op)
 {
-    if (op >= WAVE_OP_UNKNOWN || op < 0)
+    if (op >= WAVE_OP_UNKNOWN)
         fprintf (stream, "%s", _operator_characters[WAVE_OP_UNKNOWN]);
     else
         fprintf (stream, "%s", _operator_characters[op]);

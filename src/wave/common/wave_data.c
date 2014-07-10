@@ -60,7 +60,7 @@ static inline wave_string _char_data_to_string (const wave_data * const data)
  */
 static inline bool _is_constant (wave_data_type t)
 {
-    return t >= WAVE_DATA_INT && t <= WAVE_DATA_BOOL;
+    return t <= WAVE_DATA_BOOL;
 }
 
 /**
@@ -804,7 +804,7 @@ wave_string wave_data_get_string (const wave_data * const data)
 
 wave_bool wave_data_is_atom (const wave_data * data)
 {
-    return data->_type >= WAVE_DATA_INT && data->_type <= WAVE_DATA_BOOL;
+    return data->_type <= WAVE_DATA_BOOL;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -882,6 +882,6 @@ void wave_data_binary (const wave_data * const left, const wave_data * const rig
 void wave_data_fprint (FILE * const stream, const wave_data * const data)
 {
     wave_data_type t = wave_data_get_type (data);
-    if (t >= 0 && t < WAVE_DATA_UNKNOWN && _data_print_functions[t] != NULL)
+    if (t < WAVE_DATA_UNKNOWN && _data_print_functions[t] != NULL)
         _data_print_functions[t] (stream, data);
 }

@@ -174,7 +174,7 @@ static void (* const _wave_atom_content_fprint_functions []) (FILE *, const wave
 
 static inline void _wave_atom_content_fprint (FILE * stream, const wave_atom_content * c, wave_atom_type t)
 {
-    if (t >= 0 && t < WAVE_ATOM_UNKNOWN)
+    if (t < WAVE_ATOM_UNKNOWN)
         _wave_atom_content_fprint_functions[t] (stream, c);
 }
 

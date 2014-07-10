@@ -769,6 +769,6 @@ void wave_code_generation_fprint_operator (FILE * code_file, const wave_collecti
     /* We already know the current collection is an atom containing an operator */
     wave_atom * atom = wave_collection_get_atom (collection);
     wave_operator op = wave_atom_get_operator (atom);
-    if (op >= 0 && op < WAVE_OP_UNKNOWN && _operator_functions[op] != NULL)
+    if (op < WAVE_OP_UNKNOWN && _operator_functions[op] != NULL)
         _operator_functions[op] (code_file, collection, op);
 }
