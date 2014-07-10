@@ -173,7 +173,7 @@ void yacc_error_print(){
     size_t i;
     size_t error_location;
     long where_to_go = total_chars >= 20 ? (total_chars - 20) : 0;
-    fprintf(stderr,"Error encountered line %d at character %d\n", lex_current_line, lex_nbchars);
+    fprintf(stderr,"Error encountered line %d at character %lu\n", lex_current_line, lex_nbchars);
     fseek(yyin, where_to_go, SEEK_SET);
     fscanf(yyin, "%40c", string_buf);
     for(i=0; i < 40 && string_buf[i] != '\0'; i++){
