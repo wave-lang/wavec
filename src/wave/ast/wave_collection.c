@@ -117,7 +117,7 @@ static void (* const _wave_collection_free_functions []) (wave_collection *) =
 static inline void _wave_collection_free_current (wave_collection * c)
 {
     wave_collection_type collection_type = wave_collection_get_type (c);
-    if (collection_type >= 0 && collection_type < WAVE_COLLECTION_UNKNOWN)
+    if (collection_type < WAVE_COLLECTION_UNKNOWN)
         _wave_collection_free_functions [collection_type] (c);
     wave_collection_info_free (c->_info);
     free (c);
@@ -1025,7 +1025,7 @@ static void (* const _wave_collection_fprint_functions []) (FILE *, const wave_c
 static void _fprint_current (FILE * stream, const wave_collection * c)
 {
     wave_collection_type collection_type = wave_collection_get_type (c);
-    if (collection_type >= 0 && collection_type < WAVE_COLLECTION_UNKNOWN)
+    if (collection_type < WAVE_COLLECTION_UNKNOWN)
         _wave_collection_fprint_functions [collection_type] (stream, c);
 }
 

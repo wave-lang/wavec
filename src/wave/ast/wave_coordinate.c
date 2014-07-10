@@ -339,7 +339,7 @@ void wave_coordinate_set_times (wave_coordinate * c, wave_coordinate * left, wav
 void wave_coordinate_fprint (FILE * stream, const wave_coordinate * c)
 {
     wave_coordinate_type t = wave_coordinate_get_type (c);
-    if (t >= 0 && t < WAVE_COORD_UNKNOWN)
+    if (t < WAVE_COORD_UNKNOWN)
         _wave_coordinate_fprint_functions [t] (stream, c);
 }
 

@@ -166,7 +166,7 @@ static void (* const _wave_path_fprint_functions []) (FILE * , const wave_path *
 static void _wave_path_print_current (FILE * stream, const wave_path * p)
 {
     wave_move_type m = wave_path_get_move (p);
-    if (m >= 0 && m < WAVE_MOVE_UNKNOWN)
+    if (m < WAVE_MOVE_UNKNOWN)
         _wave_path_fprint_functions [m] (stream, p);
     if (wave_path_has_next (p))
         fprintf (stream, " ");
