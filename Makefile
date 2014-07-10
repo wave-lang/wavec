@@ -55,7 +55,7 @@ FLAGS_CC = $(FLAGS_CC_INCLUDE) $(FLAGS_CC_WARNINGS) $(FLAGS_CC_MISC) \
 	$(FLAGS_CC_DEBUG)
 FLAGS_CC_LEX_YACC = -W $(FLAGS_CC_INCLUDE) $(FLAGS_CC_DEBUG) $(FLAGS_CC_MISC)
 FLAGS_CC_LIB = -L$(PATH_LIB) -L$(PATH_LIB_HASH)
-FLAGS_CC_LINK = $(FLAGS_CC_LIB) -lhash -lfl -ly -lm -lwaveast -lwave
+FLAGS_CC_LINK = $(FLAGS_CC_LIB) -lhash -lfl -ly -lwaveast -lwave -lm
 FLAGS_CC_UNIT_TESTS = -lwavetests $(FLAGS_CC_LINK) -lcunit
 
 ################################################################################

@@ -28,7 +28,10 @@ extern void yacc_error_print(void);
 void yacc_init(void);
 void yacc_error_print();
 int yylex();
-void yyerror(const char * s);
+void yyerror(const char * s)
+{
+    fprintf (stderr, "%s\n", s);
+}
 
 %}
 
