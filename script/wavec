@@ -40,7 +40,7 @@ for WAVE_SRC in $*; do
     fi
 
     # Compile the produced C code.
-    gcc "$C_SRC" -o "$EXE" -O2 -std=c99 -fopenmp -Iinclude -Llib -lm -lwave
+    gcc "$C_SRC" -o "$EXE" -O2 -std=c99 -fopenmp -Iinclude -Llib -lwave -lm
 done
 
 exit 0
