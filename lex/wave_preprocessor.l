@@ -65,10 +65,10 @@ Boolean     True|False
     fprintf(yyout, "%s", value);
 }
 <PREPROCESSOR>{String}                                         { /* Strings */
-    fprintf (yyout, yytext);
+    fprintf (yyout, "%s", yytext);
 }
 <PREPROCESSOR>{Character}                                      { /* Character */
-    fprintf (yyout, yytext);
+    fprintf (yyout, "%s", yytext);
 }
 <Naming><<EOF>>                                         {
     fprintf(stderr, "Error : Encontered end of file while waiting for a declaration. \"Let\" encontered line %d\n", let_row);
